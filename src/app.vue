@@ -16,17 +16,17 @@
                     </v-btn>
                 </v-toolbar>
                 <v-list two-line subheader>
-                    <v-subheader>Mina Termometrar</v-subheader>
+                    <v-subheader class="title">Mina platser</v-subheader>
                     <v-divider></v-divider>
-                    <v-list-tile v-for="(item, id) in state.sensors" :key="location(id)" @click="">
+                    <v-list-tile v-for="(item, id) in state.sensors" :key="id" @click="">
                         <v-list-tile-content>
-                            <v-list-tile-title v-text="location(id)"></v-list-tile-title>
-                            <v-list-tile-sub-title :color="value(id) > limit(id) ? 'red' : 'teal'">
+                            <v-list-tile-title class="headline" v-text="location(id)"></v-list-tile-title>
+                            <v-list-tile-sub-title class="headline" >
                                 {{ value(id) }} {{ unitSymbol() }}
                             </v-list-tile-sub-title>
                         </v-list-tile-content>
                         <v-list-tile-action>
-                            <v-icon v-if="value(id) > limit(id)" :color="'red'">announcement</v-icon>
+                            <v-icon v-if="danger(id)" :color="'red'">announcement</v-icon>
                             <v-icon v-else :color="'teal'">check_circle</v-icon>
                         </v-list-tile-action>
                     </v-list-tile>
@@ -80,7 +80,7 @@ export default class App extends Vue {
     getCensorData() {
         const prod = 'https://test.nivapro.com/itemper/api/';
         const dev = 'http://192.168.20.77/api/';
-        axios.get(dev)
+        axios.get(prod)
         .then(resolve => {
                 const data : Temper8SensorData[] = resolve.data.slice();
                 this.state.sensors = data;
@@ -98,6 +98,9 @@ export default class App extends Vue {
     }
     unitSymbol(): string {
         return this.state.settings.unitSymbol
+    }
+    danger(id:number):boolean {
+        return this.state.sensors[id]._value > this.state.settings.limit
     }
     limit(id:number): number {
         return this.state.settings.limit;
