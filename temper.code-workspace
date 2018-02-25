@@ -1,0 +1,16 @@
+{
+	"folders": [
+		{
+			"path": "."
+		},
+		{
+			"path": "E:\\gitrepos\\Temper-resin"
+		}
+	],
+	"settings": {
+		"files.associations": {
+			"*.vue": "vue"
+		},
+		"tslint.autoFixOnSave": true
+	}
+}
