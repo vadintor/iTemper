@@ -78,7 +78,7 @@ export default class App extends Vue {
                 {"_port": 0,"_value": 0.0}]};
     
     getCensorData() {
-        const prod = 'https://test.nivapro.com/itemper/api/';
+        const prod = 'https://itemper.io/api/';
         const dev = 'http://192.168.20.77/api/';
         axios.get(prod)
         .then(resolve => {
