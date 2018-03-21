@@ -41,13 +41,13 @@ export default class MyLocations extends Vue {
         locations: Location.DefaultLocations,
         sensors: [
     { desc: {id: '0', description: 'DS18B20', category: Sensors.Category.IndoorTemperature},
-        samples: [ {_port: 0, _value: 85.0, date: 1}]},
+        samples: [ {port: 0, value: 85.0, date: 1}]},
     { desc: {id: '1', description: 'DS18B20', category: Sensors.Category.IndoorTemperature},
-        samples: [ {_port: 1, _value: 85.0, date: 1}]},
+        samples: [ {port: 1, value: 85.0, date: 1}]},
     { desc: {id: '3', description: 'DS18B20', category: Sensors.Category.IndoorTemperature},
-        samples: [ {_port: 3, _value: 85.0, date: 1}]},
+        samples: [ {port: 3, value: 85.0, date: 1}]},
     { desc: {id: '7', description: 'DS18B20', category: Sensors.Category.IndoorTemperature},
-        samples: [ {_port: 7, _value: 85.0, date: 1}]}]
+        samples: [ {port: 7, value: 85.0, date: 1}]}]
     }
 
     getCensorData() {
@@ -55,10 +55,10 @@ export default class MyLocations extends Vue {
         axios.get(iTemperAPI)
         .then(resolve => {
                 const data : Sensors.Data[] = resolve.data.slice()
-                self.state.sensors[0].samples[0]._value = data[0]._value
-                self.state.sensors[1].samples[0]._value = data[1]._value
-                self.state.sensors[2].samples[0]._value = data[2]._value
-                self.state.sensors[3].samples[0]._value = data[3]._value
+                self.state.sensors[0].samples[0].value = data[0].value
+                self.state.sensors[1].samples[0].value = data[1].value
+                self.state.sensors[2].samples[0].value = data[2].value
+                self.state.sensors[3].samples[0].value = data[3].value
         })
         .catch(error => {
                console.error('getCensorData',JSON.stringify(error))
@@ -74,7 +74,7 @@ export default class MyLocations extends Vue {
         return this.state.settings.unitSymbol
     }
     danger(id:number):boolean {
-        return this.state.sensors[id].samples[0]._value  > this.state.settings.limit
+        return this.state.sensors[id].samples[0].value  > this.state.settings.limit
     }
     limit(id:number): number {
         return this.state.settings.limit;
@@ -82,10 +82,10 @@ export default class MyLocations extends Vue {
     value(id: number): number {
         //return this.myValue;
         let multiplier = Math.pow(10, this.state.settings.resolution || 0);
-        return Math.round(this.state.sensors[id].samples[0]._value * multiplier) / multiplier;
+        return Math.round(this.state.sensors[id].samples[0].value * multiplier) / multiplier;
     }
     location(id:number):string {
-        switch(this.state.sensors[id].samples[0]._port) {
+        switch(this.state.sensors[id].samples[0].port) {
             case 0: return "Arbetsrum";
             case 1: return "Datacenter";
             case 3: return "Kök"; ;

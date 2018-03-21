@@ -1,6 +1,6 @@
 <template>
     <v-toolbar color="light-blue" dark >
-        <v-menu transition="scale-transition" bottom nudge-left=17 nudge-top=10  >
+        <v-menu transition="scale-transition" bottom nudge-left=16 nudge-top=5  >
             <v-btn icon slot="activator">
                 <v-toolbar-side-icon></v-toolbar-side-icon>
             </v-btn>
@@ -31,9 +31,9 @@ import {Vue, Component} from "vue-property-decorator"
 export default class Toolbar extends Vue {
     menuItems = [
             { action: 'home', title: 'Hem', color: 'blue darken-2'},
-            { action: 'place', title: 'Platser ...',  color: 'blue-grey darken-2' },
-            { action: 'poll', title: 'Givare ...',  color: 'blue-grey darken-2' },
-            { action: 'settings', title: 'Inställningar ...', color: 'blue-grey darken-2' }
+            { action: 'place', title: 'Platser',  color: 'blue-grey darken-2' },
+            { action: 'poll', title: 'Givare',  color: 'blue-grey darken-2' },
+            { action: 'settings', title: 'Inställningar', color: 'blue-grey darken-2' }
       ];
 
     onClick(item: Object) {
