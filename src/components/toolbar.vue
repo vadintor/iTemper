@@ -27,18 +27,25 @@
 
 <script lang="ts">
 import {Vue, Component} from "vue-property-decorator"
+interface MenuItem {
+    action: string,
+    title: string,
+    color: string,
+    route: string
+}
+
 @Component
 export default class Toolbar extends Vue {
     menuItems = [
-            { action: 'home', title: 'Hem', color: 'blue darken-2', route: ''},
-            { action: 'place', title: 'Platser',  color: 'blue-grey darken-2', route: '' },
-            { action: 'poll', title: 'Givare',  color: 'blue-grey darken-2', route: '' },
+            { action: 'home', title: 'Hem', color: 'blue darken-2', route: 'locations'},
+            { action: 'place', title: 'Platser',  color: 'blue-grey darken-2', route: 'locations' },
+            { action: 'poll', title: 'Givare',  color: 'blue-grey darken-2', route: 'locations' },
             { action: 'settings', title: 'Inställningar', color: 'blue-grey darken-2', route: 'settings' }
       ];
 
-    onClick(item: Object) {
+    onClick(item: MenuItem) {
         console.log('onClick', JSON.stringify(item) )
-        
+        this.$router.push({name: item.route})
     }
 
 }   
