@@ -5,7 +5,7 @@
         <v-content>
             <v-container>
                 <Toolbar></Toolbar>
-                <MyLocations></MyLocations>
+                <router-view></router-view>
         </v-container>
       </v-content>
     </v-app>
@@ -21,7 +21,7 @@ import Toolbar  from './components/toolbar.vue'
 
 
 @Component( {components: {
-        "MyLocations" : MyLocations,
+//        "MyLocations" : MyLocations,
         "Toolbar": Toolbar
     }})
 export default class App extends Vue {

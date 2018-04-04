@@ -5,7 +5,7 @@
         <v-list-tile v-for="(item, id) in state.sensors" :key="id" @click="">
             <v-list-tile-content>
                 <v-list-tile-title class="headline">{{ location(id) }}</v-list-tile-title>
-                <v-list-tile-sub-title class="headline" >
+                <v-list-tile-sub-title class="subheading" >
                     {{ value(id) }} {{ unitSymbol() }}
                 </v-list-tile-sub-title>
             </v-list-tile-content>

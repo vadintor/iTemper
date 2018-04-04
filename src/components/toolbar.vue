@@ -30,10 +30,10 @@ import {Vue, Component} from "vue-property-decorator"
 @Component
 export default class Toolbar extends Vue {
     menuItems = [
-            { action: 'home', title: 'Hem', color: 'blue darken-2'},
-            { action: 'place', title: 'Platser',  color: 'blue-grey darken-2' },
-            { action: 'poll', title: 'Givare',  color: 'blue-grey darken-2' },
-            { action: 'settings', title: 'Inställningar', color: 'blue-grey darken-2' }
+            { action: 'home', title: 'Hem', color: 'blue darken-2', id: 0},
+            { action: 'place', title: 'Platser',  color: 'blue-grey darken-2', id: 2 },
+            { action: 'poll', title: 'Givare',  color: 'blue-grey darken-2', id: 3 },
+            { action: 'settings', title: 'Inställningar', color: 'blue-grey darken-2', id: 4 }
       ];
 
     onClick(item: Object) {
