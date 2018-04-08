@@ -5,8 +5,23 @@
     },
     "tslint.autoFixOnSave": true,
     "cSpell.words": [
+        "arbetsrum",
+        "be",
+        "browserslist",
+        "datacenter",
+        "itemper",
         "mylocations",
+        "mysensors",
         "mysettings",
-        "vuetify"
+        "serializer",
+        "serializers",
+        "sovrum",
+        "to",
+        "torbjörn",
+        "truthy",
+        "vading",
+        "vuebuild",
+        "vuetify",
+        "vuex"
     ]
 }

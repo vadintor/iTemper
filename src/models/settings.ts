@@ -6,8 +6,8 @@ export interface  GlobalSettings {
 }
 
 export let DefaultGlobalSettings: GlobalSettings = {
-                    resolution: 2,
+                    resolution: 1,
                     unitSymbol: '°C',
                     limit: 30,
-                    interval: 5,
+                    interval: 30,
                     };

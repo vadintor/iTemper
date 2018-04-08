@@ -34,12 +34,12 @@ interface MenuItem {
     route: string
 }
 
-@Component
+@Component({})
 export default class Toolbar extends Vue {
     menuItems = [
             { action: 'home', title: 'Hem', color: 'blue darken-2', route: 'locations'},
             { action: 'place', title: 'Platser',  color: 'blue-grey darken-2', route: 'locations' },
-            { action: 'poll', title: 'Givare',  color: 'blue-grey darken-2', route: 'locations' },
+            { action: 'poll', title: 'Givare',  color: 'blue-grey darken-2', route: 'sensors' },
             { action: 'settings', title: 'Inställningar', color: 'blue-grey darken-2', route: 'settings' }
       ];
 

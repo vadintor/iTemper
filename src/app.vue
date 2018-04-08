@@ -16,13 +16,15 @@
 
 import { Vue, Component } from "vue-property-decorator"
 
-import MyLocations  from './components/mylocations.vue'
-import Toolbar  from './components/toolbar.vue'
+import MyLocations  from '@/components/mylocations.vue';
+import MySensors from '@/components/mysensors.vue';
+import Toolbar  from '@/components/toolbar.vue';
 
 
 @Component( {components: {
-//        "MyLocations" : MyLocations,
-        "Toolbar": Toolbar
+        MyLocations,
+        Toolbar,
+        MySensors,
     }})
 export default class App extends Vue {
 

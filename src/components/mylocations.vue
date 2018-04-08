@@ -2,11 +2,17 @@
     <v-list two-line subheader>
         <v-subheader class="title">Mina platser</v-subheader>
         <v-divider></v-divider>
-        <v-list-tile v-for="(item, id) in state.sensors" :key="id" @click="">
+        <v-list-tile v-for="(item, id) in state.sensors" :key="id" @click="onClick()">
             <v-list-tile-content>
                 <v-list-tile-title class="headline">{{ location(id) }}</v-list-tile-title>
-                <v-list-tile-sub-title class="subheading" >
+                <v-list-tile-sub-title v-if="isValueValid(id)" class="subheading" >
                     {{ value(id) }} {{ unitSymbol() }}
+                </v-list-tile-sub-title>
+                <v-list-tile-sub-title v-else class="subheading" >
+                    Ingen temperaturangivelse finns från den här givaren
+                </v-list-tile-sub-title>
+                <v-list-tile-sub-title v-if="showDetails" class="subheading" >
+                    {{time(id)}} {{model(id)}} / {{SN(id)}} / {{port(id)}}
                 </v-list-tile-sub-title>
             </v-list-tile-content>
             <v-list-tile-action>
@@ -18,80 +24,125 @@
 </template>
 
 <script lang="ts">
-import axios from 'axios';
-import { iTemperAPI } from './../config';
-import {Vue, Component} from "vue-property-decorator"
-import * as Location from './../models/locations'
-import * as Sensors from './../models//sensors' 
-import * as Settings from './../models/settings'
+import {Vue, Component, Watch} from "vue-property-decorator"
 
+// Models
+import * as locations from '@/models/locations'
+import {Sensor, DefaultSensors } from '@/models//sensors' 
+import * as settings from '@/models/settings'
 
+// Services
+import getSensors from '@/services/sensor-service'
+import log from '@/services/logger';
+import { isIPv4 } from "net";
 
 export interface RootState {
-    settings: Settings.GlobalSettings;
-    locations: Location.LocationState;
-    sensors: Sensors.SensorState;
+    settings: settings.GlobalSettings;
+    locations: locations.LocationState;
+    sensors: Sensor[];
 }
 
 @Component({})
 export default class MyLocations extends Vue {
-   
-      state : RootState = { 
-        settings: Settings.DefaultGlobalSettings,
-        locations: Location.DefaultLocations,
-        sensors: [
-    { desc: {id: '0', description: 'DS18B20', category: Sensors.Category.IndoorTemperature},
-        samples: [ {port: 0, value: 85.0, date: 1}]},
-    { desc: {id: '1', description: 'DS18B20', category: Sensors.Category.IndoorTemperature},
-        samples: [ {port: 1, value: 85.0, date: 1}]},
-    { desc: {id: '3', description: 'DS18B20', category: Sensors.Category.IndoorTemperature},
-        samples: [ {port: 3, value: 85.0, date: 1}]},
-    { desc: {id: '7', description: 'DS18B20', category: Sensors.Category.IndoorTemperature},
-        samples: [ {port: 7, value: 85.0, date: 1}]}]
+    showDetails: boolean = false;
+    state : RootState = { 
+        settings: settings.DefaultGlobalSettings,
+        locations: locations.DefaultLocations,
+        sensors: DefaultSensors,
     }
 
-    getCensorData() {
+    @Watch('state', {deep: true})
+    watchState(oldState: Sensor[], newState: Sensor[]) {
+
+    }
+
+    getSensorData() {
         let self = this;
-        axios.get(iTemperAPI)
-        .then(resolve => {
-                const data : Sensors.Data[] = resolve.data.slice()
-                self.state.sensors[0].samples[0].value = data[0].value
-                self.state.sensors[1].samples[0].value = data[1].value
-                self.state.sensors[2].samples[0].value = data[2].value
-                self.state.sensors[3].samples[0].value = data[3].value
+       getSensors()
+        .then ((resolve) => {
+            self.state.sensors = [];
+            for (const sensor of resolve) {
+                self.state.sensors.push(sensor);
+            }
+            // this.commit(self.state.sensors, resolve);
         })
-        .catch(error => {
-               console.error('getCensorData',JSON.stringify(error))
+        .catch((error: any) => {
+            console.error('getSensorData',JSON.stringify(error))
         })
     }
-    created(): void {
-        console.log('created')
-        this.getCensorData();
-        setInterval(this.getCensorData, 1000 * this.state.settings.interval)
+    mounted(): void {
+        console.log('MyLocations mounted')
+        this.getSensorData();
+        setInterval(this.getSensorData, 1000 * this.state.settings.interval)
 
     }
     unitSymbol(): string {
         return this.state.settings.unitSymbol
     }
     danger(id:number):boolean {
-        return this.state.sensors[id].samples[0].value  > this.state.settings.limit
+        if (this.state.sensors[id] && this.state.sensors[id].samples[0])
+            return this.state.sensors[id].samples[0].value  > this.state.settings.limit
+        else
+              return false;
     }
     limit(id:number): number {
         return this.state.settings.limit;
     }
-    value(id: number): number {
-        //return this.myValue;
+    // round(2.74, 0.1) = 2.7
+    // round(2.74, 0.25) = 2.75
+    // round(2.74, 0.5) = 2.5
+    // round(2.74, 1.0) = 3.0
+    round(value: number, precision: number) {
+        precision || (precision = 1.0);
+        var inverse = 1.0 / precision;
+        return Math.round(value * inverse) / inverse;
+}
+    isValueValid(id: number) {
+        return this.state.sensors[id].samples.length > 0;
+    }
+    value(id: number): string {
+        if (!this.isValueValid(id))
+            return ""
+        const value = this.state.sensors[id].samples[0].value;
         let multiplier = Math.pow(10, this.state.settings.resolution || 0);
-        return Math.round(this.state.sensors[id].samples[0].value * multiplier) / multiplier;
+ 
+        return this.round(value, 0.5).toString(); 
+        // Math.round( value * multiplier) / multiplier;
+    }
+
+    time(id: number): string {
+        if (!this.isValueValid(id))
+            return "" 
+        else 
+            return new Date (this.state.sensors[id].samples[0].date).toLocaleString()
     }
     location(id:number):string {
-        switch(this.state.sensors[id].samples[0].port) {
+
+        if (!this.state.sensors[id])
+            return "<no location>"
+        switch(this.state.sensors[id].desc.port) {
             case 0: return "Arbetsrum";
             case 1: return "Datacenter";
             case 3: return "Kök"; ;
             case 7: return "Sovrum"; 
         }
-        return "Port " + id.toString();
+        return this.state.sensors[id].desc.SN + '/' + this.state.sensors[id].desc.port;
+    }
+    SN(id:number) {
+        return this.state.sensors[id].desc.SN;
+    }
+    port(id:number) {
+    return this.state.sensors[id].desc.port;
+    }
+
+    model(id: number) {
+        return this.state.sensors[id].attr.model;
+    }
+
+    onClick(): boolean {
+        this.showDetails = ! this.showDetails;
+        return this.showDetails;
+
     }
 }   
 
