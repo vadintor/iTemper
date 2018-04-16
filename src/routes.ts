@@ -5,6 +5,6 @@ import { RouteConfig } from 'vue-router';
 export const routes = [
   { path: '', name: 'locations', component: MyLocations},
   { path: '/settings', name: 'settings', component: MySettings },
-  { path: '/sensors', name: 'sensors', component: MySensors },
+  { path: '/sensors/', name: 'sensors', component: MySensors },
 
 ];

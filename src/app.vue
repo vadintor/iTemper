@@ -5,7 +5,7 @@
         <v-content>
             <v-container>
                 <Toolbar></Toolbar>
-                <router-view></router-view>
+                <router-view transition="scale-transition" ></router-view>
         </v-container>
       </v-content>
     </v-app>
@@ -19,7 +19,9 @@ import { Vue, Component } from "vue-property-decorator"
 import MyLocations  from '@/components/mylocations.vue';
 import MySensors from '@/components/mysensors.vue';
 import Toolbar  from '@/components/toolbar.vue';
+import Trend from 'vuetrend';
 
+Vue.use(Trend);
 
 @Component( {components: {
         MyLocations,

@@ -1,6 +1,6 @@
 {
     "name": "itemper",
-    "version": "0.0.7",
+    "version": "0.0.8",
     "private": true,
     "description": "",
     "main": "index.js",
@@ -10,7 +10,7 @@
         "serve": "vue-cli-service serve",
         "vuebuild": "vue-cli-service build",
         "test": "vue-cli-service test",
-        "update": "vue-cli-service test --updateSnapshot"
+        "update snapshots": "vue-cli-service test --updateSnapshot"
     },
     "keywords": [],
     "author": {
@@ -30,6 +30,7 @@
         "vue-property-decorator": "^6.0.0",
         "vue-router": "^3.0.1",
         "vuetify": "^1.0.3",
+        "vuetrend": "^0.3.2",
         "vuex": "^3.0.1",
         "winston": "^2.4.1"
     },
