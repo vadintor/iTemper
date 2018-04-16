@@ -21,6 +21,7 @@
     "dependencies": {
         "axios": "^0.18.0",
         "canvas-gauges": "^2.1.4-linear",
+        "kalmanjs": "^1.0.0-beta",
         "register-service-worker": "^1.1.1",
         "vue": "^2.5.13",
         "vue-async-computed": "^3.3.1",

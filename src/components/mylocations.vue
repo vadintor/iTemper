@@ -14,11 +14,10 @@
                                 <div>
                                     <trend
                                         :data="getSamples(id)"
-                                        :gradient="['#0000ff', '#00ff00', '#ff0000']"
+                                        :gradient="['#ffffff', '#ffffff', '#ffffff']"
                                         auto-draw
                                         :autoDrawDuration="autoDrawDuration"
                                         autoDrawEasing="ease"
-
                                         smooth>
                                     </trend>
                                     
@@ -55,6 +54,8 @@ import { log } from '@/services/logger';
 import { isIPv4 } from "net";
 import * as ss from "@/services/sensor-service";
 import { getSensorSamples } from "@/services/sensor-service";
+
+import KalmanFilter from 'kalmanjs';
 
 
 export interface RootState {
@@ -119,14 +120,17 @@ export default class MyLocations extends Vue {
             this.state.sensors[id].samples
                 .filter((sample) => sample.date > lastPeriod)
                 .map((sample)=> values.push(sample.value));
-    
-        console.log("values: ", values);
-        return values;
+
+        const kalmanFilter = new KalmanFilter({R: 0.01, Q: 3});
+        const filteredValues = values.map((v) => kalmanFilter.filter(v))
+
+        return filteredValues;
     }
     mounted(): void {
         this.getSensorData();
         setInterval(this.getSensorData, 1000 * this.state.settings.interval)
     }
+
     unitSymbol(): string {
         return this.state.settings.unitSymbol
     }
@@ -158,6 +162,10 @@ export default class MyLocations extends Vue {
         return data;
     }
 
+    firstSample(id: number): Data {
+        return this.state.sensors[id].samples[0];
+    }
+
     value(id: number): string {
         if (!this.isValueValid(id))
             return ""
@@ -177,10 +185,17 @@ export default class MyLocations extends Vue {
     time(id: number): string {
         if (!this.isValueValid(id))
             return "" 
-        const date = new Date(this.lastSample(id).date); 
-        return date.toLocaleString();
+        const first = new Date(this.firstSample(id).date)
+        const last = new Date(this.lastSample(id).date); 
+        return first.toLocaleString() + "--" + last.toLocaleString();
     }
-      
+    
+    period(id: number): string {
+        if (!this.isValueValid(id))
+            return "" 
+        const last = new Date(this.lastSample(id).date); 
+        return last.toLocaleDateString();
+    }
     location(id:number):string {
 
         if (!this.state.sensors[id])
