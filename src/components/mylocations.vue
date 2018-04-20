@@ -2,50 +2,25 @@
 <div >
         <v-container fluid grid-list-md>
             <v-layout row wrap>
-                <v-flex xs4 v-for="(item,id) in 5" :key="id">
+                <v-flex xs12 md6 lg4 v-for="(item,id) in 5" :key="id">
                     <location-card  
                         :sensor="sensor(id)"
                         :name="location(id)"
                         :image="image(id)"
                         :overlay="id"
-                        height=200
+                        height=400
                     >
                     </location-card>
                 </v-flex>
             </v-layout>
         </v-container>
-
 </div>
 </template>
 
 <script lang="ts">
-            // <v-card-media class="white--text" height="400px" :src="image(id)" >
-            //     <v-container fill-height :class="color(id)">
-            //         <v-layout fill-height fluid >
-            //             <v-flex >
-            //                 <span class="headline"> {{ location(id) }} </span>
-            //                 <br>
-            //                 <span class="headline" v-if="isValueValid(id)" >{{ value(id)}} {{ unitSymbol() }}</span>
-            //                 <br>
-            //                 <span class="subheading"  v-if="isValueValid(id)"> {{time(id)}}</span>
-            //                 <highcharts v-if="showDetails" :options="options(id)"></highcharts>
-            //             </v-flex>
-            //         </v-layout>
-            //     </v-container>
-            // </v-card-media>
-            
-            // <v-card-actions>
-            //     <v-btn flat color="orange">Mer</v-btn>
-            // </v-card-actions>
 
 import * as moment from 'moment-timezone';
 
-            // <v-card v-if="showDetails" transition="fade-transition">
-            //     <v-card  v-if="isValueValid(id)" >Tidpunkt: {{time(id)}}</v-card>
-            //     <v-card  v-else>inget värde</v-card>
-            //     <v-card> Modell: {{ model(id) }}</v-card>
-            //     <v-card >Serienummer/port: {{SN(id)}}/{{ port(id) }}</v-card>
-            // </v-card>
 import {Vue, Component, Watch} from "vue-property-decorator"
 import VueHighcharts from 'vue-highcharts'
 Vue.use(VueHighcharts);
@@ -82,16 +57,13 @@ export default class MyLocations extends Vue {
     autoDrawDuration: number = 5000;
     minSampleValue: number = 0;
     maxSampleValue: number = 30;
+    firstTime: boolean = true;
     state : RootState = { 
         settings: settings.DefaultGlobalSettings,
         locations: locations.DefaultLocations,
         sensors: DefaultSensors,
     }
 
-    // @Watch('state', {deep: true})
-    // watchState(oldState: Sensor[], newState: Sensor[]) {
-
-    // }
     sensor(id: number): Sensor {
         return this.state.sensors[id];
     }
@@ -100,11 +72,24 @@ export default class MyLocations extends Vue {
     }
     getSensorData() {
         let self = this;
-       ss.getSensors(4000)
-        .then ((resolve: Sensor[]) => {
-            self.state.sensors = [];
-            for (const sensor of resolve) {
-                self.state.sensors.push(sensor);
+        const ms = 1000;
+        const period = this.firstTime ? 24 * 60 * 60 * ms : this.state.settings.interval * ms ;
+       ss.getSensors(Date.now() - period)
+        .then ((sensors: Sensor[]) => {
+
+            if (this.firstTime ) {
+                this.firstTime = false;
+                self.state.sensors = [];
+            }
+
+            for (const sensor of sensors) {
+                const stateSensor : Sensor | undefined = self.state.sensors.find((stateSensor) => stateSensor.desc === sensor.desc);
+                if (stateSensor) {
+                    for (const sample of sensor.samples)
+                        stateSensor.samples.push(sample);
+                } else {
+                    self.state.sensors.push(sensor);
+                }
             }
             
         })
@@ -144,55 +129,7 @@ export default class MyLocations extends Vue {
         return filteredValues;
     }
 
-    options(id: number): any {
-
-        return {
-            chart:{
-                backgroundColor: 'rgba(255, 255, 255, 0.0)'
-            },
-            title: {
-                text: 'Temperatur',
-                x: -20 //center
-            },
-            subtitle: {
-                text: 'Källa: iTemper.io',
-                x: -20
-            },
-            xAxis: {
-                type:'datetime'
-            },
-            yAxis: {
-                title: {
-                text: 'Temperatur (°C)'
-                },
-                plotLines: [{
-                value: 0,
-                width: 1,
-                color: '#808080'
-                }]
-            },
-            tooltip: {
-                valueSuffix: '°C'
-            },
-            legend: {
-                layout: 'vertical',
-                align: 'right',
-                verticalAlign: 'middle',
-                borderWidth: 0
-            },
-            series: [{
-                name: this.location(id),
-                data: this.getData(id)
-            }],
-            time: {
-                getTimezoneOffset:  function (timestamp: number): number {
-                    const zone = 'Europe/Stockholm';
-                    const timezoneOffset = -moment.tz(timestamp, zone).utcOffset();
-                    return timezoneOffset; 
-                }
-            }
-        };
-    }
+    
     getData(id: number): number[][] {
         const oneHour = 60*60*1000;
         const firstSampleDate =  Date.now() - 24 * oneHour;

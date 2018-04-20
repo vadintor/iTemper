@@ -6,9 +6,9 @@ import { Data, Descriptor, Sensor } from '@/models/sensors';
 
 import axios from 'axios';
 
-export function getSensors(samples: number = 1): Promise<Sensor[]> {
+export function getSensors(from: number = 1): Promise<Sensor[]> {
         return new Promise<Sensor[]> ((resolve, reject) => {
-                const url = iTemperAPI + '/sensors?samples=' + samples;
+                const url = iTemperAPI + '/sensors?from=' + from;
                 axios.get(url)
                 .then((response) => {
                         const data: Sensor[] = response.data.slice();
