@@ -21,11 +21,9 @@
             <v-icon>{{ showDetails ? 'keyboard_arrow_down' : 'keyboard_arrow_up' }}</v-icon>
             </v-btn>
         </v-card-actions>
-        <v-slide-y-overlayition>
-            <v-card-text v-show="showDetails">
-                <highcharts :options="options()"></highcharts>
-            </v-card-text>
-        </v-slide-y-overlayition>
+        <v-card-text v-show="showDetails" transition="slide-y-transition">
+            <highcharts :options="options()"></highcharts>
+        </v-card-text>
     </v-card>
 </template>
 
@@ -46,6 +44,7 @@ import { DefaultGlobalSettings } from '@/models/settings'
 import { log } from '@/services/logger';
 import { isIPv4 } from "net";
 import * as ss from "@/services/sensor-service";
+import * as settings from '@/models/settings'
 import { getSensorSamples } from "@/services/sensor-service";
 
 import KalmanFilter from 'kalmanjs';
@@ -91,11 +90,11 @@ export default class LocationCard extends Vue {
                 type:'spline'
             },
             title: {
-                text: 'Temperatur (°C)',
+                text: 'Historik',
                 x: -20 //center
             },
             subtitle: {
-                text: 'Källa: iTemper.io',
+                text: 'Senaste 24 timmar',
                 x: -20
             },
             xAxis: {
@@ -111,6 +110,12 @@ export default class LocationCard extends Vue {
                 color: '#808080'
                 }]
             },
+            legend: {
+                enabled: false
+            },
+            credits: {
+                enabled: false
+            },
             tooltip: {
                 valueSuffix: '°C'
             },
@@ -121,7 +126,7 @@ export default class LocationCard extends Vue {
             }],
             time: {
                 getTimezoneOffset:  function (timestamp: number): number {
-                    const zone = 'Europe/Stockholm';
+                    const zone = settings.DefaultGlobalSettings.zone;
                     const timezoneOffset = -moment.tz(timestamp, zone).utcOffset();
                     return timezoneOffset; 
                 }

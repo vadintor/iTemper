@@ -3,6 +3,7 @@ export interface  GlobalSettings {
     unitSymbol: string;
     limit: number;
     interval: number;
+    zone: string;
 }
 
 export let DefaultGlobalSettings: GlobalSettings = {
@@ -10,4 +11,5 @@ export let DefaultGlobalSettings: GlobalSettings = {
                     unitSymbol: '°C',
                     limit: 30,
                     interval: 30,
-                    };
+                    zone: 'Europe/Stockholm',
+};

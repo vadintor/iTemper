@@ -8,7 +8,7 @@
                         :name="location(id)"
                         :image="image(id)"
                         :overlay="id"
-                        height=400
+                        :height=400
                     >
                     </location-card>
                 </v-flex>

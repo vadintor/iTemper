@@ -19,9 +19,6 @@ import { Vue, Component } from "vue-property-decorator"
 import MyLocations  from '@/components/mylocations.vue';
 import MySensors from '@/components/mysensors.vue';
 import Toolbar  from '@/components/toolbar.vue';
-import Trend from 'vuetrend';
-
-Vue.use(Trend);
 
 @Component( {components: {
         MyLocations,

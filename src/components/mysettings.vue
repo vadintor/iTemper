@@ -45,7 +45,18 @@
                 <v-list-tile-action>
                     <v-icon :color="'teal'">check_circle</v-icon>
                 </v-list-tile-action>
-            </v-list-tile>                      
+            </v-list-tile>
+            <v-list-tile@click="">
+                <v-list-tile-content>
+                    <v-list-tile-title class="subheading">Tidszon</v-list-tile-title>
+                    <v-list-tile-sub-title class="subheading" >
+                        {{zone()}}
+                    </v-list-tile-sub-title>
+                </v-list-tile-content>
+                <v-list-tile-action>
+                    <v-icon :color="'teal'">check_circle</v-icon>
+                </v-list-tile-action>
+            </v-list-tile>                           
     </v-list>
 </template>
 
@@ -100,6 +111,10 @@ export default class MySettings extends Vue {
 
     interval(): number {
         return this.state.settings.interval
+    }
+    
+    zone(): string {
+        return this.state.settings.zone
     }
 }   
 

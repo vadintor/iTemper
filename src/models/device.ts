@@ -5,6 +5,8 @@ export type DeviceKey = string;
 
 export interface Device {
     key: DeviceKey;
+    model: string;
+    ip: string;
     sensors: Sensors.Descriptor[];
     location: Locations.Location;
 }
