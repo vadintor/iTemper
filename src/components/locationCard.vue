@@ -93,7 +93,7 @@ export default class LocationCard extends Vue {
                 x: -20 //center
             },
             subtitle: {
-                text: 'Givare: ' + this.sensor.desc.SN + '/' + this.sensor.desc.port,
+                text: 'Givare: ' + this.SN() + '/' + this.port(),
                 x: -20
             },
             xAxis: {
@@ -216,10 +216,16 @@ export default class LocationCard extends Vue {
     }
 
     SN(): string {
-        return this.sensor.desc.SN;
+        if (this.sensor != undefined)
+            return this.sensor.desc.SN
+        else    
+            return "?";
     }
     port(): number {
-    return this.sensor.desc.port;
+        if (this.sensor != undefined)
+            return this.sensor.desc.port
+        else    
+            return -1;
     }
 
     model(): string {
