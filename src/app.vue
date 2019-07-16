@@ -6,8 +6,8 @@
             <v-container>
                 <Toolbar></Toolbar>
                 <router-view transition="scale-transition" ></router-view>
-        </v-container>
-      </v-content>
+            </v-container>
+        </v-content>
     </v-app>
 </div>
 </template>
@@ -16,14 +16,17 @@
 
 import { Vue, Component } from "vue-property-decorator"
 
+import Login  from '@/components/login.vue';
 import MyLocations  from '@/components/mylocations.vue';
 import MySensors from '@/components/mysensors.vue';
 import Toolbar  from '@/components/toolbar.vue';
+
 
 @Component( {components: {
         MyLocations,
         Toolbar,
         MySensors,
+        Login,
     }})
 export default class App extends Vue {
 

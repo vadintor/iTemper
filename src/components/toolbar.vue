@@ -16,17 +16,14 @@
         </v-menu>
         <v-toolbar-title>iTemper</v-toolbar-title>
         <v-spacer></v-spacer>
-        <v-btn icon>
-            <v-icon>search</v-icon>
-        </v-btn>
-        <v-btn icon>
-            <v-icon>view_module</v-icon>
-        </v-btn>
+        <v-btn  v-if="!loggingIn" outline class="signlog">Sign up</v-btn>
+        <v-btn  v-if="!loggingIn" transition="scale-transition" outline class="signlog" @click="onLogin()">Login</v-btn>
+
     </v-toolbar>
 </template>
 
 <script lang="ts">
-import {Vue, Component} from "vue-property-decorator"
+import {Vue, Component, Prop} from "vue-property-decorator"
 interface MenuItem {
     action: string,
     title: string,
@@ -36,21 +33,29 @@ interface MenuItem {
 
 @Component({})
 export default class Toolbar extends Vue {
+    loggingIn: boolean = false;
+    loggedInName: string;
     menuItems = [
-            { action: 'home', title: 'Hem', color: 'blue darken-2', route: 'locations'},
+            { action: 'login', title: 'Login', color: 'blue darken-2', route: 'login'},
             { action: 'place', title: 'Platser',  color: 'blue-grey darken-2', route: 'locations' },
             { action: 'poll', title: 'Givare',  color: 'blue-grey darken-2', route: 'sensors' },
             { action: 'settings', title: 'Inställningar', color: 'blue-grey darken-2', route: 'settings' }
       ];
 
     onClick(item: MenuItem) {
-        console.log('onClick', JSON.stringify(item) )
         this.$router.push({name: item.route})
     }
 
+    onLogin() {
+        this.loggingIn = true;
+        this.$router.push({name: 'login'})
+    }
 }   
 </script>
 
-<style>
-
+<style scoped>
+.signlog {
+    background-color: rgb(200, 0, 227);
+    color:snow;
+}
 </style>

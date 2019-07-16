@@ -1,14 +1,14 @@
 <template>
     <v-card>
-        <v-card-media class="white--text" :src="image" :height="height">
+        <v-img class="white--text" :src="image" :height="height">
             <v-container fill-height fluid :class="'overlay-' + overlay.toString()">
                 <v-layout fill-height>
                     <v-flex xs12 align-end flexbox>
-                            <span class="display-1" v-if="isValueValid()" >{{ value() }} {{ unitSymbol() }}</span>
+                            <span class="display-3" v-if="isValueValid()" >{{ value() }} {{ unitSymbol() }}</span>
                     </v-flex>
                 </v-layout>
             </v-container>
-        </v-card-media>
+        </v-img>
         <v-card-title primary-title>
             <div>
                 <div class="headline">{{ name }}</div>
@@ -16,10 +16,9 @@
             </div>
         </v-card-title>
         <v-card-actions>
-            <v-spacer></v-spacer>
-            <v-btn icon @click.native="showDetails = !showDetails">
-            <v-icon>{{ showDetails ? 'keyboard_arrow_down' : 'keyboard_arrow_up' }}</v-icon>
-            </v-btn>
+            
+            <v-btn flat color="orange" @click.native="showDetails = !showDetails">Historik</v-btn>
+            <v-btn flat color="orange">Monitor</v-btn>
         </v-card-actions>
         <v-card-text v-show="showDetails" transition="slide-y-transition">
             <highcharts :options="options()"></highcharts>
@@ -42,7 +41,7 @@ import { DefaultGlobalSettings } from '@/models/settings'
 // Services
 
 import { log } from '@/services/logger';
-import { isIPv4 } from "net";
+//import { isIPv4 } from "net";
 import * as ss from "@/services/sensor-service";
 import * as settings from '@/models/settings'
 import { getSensorSamples } from "@/services/sensor-service";

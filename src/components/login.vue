@@ -56,11 +56,11 @@ export default class Login extends Vue {
         ];
      
     submit() {
-        this.$refs.form.validate()
+        //this.$refs.form.validate()
     }
       
     clear() {
-        this.$refs.form.reset()
+        //this.$refs.form.reset()
     }
 }   
 </script>

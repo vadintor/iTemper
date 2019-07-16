@@ -9,7 +9,7 @@ import { SENSOR_LIST } from './senor-lists';
 import Vuetify from 'vuetify';
 
 import { createLocalVue, mount } from '@vue/test-utils';
-import { shallow } from '@vue/test-utils';
+// import { shallow } from '@vue/test-utils';
 
 describe('sensors.spec.ts', () => {
   let wrp: any;

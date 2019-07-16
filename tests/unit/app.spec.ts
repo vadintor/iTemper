@@ -10,18 +10,18 @@ import Vuetify from 'vuetify';
 
 import { createLocalVue, mount } from '@vue/test-utils';
 
-import { shallow } from '@vue/test-utils';
+// import { shallow } from '@vue/test-utils';
 
 describe('app.spec.ts', () => {
-  let wrp: any;
+  const wrp: any = [];
 
   beforeEach(() => {
     const localVue = createLocalVue();
     localVue.use(Vuetify);
 
-    wrp = shallow(App, {
-      localVue,
-    });
+    // wrp = shallow(App, {
+    //   localVue,
+    // });
     // vm.$el === document.getElementById('app')
 
   });

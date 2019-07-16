@@ -32,7 +32,7 @@ import * as settings from '@/models/settings'
 // Services
 
 import { log } from '@/services/logger';
-import { isIPv4 } from "net";
+//import { isIPv4 } from "net";
 import * as ss from "@/services/sensor-service";
 import { getSensorSamples } from "@/services/sensor-service";
 
@@ -204,7 +204,11 @@ export default class MyLocations extends Vue {
     }
 
     image(id: number): string {
-        return "/img/" + this.location(id).toLowerCase() + ".jpg";
+        const location = this.location(id).toLowerCase();
+        if (location.length <= 0)
+            return "/img/kok.jpg"
+        else
+            return "/img/" + this.location(id).toLowerCase() + ".jpg";
     }
     
     time(id: number): string {

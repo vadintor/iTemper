@@ -6,7 +6,7 @@ import Vuetify from 'vuetify';
 
 import { createLocalVue, mount } from '@vue/test-utils';
 
-import { shallow } from '@vue/test-utils';
+// import { shallow } from '@vue/test-utils';
 
 describe('toolbar.spec.ts', () => {
   let wrp: any;
