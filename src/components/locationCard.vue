@@ -89,11 +89,11 @@ export default class LocationCard extends Vue {
                 type:'spline'
             },
             title: {
-                text: 'Historik',
+                text: 'Senaste 24 timmar',
                 x: -20 //center
             },
             subtitle: {
-                text: 'Senaste 24 timmar',
+                text: 'Givare: ' + this.sensor.desc.SN + '/' + this.sensor.desc.port,
                 x: -20
             },
             xAxis: {
