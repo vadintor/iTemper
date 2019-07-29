@@ -4,7 +4,10 @@
 			"path": "."
 		},
 		{
-			"path": "E:\\gitrepos\\Temper-resin"
+			"path": "E:\\gitrepos\\Dev\\iTemper-Backend"
+		},
+		{
+			"path": "E:\\gitrepos\\Dev\\iTemper-Device"
 		}
 	],
 	"settings": {
