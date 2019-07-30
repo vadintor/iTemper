@@ -17,11 +17,14 @@
         </v-card-title>
         <v-card-actions>
             
-            <v-btn flat color="orange" @click.native="showDetails = !showDetails">Historik</v-btn>
-            <v-btn flat color="orange">Monitor</v-btn>
+            <v-btn flat color="orange" @click.native="toggleHistory()">Historik</v-btn>
+            <v-btn flat color="orange" @click.native="toggleMonitor()">Monitor</v-btn>
         </v-card-actions>
-        <v-card-text v-show="showDetails" transition="slide-y-transition">
+        <v-card-text v-show="showHistory" transition="slide-y-transition">
             <highcharts :options="options()"></highcharts>
+        </v-card-text>
+        <v-card-text v-show="showMonitor" transition="slide-y-transition">
+            <span class="display-3" v-if="isValueValid()" >{{ raw() }} {{ unitSymbol() }}</span>
         </v-card-text>
     </v-card>
 </template>
@@ -58,13 +61,34 @@ export default class LocationCard extends Vue {
     @Prop() overlay: number;
 
     settings = DefaultGlobalSettings;
-    showDetails: boolean = false;
+    showHistory: boolean = false;
+    showMonitor: boolean = false;
 
     // @Watch('state', {deep: true})
     // watchState(oldState: Sensor[], newState: Sensor[]) {
 
     // }
+    toggleHistory() {
+        this.showHistory = !this.showHistory;
+        this.showMonitor = false;
+    }
+    toggleMonitor() {
+        this.showHistory = false;
+        this.showMonitor = !this.showMonitor;
 
+        if (this.showMonitor && this.sensor) {
+            ss.connectMonitor().then((monitor) => {
+                // monitor.onmessage = (msg) => {
+                //     const sensorData = JSON.parse(msg.data);
+                // };
+                monitor.send(JSON.stringify({msg: "monitor", sensor: this.sensor.desc}));
+                this.sensor.samples.push( { "date": 1564419195303, "value": 43.5});
+
+            }).catch((err) => {
+            // error here
+            });
+        }
+    }
     getSamples():number[] {
         const samples: number[] = [];
         const lastPeriod =  Date.now() - 24*60*60*1000;
@@ -169,7 +193,7 @@ export default class LocationCard extends Vue {
         var inverse = 1.0 / precision;
         return Math.round(value * inverse) / inverse;
 }
-    isValueValid() {
+    isValueValid(): boolean {
         return this.sensor && this.sensor.samples.length > 0;
     }
 
@@ -183,13 +207,13 @@ export default class LocationCard extends Vue {
         return this.sensor.samples[0];
     }
 
-    count(id: number): number {
+    count(): number {
         if (this.isValueValid())
             return  this.sensor.samples.length
         else
             return 0;
     }
-    value(id: number): string {
+    value(): string {
         if (!this.isValueValid())
             return ""
         const multiplier = Math.pow(10, this.settings.resolution || 0);
@@ -198,6 +222,9 @@ export default class LocationCard extends Vue {
         // Math.round( value * multiplier) / multiplier;
     }
 
+    raw(): string {
+        return this.isValueValid() ? this.lastSample().value.toString() : "";
+    }
     
     time(id: number): string {
         if (!this.isValueValid())

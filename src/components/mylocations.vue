@@ -2,7 +2,7 @@
 <div >
         <v-container fluid grid-list-md>
             <v-layout row wrap>
-                <v-flex xs12 md6 lg4 v-for="(item,id) in 5" :key="id">
+                <v-flex xs12 md6 lg4 v-for="(item,id) in sensorCount()" :key="id">
                     <location-card  
                         :sensor="sensor(id)"
                         :name="location(id)"
@@ -66,6 +66,9 @@ export default class MyLocations extends Vue {
 
     sensor(id: number): Sensor {
         return this.state.sensors[id];
+    }
+    sensorCount(): number {
+        return this.state.sensors ? this.state.sensors.length : 0;
     }
     settings(): settings.GlobalSettings {
         return this.state.settings;

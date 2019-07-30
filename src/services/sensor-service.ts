@@ -1,5 +1,5 @@
 
-import { iTemperAPI } from '@/config';
+import { iTemperAPI, iTemperWS } from '@/config';
 import { log } from '@/services/logger';
 
 import { Data, Descriptor, Sensor } from '@/models/sensors';
@@ -32,5 +32,18 @@ export function getSensorSamples(desc: Descriptor): Promise<Data[]> {
                         // log.debug('axios - response.data: ', data);
                         resolve(data);
                 });
+        });
+}
+
+export function connectMonitor(): Promise<WebSocket> {
+        return new Promise<WebSocket> ((resolve, reject) => {
+                const url = iTemperWS;
+                const server = new WebSocket(url);
+                server.onopen = () => {
+                    resolve(server);
+                };
+                server.onerror = (err) => {
+                    reject(err);
+                };
         });
 }
