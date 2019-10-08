@@ -65,7 +65,8 @@
 // import axios from 'axios';
 // import { iTemperAPI } from './../config';
 import { Vue, Component} from "vue-property-decorator"
-import * as Settings from './../models/settings'
+
+import { log } from '@/services/logger';
 
 
 
@@ -77,27 +78,8 @@ import * as Settings from './../models/settings'
 
 @Component({})
 export default class MySettings extends Vue {
-    state = { 
-        settings: Settings.DefaultGlobalSettings,
-    }
-//     getSettings() {
-//         let self = this;
-//         // axios.get(iTemperAPI)
-//         // .then(resolve => {
-//         //         const data : Sensors.Data[] = resolve.data.slice()
-//         //         self.state.sensors[0].samples[0].value = data[0].value
-//         //         self.state.sensors[1].samples[0].value = data[1].value
-//         //         self.state.sensors[2].samples[0].value = data[2].value
-//         //         self.state.sensors[3].samples[0].value = data[3].value
-//         // })
-//         // .catch(error => {
-//         //        console.error('getCensorData',JSON.stringify(error))
-//         // })
-//     }
-//     created(): void {
-//         console.log('created')
-//   //       this.getSettings();
-//     }
+    state = Vue.$store;
+
     unitSymbol(): string {
         return this.state.settings.unitSymbol
     }
@@ -116,6 +98,10 @@ export default class MySettings extends Vue {
     zone(): string {
         return this.state.settings.zone
     }
+
+      created() {
+      log.debug('MySettings.created()');
+  }
 }   
 
 </script>

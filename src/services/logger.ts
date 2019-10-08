@@ -1,20 +1,13 @@
-import * as winston from 'winston';
-const transports = {
-//    file: new winston.transports.File({ filename: 'itemper-vue-error.log', level: 'error' }),
-    console: new (winston.transports.Console)(),
-};
 
-export const log =  new winston.Logger({
-    exitOnError: false,
-    level: 'info',
-    transports: [
-  //      transports.file,
-        transports.console,
-    ],
-  });
-
-export function setLevel(level: string): void {
-    log.transports.console.level = level;
+class Debug {
+  private m: string;
+  constructor(m: string) {
+    this.m = m;
+  }
+  public debug(str: string) {
+    const debug = 'debug: ';
+    console.log(debug + new Date().toISOString() + ' ' + this.m + ' ' + str);
+  }
 }
   // let v: winston.LoggerOptions;
 // if we're not in production then log to the `console` with the format:
@@ -27,4 +20,4 @@ export function setLevel(level: string): void {
 //     })
 // }));
 // }
-export default log;
+export const log = new Debug('[itemper-Frontend]');

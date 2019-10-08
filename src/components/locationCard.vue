@@ -36,21 +36,21 @@ import * as moment from 'moment-timezone';
 import {Vue, Component, Watch, Prop} from "vue-property-decorator"
 import VueHighcharts from 'vue-highcharts'
 Vue.use(VueHighcharts);
-// Models
-import * as locations from '@/models/locations'
-import {Data, Sensor, DefaultSensors } from '@/models//sensors' 
-import { DefaultGlobalSettings } from '@/models/settings'
 
+// Models
+// import * as locations from '@/models/locations'
+import { Sensor, SensorLog, Data }  from '@/models/sensor' 
+import { Settings } from '@/store/settings';
+// import * as messages from '@/models/messages';
 // Services
 
 import { log } from '@/services/logger';
-//import { isIPv4 } from "net";
+
 import * as ss from "@/services/sensor-service";
-import * as settings from '@/models/settings'
-import { getSensorSamples } from "@/services/sensor-service";
 
 import KalmanFilter from 'kalmanjs';
 
+import { Monitor } from '@/services/monitor';
 
 @Component({})
 export default class LocationCard extends Vue {
@@ -60,52 +60,33 @@ export default class LocationCard extends Vue {
     @Prop() height: number;
     @Prop() overlay: number;
 
-    settings = DefaultGlobalSettings;
+    settings: Settings = Vue.$store.settings;
+
     showHistory: boolean = false;
     showMonitor: boolean = false;
+    rawValue: string = "";
+    monitor: Monitor;
 
-    // @Watch('state', {deep: true})
-    // watchState(oldState: Sensor[], newState: Sensor[]) {
+    receiveLog(log: SensorLog): void {
+        this.rawValue = log.samples[0].value.toString();
+    }
 
-    // }
+    mounted() {
+        this.monitor = new Monitor();
+        this.monitor.SubscribeSensorLog(this.sensor.desc, this.receiveLog);
+    }
     toggleHistory() {
         this.showHistory = !this.showHistory;
         this.showMonitor = false;
     }
+
     toggleMonitor() {
         this.showHistory = false;
         this.showMonitor = !this.showMonitor;
-
-        if (this.showMonitor && this.sensor) {
-            ss.connectMonitor().then((monitor) => {
-                // monitor.onmessage = (msg) => {
-                //     const sensorData = JSON.parse(msg.data);
-                // };
-                monitor.send(JSON.stringify({msg: "monitor", sensor: this.sensor.desc}));
-                this.sensor.samples.push( { "date": 1564419195303, "value": 43.5});
-
-            }).catch((err) => {
-            // error here
-            });
-        }
-    }
-    getSamples():number[] {
-        const samples: number[] = [];
-        const lastPeriod =  Date.now() - 24*60*60*1000;
-        const values: number [] = [];
-
-        if (this.sensor)
-            this.sensor.samples
-                .filter((sample) => sample.date > lastPeriod)
-                .map((sample)=> values.push(sample.value));
-
-        const kalmanFilter = new KalmanFilter({R: 0.01, Q: 3});
-        const filteredValues = values.map((v) => kalmanFilter.filter(v))
-
-        return filteredValues;
     }
 
     options(): any {
+        const self = this;
 
         return {
             chart:{
@@ -149,7 +130,7 @@ export default class LocationCard extends Vue {
             }],
             time: {
                 getTimezoneOffset:  function (timestamp: number): number {
-                    const zone = settings.DefaultGlobalSettings.zone;
+                    const zone = self.settings.zone;
                     const timezoneOffset = -moment.tz(timestamp, zone).utcOffset();
                     return timezoneOffset; 
                 }
@@ -223,7 +204,8 @@ export default class LocationCard extends Vue {
     }
 
     raw(): string {
-        return this.isValueValid() ? this.lastSample().value.toString() : "";
+        return this.rawValue;
+        // return this.isValueValid() ? this.lastSample().value.toString() : "";
     }
     
     time(id: number): string {

@@ -39,6 +39,13 @@ module.exports = {
                 }
             },
             {
+                test: /\.apk$/,
+                loader: 'file-loader',
+                options: {
+                    name: `install/[name].[ext]`
+                }
+            },
+            {
                 test: /\.css$/,
                 loader: "css-loader"
             }

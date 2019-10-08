@@ -1,49 +1,60 @@
 
 import { iTemperAPI, iTemperWS } from '@/config';
-import { log } from '@/services/logger';
+import { Data, Descriptor, Sensor } from '@/models/sensor';
 
-import { Data, Descriptor, Sensor } from '@/models/sensors';
+import {json} from '@/helpers';
+import { log } from '@/services/logger';
+import {ILoginService } from '@/services/login-service';
 
 import axios, { AxiosInstance } from 'axios';
+export interface ISensorService {
+        getSensorsSamples(samples: number): Promise<Sensor[]>;
+        getSensorsFrom(from: number): Promise<Sensor[]>;
+}
 
-const io: AxiosInstance = axios.create({
-        headers: {'Content-Type': 'application/json'},
-      });
+export class SensorService implements ISensorService {
 
-export function getSensors(from: number = 1): Promise<Sensor[]> {
-        return new Promise<Sensor[]> ((resolve, reject) => {
+        private io: AxiosInstance;
+        private headers: {
+                'Content-Type': 'application/json',
+        };
+        private loginService: ILoginService;
+
+        constructor(loginService: ILoginService) {
+                this.loginService = loginService;
+                this.io = axios.create({
+                        headers: {
+                        'Content-Type': 'application/json',
+                        },
+                });
+        }
+
+        public getSensorsSamples(samples: number = 1): Promise<Sensor[]> {
+                const url = iTemperAPI + '/sensors?samples=' + samples;
+                return this.getSensors(url);
+        }
+
+        public getSensorsFrom(from: number): Promise<Sensor[]> {
                 const url = iTemperAPI + '/sensors?from=' + from;
-                io.get(url)
-                .then((response) => {
-                        const data: Sensor[] = response.data.slice();
-                        // log.debug('axios - response.data: ', data);
-                        resolve(data);
-                });
-        });
-}
+                return this.getSensors(url);
+        }
 
-export function getSensorSamples(desc: Descriptor): Promise<Data[]> {
-        return new Promise<Data[]> ((resolve, reject) => {
-                const url = iTemperAPI + '/sensors' + '/' + desc.SN + '/' + desc.port;
-                // log.debug('getTrend', url);
-                io.get(url)
-                .then((response) => {
-                        const data: Data[] = response.data.slice();
-                        // log.debug('axios - response.data: ', data);
-                        resolve(data);
+        private getSensors(url: string): Promise<Sensor[]> {
+                log.debug('SensorService.getSensors: url=' + url);
+                return new Promise<Sensor[]> ((resolve, reject) => {
+                        if (!this.loginService.isLoggedIn) {
+                                reject('SensorService.getSensors: user is not logged');
+                        }
+                        const Authorization = {Authorization: this.loginService.Authorization().value};
+                        this.io.get(url, {headers: Authorization})
+                        .then (response => {
+                                const data: Sensor[] = response.data.slice();
+                                log.debug('SensorService.getSensors: axios - response sensors=' + json(data));
+                                resolve(data);
+                        })
+                        .catch((error) => {
+                                reject(error);
+                        });
                 });
-        });
-}
-
-export function connectMonitor(): Promise<WebSocket> {
-        return new Promise<WebSocket> ((resolve, reject) => {
-                const url = iTemperWS;
-                const server = new WebSocket(url);
-                server.onopen = () => {
-                    resolve(server);
-                };
-                server.onerror = (err) => {
-                    reject(err);
-                };
-        });
+        }
 }

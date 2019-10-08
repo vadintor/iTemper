@@ -2,17 +2,17 @@
 <div >
     <v-container fluid grid-list-md>
         <v-layout row wrap>
-            <v-flex xs12 md6 lg4 v-for="(item,id) in state.sensors.all" :key="id">
-                <location-card  
-                    :sensor="item"
+            <v-flex xs12 md6 lg4 v-for="(item,id) in state.devices.all" :key="id">
+                <device-card  
+                    :device="item"
                     :name="name(item)"
                     :image="image(id)"
                     :overlay="id"
                     :height=400
                 >
-                </location-card>
+                </device-card>
             </v-flex>
-            <v-chip v-if="sensorCount()===0" transition="scale-transition" >Det finns inga sensorer ännu</v-chip>
+            <v-chip v-if="deviceCount()===0" transition="scale-transition" >Det finns inga enheter ännu</v-chip>
         </v-layout>
     </v-container>
 </div>
@@ -21,12 +21,9 @@
 <script lang="ts">
 import * as moment from 'moment-timezone';
 import {Vue, Component, Watch} from "vue-property-decorator"
-import VueHighcharts from 'vue-highcharts'
-
-Vue.use(VueHighcharts);
 // Models
 
-import { Data, Sensor } from '@/models/sensor' 
+import { Device } from '@/models/device' 
 import  { Settings } from '@/store/settings'
 
 // Services
@@ -37,37 +34,33 @@ import { log } from '@/services/logger';
 import KalmanFilter from 'kalmanjs';
 
 // Child components
-import LocationCard from './locationCard.vue'
+import DeviceCard from './deviceCard.vue'
 
 
 @Component({
     components: {
-    LocationCard
+    DeviceCard
   }
 })
 export default class MyLocations extends Vue {
 
     state = Vue.$store;
 
-    sensorCount(): number {
-        return this.state.sensors.all.length;
+    deviceCount(): number {
+        return this.state.devices.all.length;
     }
     settings(): Settings {
         return this.state.settings;
     }
-    getSensorData() {
-        this.state.sensors.getSensorsLast24h();
+    getDevices() {
+        this.state.devices.getDevices();
     }
 
     created(): void {
-        log.debug('MyLocations.created()')
-        this.getSensorData();
-        setInterval(this.getSensorData, 1000 * this.state.settings.interval)
+        log.debug('MyDevices.created()')
+        this.getDevices();
     }
 
-    unitSymbol(): string {
-        return this.state.settings.unitSymbol
-    }
 
     limit(id:number): number {
         return this.state.settings.limit;
@@ -82,8 +75,8 @@ export default class MyLocations extends Vue {
         return Math.round(value * inverse) / inverse;
     }
 
-    name(sensor: Sensor) {
-        return sensor.desc.SN + '/' + sensor.desc.port
+    name(device: Device) {
+        return device.name;
     }
     
     color(id: number): string {

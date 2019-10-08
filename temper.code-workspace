@@ -14,6 +14,7 @@
 		"files.associations": {
 			"*.vue": "vue"
 		},
-		"tslint.autoFixOnSave": true
+		"tslint.autoFixOnSave": true,
+		"VSCodeCounter.showInStatusBar": false
 	}
 }
