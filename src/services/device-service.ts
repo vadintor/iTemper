@@ -55,13 +55,12 @@ export class DeviceService implements IDeviceService {
         log.debug('DeviceService.request: ' + method.toUpperCase() + ' ' + url);
         return new Promise<any> ((resolve, reject) => {
                 if (!this.loginService.isLoggedIn) {
-                        reject('DeviceService.request: user is not logged');
+                        reject('User is not logged');
                 }
                 const Authorization = {Authorization: this.loginService.Authorization().value};
                 this.io.request({url, method, headers: Authorization, data: body})
                 .then (response => {
                         const data = response.data.slice();
-                        log.debug('DeviceService.getDevices:  axios - response sensors=' + json(data));
                         resolve(data);
                 })
                 .catch((error) => {

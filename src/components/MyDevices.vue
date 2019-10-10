@@ -2,13 +2,10 @@
 <div >
     <v-container fluid grid-list-md>
         <v-layout row wrap>
-            <v-flex xs12 md6 lg4 v-for="(item,id) in state.devices.all" :key="id">
+            <v-flex v-for="(item,id) in state.devices.all" :key="id">
                 <device-card  
                     :device="item"
-                    :name="name(item)"
-                    :image="image(id)"
-                    :overlay="id"
-                    :height=400
+                    :id="id"
                 >
                 </device-card>
             </v-flex>
@@ -31,29 +28,26 @@ import  { Settings } from '@/store/settings'
 import { log } from '@/services/logger';
 
 
-import KalmanFilter from 'kalmanjs';
-
 // Child components
 import DeviceCard from './deviceCard.vue'
 
-
+// STore
+import { Devices, devices } from '@/store/devices' 
 @Component({
     components: {
     DeviceCard
   }
 })
-export default class MyLocations extends Vue {
+export default class MyDevices extends Vue {
 
     state = Vue.$store;
 
     deviceCount(): number {
-        return this.state.devices.all.length;
+        return devices.all.length;
     }
-    settings(): Settings {
-        return this.state.settings;
-    }
+
     getDevices() {
-        this.state.devices.getDevices();
+        devices.getDevices();
     }
 
     created(): void {
@@ -62,18 +56,6 @@ export default class MyLocations extends Vue {
     }
 
 
-    limit(id:number): number {
-        return this.state.settings.limit;
-    }
-    // round(2.74, 0.1) = 2.7
-    // round(2.74, 0.25) = 2.75
-    // round(2.74, 0.5) = 2.5
-    // round(2.74, 1.0) = 3.0
-    round(value: number, precision: number) {
-        precision || (precision = 1.0);
-        var inverse = 1.0 / precision;
-        return Math.round(value * inverse) / inverse;
-    }
 
     name(device: Device) {
         return device.name;

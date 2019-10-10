@@ -59,7 +59,7 @@ export default class Toolbar extends Vue {
 
     menuItems = [
             { action: 'place', title: 'Platser',  color: 'blue-grey darken-2', route: 'locations' },
-            { action: 'poll', title: 'Givare',  color: 'blue-grey darken-2', route: 'sensors' },
+            { action: 'poll', title: 'Givare',  color: 'blue-grey darken-2', route: 'devices' },
             { action: 'settings', title: 'Inställningar', color: 'blue-grey darken-2', route: 'settings' },
             { action: 'logout', title: 'Logout', color: 'blue darken-2', route: 'login'}
       ];

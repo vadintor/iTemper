@@ -1,10 +1,10 @@
 import {Storage } from './../services/storage-service';
 
 export class Device {
-    private mName: string = '';
-    private mDeviceID: string = '';
-    private mKey: string = '';
-    private mLocation: Location;
+    public mName: string = '';
+    public mDeviceID: string = '';
+    public mKey: string = '';
+    public mLocation: Location;
     private keyStorage: Storage<string>;
 
     constructor(name: string, id: string) {

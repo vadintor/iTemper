@@ -74,7 +74,9 @@ export class Sensors  {
     public get all(): Sensor[] {
         return this.mSensors;
     }
-
+    public filterByDeviceID(deviceID: string): Sensor[] {
+        return this.mSensors.filter(sensor => sensor.deviceID === deviceID);
+    }
     public index(id: number): Sensor | undefined {
         if (0 <= id && id < this.count) {
             return this.mSensors[id];

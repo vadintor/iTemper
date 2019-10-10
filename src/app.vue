@@ -21,6 +21,7 @@ Vue.$store = store;
 
 import Home from '@/components/home.vue';
 import Login  from '@/components/login.vue';
+import MyDevices  from '@/components/mydevices.vue';
 import MyLocations  from '@/components/mylocations.vue';
 import MySensors from '@/components/mysensors.vue';
 import Toolbar  from '@/components/toolbar.vue';
@@ -30,6 +31,7 @@ import Toolbar  from '@/components/toolbar.vue';
         Toolbar,
         Home,
         Login,
+        MyDevices,
         MyLocations,
         MySensors,
     }})

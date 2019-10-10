@@ -41,16 +41,16 @@ export interface SensorLog {
     samples: Data[];
 }
 export class Sensor {
-    private mDeviceID: string;
-    private mDesc: Descriptor;
-    private mAttr: Attributes;
-    private mSamples: Data[] = [];
+    public mDeviceID: string;
+    public mDesc: Descriptor;
+    public mAttr: Attributes;
+    public mSamples: Data[] = [];
 
     constructor(desc: Descriptor, attr: Attributes) {
        this.mDesc = desc;
        this.mAttr = attr;
     }
-    public get DeviceID(): string {
+    public get deviceID(): string {
         return this.mDeviceID;
     }
     public get desc(): Descriptor {

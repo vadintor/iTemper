@@ -3,6 +3,7 @@ import Router from 'vue-router';
 
 import Home from '@/components/home.vue';
 import Login from '@/components/login.vue';
+import MyDevices from '@/components/mydevices.vue';
 import MyLocations from '@/components/mylocations.vue';
 import MySensors from '@/components/mysensors.vue';
 import MySettings from '@/components/mysettings.vue';
@@ -20,6 +21,7 @@ const routes = [
   { path: '/', name: 'home', component: Home},
   { path: '/login', name: 'login', component: Login },
   { path: '/locations', name: 'locations', component: MyLocations},
+  { path: '/devices', name: 'devices', component: MyDevices},
   { path: '/settings', name: 'settings', component: MySettings },
   { path: '/sensors', name: 'sensors', component: MySensors },
   { path: '*', redirect: '/' },

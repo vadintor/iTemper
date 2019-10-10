@@ -6,7 +6,7 @@ import { log } from '@/services/logger';
 
 export class Devices  {
     public mError: string = '';
-    private mDevices: Device[] = [];
+    public mDevices: Device[] = [];
     private deviceService: IDeviceService;
 
     constructor(deviceService: IDeviceService) {
