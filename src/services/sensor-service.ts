@@ -4,7 +4,7 @@ import { Data, Descriptor, Sensor } from '@/models/sensor';
 
 import {json} from '@/helpers';
 import { log } from '@/services/logger';
-import {ILoginService } from '@/services/login-service';
+import { IApiService, Method } from '@/services/api-service';
 
 import axios, { AxiosInstance } from 'axios';
 export interface ISensorService {
@@ -14,19 +14,10 @@ export interface ISensorService {
 
 export class SensorService implements ISensorService {
 
-        private io: AxiosInstance;
-        private headers = {
-                'Content-Type': 'application/json',
-        };
-        private loginService: ILoginService;
+        private api: IApiService;
 
-        constructor(loginService: ILoginService) {
-                this.loginService = loginService;
-                this.io = axios.create({
-                        headers: {
-                        'Content-Type': 'application/json',
-                        },
-                });
+        constructor(apiService: IApiService) {
+            this.api = apiService;
         }
 
         public getSensorsSamples(samples: number = 1): Promise<Sensor[]> {
@@ -41,12 +32,12 @@ export class SensorService implements ISensorService {
 
         private getSensors(url: string): Promise<Sensor[]> {
                 log.debug('SensorService.getSensors: url=' + url);
+                const method: Method = 'get';
                 return new Promise<Sensor[]> ((resolve, reject) => {
-                        if (!this.loginService.isLoggedIn) {
+                        if (!this.api.isLoggedIn) {
                                 reject('SensorService.getSensors: user is not logged');
                         }
-                        const Authorization = {Authorization: this.loginService.Authorization().value};
-                        this.io.get(url, {headers: Authorization})
+                        this.api.request(method, url)
                         .then ((response) => {
                                 const data: Sensor[] = response.data.slice();
                                 log.debug('SensorService.getSensors: axios - response sensors=' + json(data));

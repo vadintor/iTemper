@@ -3,9 +3,8 @@ import { Device} from '@/models/device';
 
 import {json} from '@/helpers';
 import { log } from '@/services/logger';
-import {ILoginService } from '@/services/login-service';
+import { IApiService, Method } from '@/services/api-service';
 
-import axios, { AxiosInstance, Method } from 'axios';
 export interface ILocationService {
         getDevices(): Promise<Device[]>;
         createDevice(name: string): Promise<Device>;
@@ -15,19 +14,10 @@ export interface ILocationService {
 
 export class LocationService implements ILocationService {
 
-    private io: AxiosInstance;
-    private headers = {
-        'Content-Type': 'application/json',
-    };
-    private loginService: ILoginService;
+    private api: IApiService;
 
-    constructor(loginService: ILoginService) {
-        this.loginService = loginService;
-        this.io = axios.create({
-                headers: {
-                'Content-Type': 'application/json',
-                },
-        });
+    constructor(apiService: IApiService) {
+        this.api = apiService;
     }
 
     public getDevices(): Promise<Device[]> {
@@ -54,11 +44,10 @@ export class LocationService implements ILocationService {
     private request(method: Method, url: string, body?: any): Promise<any> {
         log.debug('DeviceService.request: ' + method.toUpperCase() + ' ' + url);
         return new Promise<any> ((resolve, reject) => {
-                if (!this.loginService.isLoggedIn) {
+                if (!this.api.isLoggedIn) {
                         reject('DeviceService.request: user is not logged');
                 }
-                const Authorization = {Authorization: this.loginService.Authorization().value};
-                this.io.request({url, method, headers: Authorization, data: body})
+                this.api.request(method, url, body)
                 .then ((response) => {
                         const data = response.data.slice();
                         log.debug('DeviceService.getDevices:  axios - response sensors=' + json(data));

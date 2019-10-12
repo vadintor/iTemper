@@ -3,9 +3,8 @@ import { Device} from '@/models/device';
 
 import {json} from '@/helpers';
 import { log } from '@/services/logger';
-import {ILoginService } from '@/services/login-service';
+import { IApiService, Method } from '@/services/api-service';
 
-import axios, { Method, AxiosInstance } from 'axios';
 export interface IDeviceService {
         getDevices(): Promise<Device[]>;
         createDevice(name: string): Promise<Device>;
@@ -15,57 +14,30 @@ export interface IDeviceService {
 
 export class DeviceService implements IDeviceService {
 
-    private io: AxiosInstance;
-    private headers = {
-        'Content-Type': 'application/json',
-    };
-    private loginService: ILoginService;
+    private api: IApiService;
 
-    constructor(loginService: ILoginService) {
-        this.loginService = loginService;
-        this.io = axios.create({
-                headers: {
-                'Content-Type': 'application/json',
-                },
-        });
+    constructor(apiService: IApiService) {
+        this.api = apiService;
     }
 
     public getDevices(): Promise<Device[]> {
             const url = iTemperAPI + '/devices';
             const method: Method = 'get';
-            return this.request(method, url);
+            return this.api.request(method, url);
     }
     public createDevice(name: string): Promise<Device> {
         const url = iTemperAPI + '/devices';
         const method: Method = 'post';
-        return this.request(method, url, {name});
+        return this.api.request(method, url, {name});
     }
     public renameDevice(name: string, device: Device): Promise<Device> {
         const url = iTemperAPI + '/devices/' + device.deviceID;
         const method: Method = 'put';
-        return this.request(method, url, {name});
+        return this.api.request(method, url, {name});
     }
     public deleteDevice(device: Device): Promise<Device> {
         const url = iTemperAPI + '/devices/' + device.deviceID;
         const method: Method = 'delete';
-        return this.request(method, url);
-    }
-
-    private request(method: Method, url: string, body?: any): Promise<any> {
-        log.debug('DeviceService.request: ' + method.toUpperCase() + ' ' + url);
-        return new Promise<any> ((resolve, reject) => {
-                if (!this.loginService.isLoggedIn) {
-                        reject('User is not logged');
-                }
-                const Authorization = {Authorization: this.loginService.Authorization().value};
-                this.io.request({url, method, headers: Authorization, data: body})
-                .then ((response) => {
-                        const data = response.data.slice();
-                        resolve(data);
-                })
-                .catch((error: any) => {
-                        reject(error);
-                });
-        });
+        return this.api.request(method, url);
     }
 }
