@@ -39,11 +39,11 @@
 
 import * as moment from 'moment-timezone';
 
-import {Vue, Component, Watch, Prop} from "vue-property-decorator"
+import {Vue, Component, Watch, Prop} from 'vue-property-decorator';
 
 // Models
 // import * as locations from '@/models/locations'
-import { Device }  from '@/models/device' 
+import { Device } from '@/models/device';
 
 import { log } from '@/services/logger';
 
@@ -54,12 +54,12 @@ import { Monitor } from '@/services/monitor';
 
 @Component({})
 export default class DeviceCard extends Vue {
-    @Prop() device: Device;
-    @Prop() id: number;
+    @Prop() public device!: Device;
+    @Prop() public id!: number;
 
-    state = Vue.$store;
-    newName: string = '';
-    headers = [
+    public state = Vue.$store;
+    public newName: string = '';
+    public headers = [
         {
         text: 'Givare',
         align: 'left',
@@ -68,44 +68,40 @@ export default class DeviceCard extends Vue {
         },
         { text: 'Typ', value: 'category' },
         { text: 'Mätvärde', value: 'value' },
-        { text: 'Sensast', value: 'time' }
+        { text: 'Sensast', value: 'time' },
     ];
-    rows = [];
-    mounted() {
+    public rows: any = [];
 
+    public overlay(id: number): string {
+        return 'overlay-' + id.toString();
     }
 
-    overlay(id: number): string {
-        return 'overlay-' + id.toString()
-    }
-
-    name(): string {
+    public name(): string {
         return this.device.name;
     }
 
-    mySensors() {
-        this.rows = this.state.sensors.filterByDeviceID(this.device.deviceID).map(el => {
+    public mySensors(): any {
+        this.rows = this.state.sensors.filterByDeviceID(this.device.deviceID).map((el) => {
             return  {desc: el.desc.SN + '/' + el.desc.port,
             category: el.attr.category,
             value: el.samples[0].value,
-            time: new Date(el.samples[0].date).toLocaleString()}
+            time: new Date(el.samples[0].date).toLocaleString()};
         });
-        log.debug('DEVICECARD.mySensors='+ JSON.stringify(result));
-        return result;
+        log.debug('DEVICECARD.mySensors=' + JSON.stringify(this.rows));
 
     }
 
 
 
-    editName(): void {
-        this.state.devices.renameDevice(this.newName, this.device)
+    public editName(): void {
+        this.state.devices.renameDevice(this.newName, this.device);
     }
 
-    deleteDevice() {
+    public deleteDevice() {
         this.state.devices.deleteDevice(this.device);
     }
 
-}   
+}
 
 </script>
 

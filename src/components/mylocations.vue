@@ -20,14 +20,14 @@
 
 <script lang="ts">
 import * as moment from 'moment-timezone';
-import {Vue, Component, Watch} from "vue-property-decorator"
-import VueHighcharts from 'vue-highcharts'
+import {Vue, Component, Watch} from 'vue-property-decorator';
+import VueHighcharts from 'vue-highcharts';
 
 Vue.use(VueHighcharts);
 // Models
 
-import { Data, Sensor } from '@/models/sensor' 
-import  { Settings } from '@/store/settings'
+import { Data, Sensor } from '@/models/sensor';
+import { Settings } from '@/store/settings';
 
 // Services
 
@@ -37,67 +37,67 @@ import { log } from '@/services/logger';
 import KalmanFilter from 'kalmanjs';
 
 // Child components
-import LocationCard from './locationCard.vue'
+import LocationCard from './locationCard.vue';
 
 
 @Component({
     components: {
-    LocationCard
-  }
+    LocationCard,
+  },
 })
 export default class MyLocations extends Vue {
 
-    state = Vue.$store;
+    public state = Vue.$store;
 
-    sensorCount(): number {
+    public sensorCount(): number {
         return this.state.sensors.all.length;
     }
-    settings(): Settings {
+    public settings(): Settings {
         return this.state.settings;
     }
-    getSensorData() {
+    public getSensorData() {
         this.state.sensors.getSensorsLast24h();
     }
 
-    created(): void {
-        log.debug('MyLocations.created()')
+    public created(): void {
+        log.debug('MyLocations.created()');
         this.getSensorData();
-        setInterval(this.getSensorData, 1000 * this.state.settings.interval)
+        setInterval(this.getSensorData, 1000 * this.state.settings.interval);
     }
 
-    unitSymbol(): string {
-        return this.state.settings.unitSymbol
+    public unitSymbol(): string {
+        return this.state.settings.unitSymbol;
     }
 
-    limit(id:number): number {
+    public limit(id: number): number {
         return this.state.settings.limit;
     }
     // round(2.74, 0.1) = 2.7
     // round(2.74, 0.25) = 2.75
     // round(2.74, 0.5) = 2.5
     // round(2.74, 1.0) = 3.0
-    round(value: number, precision: number) {
-        precision || (precision = 1.0);
-        var inverse = 1.0 / precision;
+    public round(value: number, precision: number) {
+        const prec = precision || (precision = 1.0);
+        const inverse = 1.0 / prec;
         return Math.round(value * inverse) / inverse;
     }
 
-    name(sensor: Sensor) {
-        return sensor.desc.SN + '/' + sensor.desc.port
-    }
-    
-    color(id: number): string {
-        return "trans-" + id.toString();
+    public name(sensor: Sensor) {
+        return sensor.desc.SN + '/' + sensor.desc.port;
     }
 
-    image(id: number): string {
-            return "/img/" + "uterum" + ".jpg";
+    public color(id: number): string {
+        return 'trans-' + id.toString();
     }
-    
-    location(id:number): string {
-            return "En  plats";
+
+    public image(id: number): string {
+            return '/img/' + 'uterum' + '.jpg';
     }
-}   
+
+    public location(id: number): string {
+            return 'En  plats';
+    }
+}
 
 </script>
 

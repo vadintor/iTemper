@@ -41,7 +41,7 @@ export interface SensorLog {
     samples: Data[];
 }
 export class Sensor {
-    public mDeviceID: string;
+    public mDeviceID: string = '';
     public mDesc: Descriptor;
     public mAttr: Attributes;
     public mSamples: Data[] = [];

@@ -2,17 +2,17 @@
   <div>Sensor component</div>
 </template>
 <script lang="ts">
-import { Vue, Component, Prop } from "vue-property-decorator";
+import { Vue, Component, Prop } from 'vue-property-decorator';
 
-import * as ss from '@/services/sensor-service'
+import * as ss from '@/services/sensor-service';
 
 import { log } from '@/services/logger';
 
 
 @Component({})
 export default class MySensors extends Vue {
-  sensors =  Vue.$store.sensors;
-  getSensorData() {
+  public sensors =  Vue.$store.sensors;
+  public getSensorData() {
       this.sensors.getSensorsSamples(1);
     //   const self = this;
     //   ss.getSensors()
@@ -27,10 +27,8 @@ export default class MySensors extends Vue {
     //   })
   }
 
-  created() {
-      log.debug('MySensors.created()')
+  public created() {
+      log.debug('MySensors.created()');
   }
 }
-
-
 </script>

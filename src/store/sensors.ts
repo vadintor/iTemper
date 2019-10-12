@@ -18,7 +18,7 @@ import * as itemper from '@/services/itemper';
 import { ISensorService } from '@/services/sensor-service';
 import { Data, Descriptor, Sensor } from '../models/sensor';
 
-import { store } from '@/store';
+import { store } from '@/store/store';
 
 import { log } from '@/services/logger';
 
@@ -44,7 +44,7 @@ export class Sensors  {
             });
             this.mError = false;
         })
-        .catch(error => {
+        .catch((error) => {
             this.mError = true;
             this.mErrorMessage = error;
         });
@@ -61,7 +61,7 @@ export class Sensors  {
             });
             this.mError = false;
         })
-        .catch(error => {
+        .catch((error) => {
             this.mError = true;
             this.mErrorMessage = error;
         });
@@ -69,13 +69,13 @@ export class Sensors  {
     // getSensorSamples(desc: Descriptor): Promise<Data[]>
 
     public find(desc: Descriptor): Sensor | undefined {
-        return this.mSensors.find(sensor => sensor.desc.SN === desc.SN && sensor.desc.port === desc.port);
+        return this.mSensors.find((sensor) => sensor.desc.SN === desc.SN && sensor.desc.port === desc.port);
     }
     public get all(): Sensor[] {
         return this.mSensors;
     }
     public filterByDeviceID(deviceID: string): Sensor[] {
-        return this.mSensors.filter(sensor => sensor.deviceID === deviceID);
+        return this.mSensors.filter((sensor) => sensor.deviceID === deviceID);
     }
     public index(id: number): Sensor | undefined {
         if (0 <= id && id < this.count) {
@@ -132,7 +132,7 @@ export class Sensors  {
 
         })
         .catch((error: any) => {
-            console.error('getSensorData', JSON.stringify(error));
+            log.debug('getSensorData' + JSON.stringify(error));
         });
     }
     private push(sensor: Sensor) {

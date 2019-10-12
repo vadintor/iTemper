@@ -17,11 +17,11 @@
 
 <script lang="ts">
 import * as moment from 'moment-timezone';
-import {Vue, Component, Watch} from "vue-property-decorator"
+import {Vue, Component, Watch} from 'vue-property-decorator';
 // Models
 
-import { Device } from '@/models/device' 
-import  { Settings } from '@/store/settings'
+import { Device } from '@/models/device';
+import { Settings } from '@/store/settings';
 
 // Services
 
@@ -29,50 +29,48 @@ import { log } from '@/services/logger';
 
 
 // Child components
-import DeviceCard from './deviceCard.vue'
+import DeviceCard from './deviceCard.vue';
 
-// STore
-import { Devices, devices } from '@/store/devices' 
+// Store
+import { Devices, devices } from '@/store/devices';
 @Component({
     components: {
-    DeviceCard
-  }
+    DeviceCard,
+  },
 })
 export default class MyDevices extends Vue {
 
-    state = Vue.$store;
+    public state = Vue.$store;
 
-    deviceCount(): number {
+    public deviceCount(): number {
         return devices.all.length;
     }
 
-    getDevices() {
+    public getDevices() {
         devices.getDevices();
     }
 
-    created(): void {
-        log.debug('MyDevices.created()')
+    public created(): void {
+        log.debug('MyDevices.created()');
         this.getDevices();
     }
 
-
-
-    name(device: Device) {
+    public name(device: Device) {
         return device.name;
     }
-    
-    color(id: number): string {
-        return "trans-" + id.toString();
+
+    public color(id: number): string {
+        return 'trans-' + id.toString();
     }
 
-    image(id: number): string {
-            return "/img/" + "uterum" + ".jpg";
+    public image(id: number): string {
+            return '/img/' + 'uterum' + '.jpg';
     }
-    
-    location(id:number): string {
-            return "En  plats";
+
+    public location(id: number): string {
+            return 'En  plats';
     }
-}   
+}
 
 </script>
 

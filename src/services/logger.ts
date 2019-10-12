@@ -6,7 +6,10 @@ class Debug {
   }
   public debug(str: string) {
     const debug = 'debug: ';
-    console.log(debug + new Date().toISOString() + ' ' + this.m + ' ' + str);
+    if (process.env.development) {
+        // console.log(debug + new Date().toISOString() + ' ' + this.m + ' ' + str);
+    }
+
   }
 }
   // let v: winston.LoggerOptions;

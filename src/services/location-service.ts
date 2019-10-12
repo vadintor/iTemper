@@ -5,7 +5,7 @@ import {json} from '@/helpers';
 import { log } from '@/services/logger';
 import {ILoginService } from '@/services/login-service';
 
-import axios, { AxiosInstance } from 'axios';
+import axios, { AxiosInstance, Method } from 'axios';
 export interface ILocationService {
         getDevices(): Promise<Device[]>;
         createDevice(name: string): Promise<Device>;
@@ -16,7 +16,7 @@ export interface ILocationService {
 export class LocationService implements ILocationService {
 
     private io: AxiosInstance;
-    private headers: {
+    private headers = {
         'Content-Type': 'application/json',
     };
     private loginService: ILoginService;
@@ -32,26 +32,26 @@ export class LocationService implements ILocationService {
 
     public getDevices(): Promise<Device[]> {
             const url = iTemperAPI + '/devices';
-            const method = 'get';
+            const method: Method = 'get';
             return this.request(method, url);
     }
     public createDevice(name: string): Promise<Device> {
         const url = iTemperAPI + '/devices';
-        const method = 'post';
+        const method: Method = 'post';
         return this.request(method, url, {name});
     }
     public renameDevice(name: string, device: Device): Promise<Device> {
         const url = iTemperAPI + '/devices/' + device.deviceID;
-        const method = 'put';
+        const method: Method = 'put';
         return this.request(method, url, {name});
     }
     public deleteDevice(device: Device): Promise<Device> {
         const url = iTemperAPI + '/devices/' + device.deviceID;
-        const method = 'delete';
+        const method: Method = 'delete';
         return this.request(method, url);
     }
 
-    private request(method: string, url: string, body?: any): Promise<any> {
+    private request(method: Method, url: string, body?: any): Promise<any> {
         log.debug('DeviceService.request: ' + method.toUpperCase() + ' ' + url);
         return new Promise<any> ((resolve, reject) => {
                 if (!this.loginService.isLoggedIn) {
@@ -59,12 +59,12 @@ export class LocationService implements ILocationService {
                 }
                 const Authorization = {Authorization: this.loginService.Authorization().value};
                 this.io.request({url, method, headers: Authorization, data: body})
-                .then (response => {
+                .then ((response) => {
                         const data = response.data.slice();
                         log.debug('DeviceService.getDevices:  axios - response sensors=' + json(data));
                         resolve(data);
                 })
-                .catch((error) => {
+                .catch((error: any) => {
                         reject(error);
                 });
         });

@@ -33,20 +33,20 @@
 
 import * as moment from 'moment-timezone';
 
-import {Vue, Component, Watch, Prop} from "vue-property-decorator"
-import VueHighcharts from 'vue-highcharts'
+import {Vue, Component, Watch, Prop} from 'vue-property-decorator';
+import VueHighcharts from 'vue-highcharts';
 Vue.use(VueHighcharts);
 
 // Models
 // import * as locations from '@/models/locations'
-import { Sensor, SensorLog, Data }  from '@/models/sensor' 
+import { Sensor, SensorLog, Data } from '@/models/sensor';
 import { Settings } from '@/store/settings';
 // import * as messages from '@/models/messages';
 // Services
 
 import { log } from '@/services/logger';
 
-import * as ss from "@/services/sensor-service";
+import * as ss from '@/services/sensor-service';
 
 import KalmanFilter from 'kalmanjs';
 
@@ -54,193 +54,199 @@ import { Monitor } from '@/services/monitor';
 
 @Component({})
 export default class LocationCard extends Vue {
-    @Prop() sensor: Sensor;
-    @Prop() name: string;
-    @Prop() image: string;
-    @Prop() height: number;
-    @Prop() overlay: number;
+    @Prop() public sensor!: Sensor;
+    @Prop() public name!: string;
+    @Prop() public image!: string;
+    @Prop() public height!: number;
+    @Prop() public overlay!: number;
 
-    settings: Settings = Vue.$store.settings;
+    public settings: Settings = Vue.$store.settings;
 
-    showHistory: boolean = false;
-    showMonitor: boolean = false;
-    rawValue: string = "";
-    monitor: Monitor;
+    public showHistory: boolean = false;
+    public showMonitor: boolean = false;
+    public rawValue: string = '';
+    public monitor!: Monitor;
 
-    receiveLog(log: SensorLog): void {
-        this.rawValue = log.samples[0].value.toString();
+    public receiveLog(l: SensorLog): void {
+        this.rawValue = l.samples[0].value.toString();
     }
 
-    mounted() {
+    public mounted() {
         this.monitor = new Monitor();
         this.monitor.SubscribeSensorLog(this.sensor.desc, this.receiveLog);
     }
-    toggleHistory() {
+    public toggleHistory() {
         this.showHistory = !this.showHistory;
         this.showMonitor = false;
     }
 
-    toggleMonitor() {
+    public toggleMonitor() {
         this.showHistory = false;
         this.showMonitor = !this.showMonitor;
     }
 
-    options(): any {
+    public options(): any {
         const self = this;
 
         return {
-            chart:{
+            chart: {
                 backgroundColor: 'rgba(255, 255, 255, 0.0)',
-                type:'spline'
+                type: 'spline',
             },
             title: {
                 text: 'Senaste 24 timmar',
-                x: -20 //center
+                x: -20, // center
             },
             subtitle: {
                 text: 'Givare: ' + this.SN() + '/' + this.port(),
-                x: -20
+                x: -20,
             },
             xAxis: {
-                type:'datetime'
+                type: 'datetime',
             },
             yAxis: {
                 title: {
-                text: 'Temperatur (°C)'
+                text: 'Temperatur (°C)',
                 },
                 plotLines: [{
                 value: 0,
                 width: 0,
-                color: '#808080'
-                }]
+                color: '#808080',
+                }],
             },
             legend: {
-                enabled: false
+                enabled: false,
             },
             credits: {
-                enabled: false
+                enabled: false,
             },
             tooltip: {
-                valueSuffix: '°C'
+                valueSuffix: '°C',
             },
 
             series: [{
                 name: this.name,
-                data: this.getData()
+                data: this.getData(),
             }],
             time: {
-                getTimezoneOffset:  function (timestamp: number): number {
+                getTimezoneOffset(timestamp: number): number {
                     const zone = self.settings.zone;
                     const timezoneOffset = -moment.tz(timestamp, zone).utcOffset();
-                    return timezoneOffset; 
-                }
-            }
+                    return timezoneOffset;
+                },
+            },
         };
     }
-    getData(): number[][] {
-        const oneHour = 60*60*1000;
+    public getData(): number[][] {
+        const oneHour = 60 * 60 * 1000;
         const firstSampleDate =  Date.now() - 24 * oneHour;
         const data: number [][] = [];
         const kalmanFilter = new KalmanFilter({R: 0.01, Q: 0.5});
 
-        if (this.sensor)
+        if (this.sensor) {
             this.sensor.samples
                 .filter((sample) => sample.date > firstSampleDate)
-                .map((sample) => 
-                    data.push([sample.date, this.round(kalmanFilter.filter(sample.value), 0.01)])
-                );
-
+                .map((sample) =>
+                    data.push([sample.date, this.round(kalmanFilter.filter(sample.value), 0.01)]));
+        }
         return data;
     }
 
-    unitSymbol(): string {
-        return this.settings.unitSymbol
+    public unitSymbol(): string {
+        return this.settings.unitSymbol;
     }
-    danger(): boolean {
-        if (this.sensor && this.sensor.samples[0])
-            return this.sensor.samples[0].value  > this.settings.limit
-        else
+    public danger(): boolean {
+        if (this.sensor && this.sensor.samples[0]) {
+            return this.sensor.samples[0].value  > this.settings.limit;
+        } else {
               return false;
+        }
     }
-    limit(): number {
+    public limit(): number {
         return this.settings.limit;
     }
     // round(2.74, 0.1) = 2.7
     // round(2.74, 0.25) = 2.75
     // round(2.74, 0.5) = 2.5
     // round(2.74, 1.0) = 3.0
-    round(value: number, precision: number) {
-        precision || (precision = 1.0);
-        var inverse = 1.0 / precision;
+    public round(value: number, precision: number) {
+        const prec = precision || (precision = 1.0);
+        const inverse = 1.0 / prec;
         return Math.round(value * inverse) / inverse;
 }
-    isValueValid(): boolean {
+    public isValueValid(): boolean {
         return this.sensor && this.sensor.samples.length > 0;
     }
 
-    lastSample(): Data {
-        const last = this.sensor.samples.length - 1
+    public lastSample(): Data {
+        const last = this.sensor.samples.length - 1;
         const data = this.sensor.samples[last];
         return data;
     }
 
-    firstSample(id: number): Data {
+    public firstSample(id: number): Data {
         return this.sensor.samples[0];
     }
 
-    count(): number {
-        if (this.isValueValid())
-            return  this.sensor.samples.length
-        else
+    public count(): number {
+        if (this.isValueValid()) {
+            return  this.sensor.samples.length;
+        } else {
             return 0;
+        }
     }
-    value(): string {
-        if (!this.isValueValid())
-            return ""
+    public value(): string {
+        if (!this.isValueValid()) {
+            return '';
+        }
         const multiplier = Math.pow(10, this.settings.resolution || 0);
-        const value = this.lastSample().value; 
-        return this.round(value, 0.5).toString().replace(".", ",")
+        const value = this.lastSample().value;
+        return this.round(value, 0.5).toString().replace('.', ',');
         // Math.round( value * multiplier) / multiplier;
     }
 
-    raw(): string {
+    public raw(): string {
         return this.rawValue;
         // return this.isValueValid() ? this.lastSample().value.toString() : "";
     }
-    
-    time(id: number): string {
-        if (!this.isValueValid())
-            return "" 
+
+    public time(id: number): string {
+        if (!this.isValueValid()) {
+            return '';
+        }
+
         const firstFields = new Date(this.firstSample(id).date).toLocaleString().split(' ');
-        const lastFields = new Date(this.lastSample().date).toLocaleString().split(' '); 
-        const timeFileds = lastFields[1].split(':')
-        return lastFields[0] +', kl. ' + timeFileds[0] + ':' + timeFileds[1]
+        const lastFields = new Date(this.lastSample().date).toLocaleString().split(' ');
+        const timeFileds = lastFields[1].split(':');
+        return lastFields[0] + ', kl. ' + timeFileds[0] + ':' + timeFileds[1];
     }
-    
-    period(): string {
-        if (!this.isValueValid())
-            return "" 
-        const last = new Date(this.lastSample().date); 
+    public period(): string {
+        if (!this.isValueValid()) {
+            return '';
+        }
+        const last = new Date(this.lastSample().date);
         return last.toLocaleDateString();
     }
 
-    SN(): string {
-        if (this.sensor != undefined)
-            return this.sensor.desc.SN
-        else    
-            return "?";
-    }
-    port(): number {
-        if (this.sensor != undefined)
-            return this.sensor.desc.port
-        else    
-            return -1;
-    }
+    public SN(): string {
+        if (this.sensor !== undefined) {
+            return this.sensor.desc.SN;
+        } else {
+            return '?';
+        }
 
-    model(): string {
+    }
+    public port(): number {
+        if (this.sensor !== undefined) {
+            return this.sensor.desc.port;
+        } else {
+            return -1;
+        }
+    }
+    public model(): string {
         return this.sensor.attr.model;
     }
-}   
+}
 
 </script>
 

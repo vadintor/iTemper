@@ -37,11 +37,11 @@ export class Monitor implements IMonitor {
     constructor() {
         if (!Monitor.ws) {
             this.connectMonitor()
-            .then(ws => {
+            .then((ws) => {
                 Monitor.ws = ws;
                 this.send({command: ClientCommand.START_MONITOR, data: {}});
             })
-            .catch(err => log.debug('Monitor: error connecting monitor'));
+            .catch((err) => log.debug('Monitor: error connecting monitor'));
         }
     }
 
@@ -81,7 +81,7 @@ export class Monitor implements IMonitor {
             messageSubscribers = [messageSubscriber];
             Monitor.allSubscribers.set(messageDesc, messageSubscribers);
         } else {
-            const alreadySubscribed = messageSubscribers.find(s => s.publish === publish && s.factory === factory);
+            const alreadySubscribed = messageSubscribers.find((s) => s.publish === publish && s.factory === factory);
 
             if (!alreadySubscribed) {
                 messageSubscribers.push(messageSubscriber);

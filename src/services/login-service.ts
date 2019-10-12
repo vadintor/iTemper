@@ -68,7 +68,7 @@ export class LoginService implements ILoginService {
                 this.isLoggedIn = true;
                 resolve(user);
             })
-            .catch(err => {
+            .catch((err: any) => {
                 log.debug('LoginService.login: error=' + json(err.response));
                 reject(err.response);
             });

@@ -15,7 +15,7 @@ export interface ISensorService {
 export class SensorService implements ISensorService {
 
         private io: AxiosInstance;
-        private headers: {
+        private headers = {
                 'Content-Type': 'application/json',
         };
         private loginService: ILoginService;
@@ -47,7 +47,7 @@ export class SensorService implements ISensorService {
                         }
                         const Authorization = {Authorization: this.loginService.Authorization().value};
                         this.io.get(url, {headers: Authorization})
-                        .then (response => {
+                        .then ((response) => {
                                 const data: Sensor[] = response.data.slice();
                                 log.debug('SensorService.getSensors: axios - response sensors=' + json(data));
                                 resolve(data);

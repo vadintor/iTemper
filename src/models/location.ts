@@ -24,7 +24,7 @@ export class Location {
     }
 
     public addSensor(sensor: Sensor) {
-        const existing = this.mSensors.find(s => s.desc.SN === sensor.desc.SN && s.desc.port === sensor.desc.port);
+        const existing = this.mSensors.find((s) => s.desc.SN === sensor.desc.SN && s.desc.port === sensor.desc.port);
         if (!existing) {
             this.mSensors.push(sensor);
         }

@@ -1,11 +1,34 @@
-# iTemper
+# vue-lab
 
-This is the front-end to the Temper 8 device enabling Internet access for sensors connected to a Temper 8 device.
+## Project setup
+```
+npm install
+```
 
-This release contains a menu pre-view, no functionality, should work on Chrome at least
+### Compiles and hot-reloads for development
+```
+npm run serve
+```
 
-## Functionality
-The web application polls the Temper 8 device and shows the temperature values returned by the device.
+### Compiles and minifies for production
+```
+npm run build
+```
 
-## Known issues
-Four sensors must be connected to the device. 
+### Run your tests
+```
+npm run test
+```
+
+### Lints and fixes files
+```
+npm run lint
+```
+
+### Run your unit tests
+```
+npm run test:unit
+```
+
+### Customize configuration
+See [Configuration Reference](https://cli.vuejs.org/config/).

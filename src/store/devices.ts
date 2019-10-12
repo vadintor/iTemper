@@ -20,27 +20,27 @@ export class Devices  {
         this.deviceService.getDevices()
         .then((response: Device[]) => {
             response.forEach((device) => {
-                const deviceFound = this.mDevices.find(d => d.deviceID === device.deviceID);
+                const deviceFound = this.mDevices.find((d) => d.deviceID === device.deviceID);
                 if (!deviceFound) {
                     this.mDevices.push(device);
                 }
             });
         })
-        .catch(e => this.handleError(e));
+        .catch((e) => this.handleError(e));
     }
     public createDevice(name: string): void {
         this.resetError();
         this.deviceService.createDevice(name)
-        .then(device => {
+        .then((device) => {
             this.mDevices.push(device);
         })
-        .catch(e => this.handleError(e));
+        .catch((e) => this.handleError(e));
     }
     public renameDevice(name: string, device: Device): void {
         this.resetError();
         this.deviceService.renameDevice(name, device)
         .then((d: Device) => device.name = d.name)
-        .catch(e => this.handleError(e));
+        .catch((e) => this.handleError(e));
     }
     public deleteDevice(device: Device): void {
         this.resetError();
@@ -49,7 +49,7 @@ export class Devices  {
             const index = this.mDevices.indexOf(device);
             this.mDevices.splice(index, 1);
         })
-        .catch(e => this.handleError(e));
+        .catch((e) => this.handleError(e));
     }
 
     private resetError() {

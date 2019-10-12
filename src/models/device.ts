@@ -4,7 +4,7 @@ export class Device {
     public mName: string = '';
     public mDeviceID: string = '';
     public mKey: string = '';
-    public mLocation: Location;
+    // public mLocation: Location;
     private keyStorage: Storage<string>;
 
     constructor(name: string, id: string) {
@@ -41,12 +41,12 @@ export class Device {
         this.mKey = value;
     }
 
-    public get location(): Location {
-        return this.mLocation;
-    }
+    // public get location(): Location {
+    //     return this.mLocation;
+    // }
 
-    public set location(value: Location) {
-        this.mLocation = value;
-    }
+    // public set location(value: Location) {
+    //     this.mLocation = value;
+    // }
 
 }

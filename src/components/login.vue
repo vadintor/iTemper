@@ -62,24 +62,25 @@
         <v-divider></v-divider>
         <v-card-actions v-if="!setup">
             <v-btn @click="submit" :loading="submitted" color="info">Login</v-btn>
-            <v-spacer></v-spacer>
-            <p>Register if you don't have an account </p>
+            <v-spacer><p align="center">Register if you don't have an account </p></v-spacer>
             <v-btn @click="swap" :disabled="submitted">Register</v-btn>
+
         </v-card-actions>
         <v-card-actions v-else>
             <v-btn @click="register" :loading="submitted" color="info">Register</v-btn>
-            <v-spacer></v-spacer>
-            <p>Allready have an account? </p>
+            <v-spacer><p align="center">Allready have an account? </p></v-spacer>
+
             <v-btn @click="swap" :disabled="submitted">Login</v-btn>
+
         </v-card-actions>
     </v-card>
 </div>
 </template>
 
 <script lang="ts">
-import { Component, Prop, Vue,  } from "vue-property-decorator"
+import { Component, Prop, Vue } from 'vue-property-decorator';
 import * as itemper from '@/services/itemper';
-import { store } from '@/store';
+import { store } from '@/store/store';
 import { Status } from '@/models/user';
 import { router } from '@/helpers';
 
@@ -94,60 +95,60 @@ type ValidationFunction = (value: string) => BooleanOrString;
 
 @Component({})
 export default class Login extends Vue {
-    setup = false;
-    showPassword: boolean = false;
-    user = store.user;
-    valid: Boolean =  false;
-    checkbox: boolean = false;
-    select: string = '';
+    public setup = false;
+    public showPassword: boolean = false;
+    public user = store.user;
+    public valid: boolean =  false;
+    public checkbox: boolean = false;
+    public select: string = '';
 
-    submitted: boolean = false;
-    returnUrl: any;
-    error: string = ''
-    timeout: number = 5000;
+    public submitted: boolean = false;
+    public returnUrl: any;
+    public error: string = '';
+    public timeout: number = 5000;
 
-    passwordRules: Array<ValidationFunction> = [
+    public passwordRules: ValidationFunction[] = [
           (v) => !!v || 'Enter password',
-          (v) => v && v.length >= 7 || 'Password must be at least 7 characters'
+          (v) => v && v.length >= 7 || 'Password must be at least 7 characters',
         ];
-    confirmPasswordRules: Array<ValidationFunction> = [
+    public confirmPasswordRules: ValidationFunction[] = [
           (v) => !!v || 'Please, re-ener password',
-          (v) => v && v === this.user.mPassword || 'Does not match password'
+          (v) => v && v === this.user.mPassword || 'Does not match password',
         ];
 
-    emailRules: Array<ValidationFunction> = [
+    public emailRules: ValidationFunction[] = [
           (v) => !!v || 'Enter  E-mail address',
-          (v) => /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(v) || 'Invalid E-mail address'
+          (v) => /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(v) || 'Invalid E-mail address',
         ];
-    nameRules: Array<ValidationFunction> = [
+    public nameRules: ValidationFunction[] = [
           (v) => !!v || 'Enter name',
-          (v) => /^\w/.test(v) && v.length >= 3 || 'Name must be at least 3 characters'
+          (v) => /^\w/.test(v) && v.length >= 3 || 'Name must be at least 3 characters',
         ];
-    setEmail(email: string) {
+    public setEmail(email: string) {
         this.user.mEmail = email;
     }
 
-    login(email: string, password: string) {
+    public login(email: string, password: string) {
         this.submitted = true;
         itemper.loginService.login(email, password)
-        .then( (user) => {
+        .then((user) => {
             this.submitted = false;
             this.user.status = Status.LOGGED_IN;
             log.debug('Login: returnUrl=' + this.returnUrl);
             if (this.returnUrl) {
-                router.push(this.returnUrl)
+                router.push(this.returnUrl);
             } else {
-                router.push({name: 'locations'})
+                router.push({name: 'locations'});
             }
         })
-        .catch(error => {
+        .catch((error) => {
             this.submitted = false;
             this.error = error;
             this.user.status = Status.LOGGED_OUT;
         });
     }
 
-    register() {
+    public register() {
         const email = this.user.mEmail;
         const password = this.user.mPassword;
         const confirmPassword = this.user.mConfirmPassword;
@@ -158,41 +159,42 @@ export default class Login extends Vue {
             this.user.status = Status.LOGGED_IN;
             log.debug('Login: returnUrl=' + this.returnUrl);
             if (this.returnUrl) {
-                router.push(this.returnUrl)
+                router.push(this.returnUrl);
             } else {
-                router.push({name: 'locations'})
+                router.push({name: 'locations'});
             }
         })
-        .catch(error => {
+        .catch((error) => {
             this.submitted = false;
             this.error = error;
             this.user.status = Status.LOGGED_OUT;
         });
 
     }
-    created() {
+    public created() {
         // reset login status
         log.debug('Login.created()');
 
         // get return url from route parameters or default to '/'
         // this.returnUrl = this.$route.query.returnUrl ;
     }
-    
-    submit() {
-        log.debug('Login.submit()')
-        if (!this.valid) return 
-        else {
+
+    public submit() {
+        log.debug('Login.submit()');
+        if (!this.valid) {
+            return;
+        } else {
             this.submitted = true;
             this.login(this.user.mEmail, this.user.mPassword);
         }
-        //this.$refs.form.validate()
+        // this.$refs.form.validate()
     }
-      
-    swap() {
+
+    public swap() {
         log.debug('Login.register()');
         this.setup = !this.setup;
     }
-}   
+}
 </script>
 
 <style>

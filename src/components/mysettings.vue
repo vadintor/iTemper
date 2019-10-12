@@ -10,7 +10,7 @@
                     </v-list-tile-sub-title>
                 </v-list-tile-content>
                 <v-list-tile-action>
-                    <v-icon :color="'teal'">check_circle</v-icon>
+                    <v-icon :color="'teal'">mdi-check-circle</v-icon>
                 </v-list-tile-action>
             </v-list-tile>
             <v-list-tile @click="">
@@ -21,7 +21,7 @@
                     </v-list-tile-sub-title>
                 </v-list-tile-content>
                 <v-list-tile-action>
-                    <v-icon :color="'teal'">check_circle</v-icon>
+                    <v-icon :color="'teal'">mdi-check-circle</v-icon>
                 </v-list-tile-action>
             </v-list-tile>
             <v-list-tile @click="">
@@ -32,7 +32,7 @@
                     </v-list-tile-sub-title>
                 </v-list-tile-content>
                 <v-list-tile-action>
-                    <v-icon :color="'teal'">check_circle</v-icon>
+                    <v-icon :color="'teal'">mdi-check-circle</v-icon>
                 </v-list-tile-action>
             </v-list-tile>
             <v-list-tile@click="">
@@ -43,7 +43,7 @@
                     </v-list-tile-sub-title>
                 </v-list-tile-content>
                 <v-list-tile-action>
-                    <v-icon :color="'teal'">check_circle</v-icon>
+                    <v-icon :color="'teal'">mdi-check-circle</v-icon>
                 </v-list-tile-action>
             </v-list-tile>
             <v-list-tile@click="">
@@ -54,7 +54,7 @@
                     </v-list-tile-sub-title>
                 </v-list-tile-content>
                 <v-list-tile-action>
-                    <v-icon :color="'teal'">check_circle</v-icon>
+                    <v-icon :color="'teal'">mdi-check-circle</v-icon>
                 </v-list-tile-action>
             </v-list-tile>                           
     </v-list>
@@ -64,7 +64,7 @@
 
 // import axios from 'axios';
 // import { iTemperAPI } from './../config';
-import { Vue, Component} from "vue-property-decorator"
+import { Vue, Component } from 'vue-property-decorator';
 
 import { log } from '@/services/logger';
 
@@ -78,32 +78,30 @@ import { log } from '@/services/logger';
 
 @Component({})
 export default class MySettings extends Vue {
-    state = Vue.$store;
+    public state = Vue.$store;
 
-    unitSymbol(): string {
-        return this.state.settings.unitSymbol
+    public unitSymbol(): string {
+        return this.state.settings.unitSymbol;
     }
-
-    limit(): number {
+    public limit(): number {
         return this.state.settings.limit;
     }
-    resolution(): number {
-        return this.state.settings.resolution
+    public resolution(): number {
+        return this.state.settings.resolution;
     }
 
-    interval(): number {
-        return this.state.settings.interval
-    }
-    
-    zone(): string {
-        return this.state.settings.zone
+    public interval(): number {
+        return this.state.settings.interval;
     }
 
-      created() {
+    public zone(): string {
+        return this.state.settings.zone;
+    }
+
+    public created() {
       log.debug('MySettings.created()');
-  }
-}   
-
+    }
+}
 </script>
 
 <style>

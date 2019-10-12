@@ -1,30 +1,29 @@
-
 <template>
-<div id="app">
+<div id='app'>
     <v-app>
         <Toolbar></Toolbar>
         <v-content>
             <v-container>
-                <router-view transition="scale-transition" ></router-view>
+                <router-view transition='scale-transition' ></router-view>
             </v-container>
         </v-content>
     </v-app>
 </div>
 </template>
 
-<script lang="ts">
+<script lang='ts'>
 
-import { Vue, Component } from "vue-property-decorator"
+import { Vue, Component } from 'vue-property-decorator';
 
-import { store } from '@/store';
+import { store } from '@/store/store';
 Vue.$store = store;
 
 import Home from '@/components/home.vue';
-import Login  from '@/components/login.vue';
-import MyDevices  from '@/components/mydevices.vue';
-import MyLocations  from '@/components/mylocations.vue';
+import Login from '@/components/login.vue';
+import MyDevices from '@/components/mydevices.vue';
+import MyLocations from '@/components/mylocations.vue';
 import MySensors from '@/components/mysensors.vue';
-import Toolbar  from '@/components/toolbar.vue';
+import Toolbar from '@/components/toolbar.vue';
 
 
 @Component( {components: {
@@ -33,13 +32,13 @@ import Toolbar  from '@/components/toolbar.vue';
         Login,
         MyDevices,
         MyLocations,
-        MySensors,
+        // MySensors,
     }})
 export default class App extends Vue {
 
-    // TODO bestäm om det är läge att använda Vuex eller hur göra med "State"
-  
-}   
+    // TODO bestäm om det är läge att använda Vuex eller hur göra med 'State'
+
+}
 </script>
 
 <style>
