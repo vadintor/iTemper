@@ -166,21 +166,13 @@ export default class Login extends Vue {
         })
         .catch((error) => {
             this.submitted = false;
-            this.error = error;
+            this.error = error.msg;
             this.user.status = Status.LOGGED_OUT;
         });
 
     }
-    public created() {
-        // reset login status
-        log.debug('Login.created()');
-
-        // get return url from route parameters or default to '/'
-        // this.returnUrl = this.$route.query.returnUrl ;
-    }
 
     public submit() {
-        log.debug('Login.submit()');
         if (!this.valid) {
             return;
         } else {
@@ -191,7 +183,6 @@ export default class Login extends Vue {
     }
 
     public swap() {
-        log.debug('Login.register()');
         this.setup = !this.setup;
     }
 }

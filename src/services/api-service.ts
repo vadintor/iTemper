@@ -25,33 +25,36 @@ export class ApiService implements IApiService {
     private ContentTypeHeader = {'Content-Type': 'application/json'};
 
     constructor() {
-        this.io = axios.create({headers: this.ContentTypeHeader});
+        this.io = axios.create({
+            baseURL: iTemperAPI,
+            headers: this.ContentTypeHeader,
+        });
     }
 
     // public get isLoggedIn(): boolean {
     //     return this.token !== undefined;
     // }
     public register(email: string, password: string, confirmPassword: string): Promise<User> {
-        log.debug('LoginService.register');
-        const url = iTemperAPI + '/signup';
+        log.debug('ApiService.register');
+        const url = '/signup';
         const body = JSON.stringify({email, password, confirmPassword});
         return this.post(url, body);
     }
     public login(email: string, password: string): Promise<User> {
-        log.debug('LoginService.login');
-        const url = iTemperAPI + '/login';
+        log.debug('ApiService.login');
+        const url = '/login';
         const body = JSON.stringify({email, password});
         return this.post(url, body);
     }
 
     public logout() {
-        log.debug('LoginService.logout');
+        log.debug('ApiService.logout');
         this.token = undefined;
         this.isLoggedIn = false;
     }
 
     public Authorization() {
-        log.debug('LoginService.Authorization');
+        log.debug('ApiService.Authorization');
         if (this.token) {
             return {value: 'Bearer ' + this.token};
         } else {
@@ -60,7 +63,7 @@ export class ApiService implements IApiService {
     }
 
     public request(method: Method, url: string, body?: any): Promise<any> {
-        log.debug('DeviceService.request: ' + method.toUpperCase() + ' ' + url);
+        log.debug('ApiService.request: ' + method.toUpperCase() + ' ' + url);
         return new Promise<any> ((resolve, reject) => {
                 if (!this.isLoggedIn) {
                         reject('User is not logged');
@@ -72,7 +75,15 @@ export class ApiService implements IApiService {
                         resolve(data);
                 })
                 .catch((error: any) => {
-                        reject(error);
+                    let msg = 'Something happened, try again later';
+                    if (error.response) {
+                        msg = error.response.status + ': ' + error.response.data;
+                    } else if (error.request) {
+                        log.debug(error.request);
+                    } else {
+                        log.debug('request Error=' + error.message);
+                    }
+                    reject(msg);
                 });
         });
     }
@@ -88,7 +99,7 @@ export class ApiService implements IApiService {
                 resolve(user);
             })
             .catch((err: any) => {
-                log.debug('LoginService.login: error=' + json(err.response));
+                log.debug('ApiService.login: error=' + json(err.response));
                 reject(err.response);
             });
         });

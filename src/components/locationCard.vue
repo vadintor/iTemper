@@ -17,8 +17,8 @@
         </v-card-title>
         <v-card-actions>
             
-            <v-btn flat color="orange" @click.native="toggleHistory()">Historik</v-btn>
-            <v-btn flat color="orange" @click.native="toggleMonitor()">Monitor</v-btn>
+            <v-btn text color="orange" @click.native="toggleHistory()">Historik</v-btn>
+            <v-btn text color="orange" @click.native="toggleMonitor()">Monitor</v-btn>
         </v-card-actions>
         <v-card-text v-show="showHistory" transition="slide-y-transition">
             <highcharts :options="options()"></highcharts>

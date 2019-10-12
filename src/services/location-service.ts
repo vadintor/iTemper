@@ -15,15 +15,14 @@ export interface ILocationService {
 export class LocationService implements ILocationService {
 
     private api: IApiService;
-
+    private path: string = '/locations';
     constructor(apiService: IApiService) {
         this.api = apiService;
     }
 
     public getDevices(): Promise<Device[]> {
-            const url = iTemperAPI + '/devices';
             const method: Method = 'get';
-            return this.request(method, url);
+            return this.request(method, this.path);
     }
     public createDevice(name: string): Promise<Device> {
         const url = iTemperAPI + '/devices';

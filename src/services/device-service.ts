@@ -15,29 +15,27 @@ export interface IDeviceService {
 export class DeviceService implements IDeviceService {
 
     private api: IApiService;
-
+    private path: string = '/devices';
     constructor(apiService: IApiService) {
         this.api = apiService;
     }
 
     public getDevices(): Promise<Device[]> {
-            const url = iTemperAPI + '/devices';
-            const method: Method = 'get';
-            return this.api.request(method, url);
+        const method: Method = 'get';
+        return this.api.request(method, this.path);
     }
     public createDevice(name: string): Promise<Device> {
-        const url = iTemperAPI + '/devices';
         const method: Method = 'post';
-        return this.api.request(method, url, {name});
+        return this.api.request(method, this.path, {name});
     }
     public renameDevice(name: string, device: Device): Promise<Device> {
-        const url = iTemperAPI + '/devices/' + device.deviceID;
+        const path = this.path + '/' + device.deviceID;
         const method: Method = 'put';
-        return this.api.request(method, url, {name});
+        return this.api.request(method, path, {name});
     }
     public deleteDevice(device: Device): Promise<Device> {
-        const url = iTemperAPI + '/devices/' + device.deviceID;
+        const path = this.path + '/' + device.deviceID;
         const method: Method = 'delete';
-        return this.api.request(method, url);
+        return this.api.request(method, path);
     }
 }

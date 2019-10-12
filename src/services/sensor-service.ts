@@ -15,36 +15,30 @@ export interface ISensorService {
 export class SensorService implements ISensorService {
 
         private api: IApiService;
-
+        private path: string = '/sensors';
         constructor(apiService: IApiService) {
-            this.api = apiService;
+                this.api = apiService;
         }
 
         public getSensorsSamples(samples: number = 1): Promise<Sensor[]> {
-                const url = iTemperAPI + '/sensors?samples=' + samples;
-                return this.getSensors(url);
+                const path = this.path + '?samples=' + samples;
+                return this.getSensors(path);
         }
 
         public getSensorsFrom(from: number): Promise<Sensor[]> {
-                const url = iTemperAPI + '/sensors?from=' + from;
-                return this.getSensors(url);
+                const path = this.path + '?from=' + from;
+                return this.getSensors(path);
         }
 
-        private getSensors(url: string): Promise<Sensor[]> {
-                log.debug('SensorService.getSensors: url=' + url);
+        private getSensors(path: string): Promise<Sensor[]> {
+                log.debug('SensorService.getSensors: url=' + path);
                 const method: Method = 'get';
                 return new Promise<Sensor[]> ((resolve, reject) => {
-                        if (!this.api.isLoggedIn) {
-                                reject('SensorService.getSensors: user is not logged');
-                        }
-                        this.api.request(method, url)
+                        this.api.request(method, path)
                         .then ((response) => {
-                                const data: Sensor[] = response.data.slice();
-                                log.debug('SensorService.getSensors: axios - response sensors=' + json(data));
+                                log.debug('SensorService.getSensors: axios - response sensors=' + json(response));
+                                const data: Sensor[] = response;
                                 resolve(data);
-                        })
-                        .catch((error) => {
-                                reject(error);
                         });
                 });
         }

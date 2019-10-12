@@ -6,8 +6,8 @@ class Debug {
   }
   public debug(str: string) {
     const debug = 'debug: ';
-    if (process.env.development) {
-        // console.log(debug + new Date().toISOString() + ' ' + this.m + ' ' + str);
+    if (!process.env.production) {
+        console.log(debug + new Date().toISOString() + ' ' + this.m + ' ' + str);
     }
 
   }
