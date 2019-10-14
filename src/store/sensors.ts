@@ -14,7 +14,6 @@
 //     port: 7,
 // },
 // },
-import * as itemper from '@/services/itemper';
 import { ISensorService } from '@/services/sensor-service';
 import { Data, Descriptor, Sensor } from '../models/sensor';
 
@@ -30,6 +29,7 @@ export class Sensors  {
     private firstTime: boolean = true;
 
     constructor(sensorService: ISensorService) {
+        log.debug('Sensor sensorservice' + (sensorService !== undefined));
         this.sensorService = sensorService;
     }
 
@@ -140,4 +140,4 @@ export class Sensors  {
     }
 
 }
-export const sensors = new Sensors(itemper.sensorService);
+

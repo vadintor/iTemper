@@ -21,7 +21,6 @@ import {Vue, Component, Watch} from 'vue-property-decorator';
 // Models
 
 import { Device } from '@/models/device';
-import { Settings } from '@/store/settings';
 
 // Services
 
@@ -31,8 +30,6 @@ import { log } from '@/services/logger';
 // Child components
 import DeviceCard from './deviceCard.vue';
 
-// Store
-import { Devices, devices } from '@/store/devices';
 @Component({
     components: {
     DeviceCard,
@@ -43,11 +40,11 @@ export default class MyDevices extends Vue {
     public state = Vue.$store;
 
     public deviceCount(): number {
-        return devices.all.length;
+        return this.state.devices.all.length;
     }
 
     public getDevices() {
-        devices.getDevices();
+        this.state.devices.getDevices();
     }
 
     public created(): void {

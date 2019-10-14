@@ -16,7 +16,7 @@
         <v-data-table
             :headers="headers"
             :items="rows"
-            disable-pagination="true"
+            disable-pagination
         >
             <template v-slot:items="props">
                 <td >{{ props.item.desc }}</td>
@@ -28,8 +28,8 @@
 
 
         <v-card-actions>
-            <v-btn flat color="orange" @click.native="editName()">Ändra</v-btn>
-            <v-btn flat color="orange" @click.native="deleteDEvice()">Radera</v-btn>
+            <v-btn text color="orange" @click.native="editName()">Ändra</v-btn>
+            <v-btn text color="orange" @click.native="deleteDEvice()">Radera</v-btn>
         </v-card-actions>
 
     </v-card>
@@ -46,9 +46,6 @@ import {Vue, Component, Watch, Prop} from 'vue-property-decorator';
 import { Device } from '@/models/device';
 
 import { log } from '@/services/logger';
-
-import { Sensors, sensors } from '@/store/sensors';
-import { Devices, devices } from '@/store/devices';
 
 import { Monitor } from '@/services/monitor';
 

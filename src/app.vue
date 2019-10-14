@@ -17,12 +17,12 @@ import { Vue, Component } from 'vue-property-decorator';
 
 import { store } from '@/store/store';
 Vue.$store = store;
-
 import Home from '@/components/home.vue';
 import Login from '@/components/login.vue';
 import MyDevices from '@/components/mydevices.vue';
 import MyLocations from '@/components/mylocations.vue';
 import MySensors from '@/components/mysensors.vue';
+import Register from '@/components/register.vue';
 import Toolbar from '@/components/toolbar.vue';
 
 
@@ -30,6 +30,7 @@ import Toolbar from '@/components/toolbar.vue';
         Toolbar,
         Home,
         Login,
+        Register,
         MyDevices,
         MyLocations,
         // MySensors,

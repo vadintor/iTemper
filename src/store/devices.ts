@@ -1,5 +1,4 @@
 import { IDeviceService } from '@/services/device-service';
-import * as itemper from '@/services/itemper';
 import { Device } from '../models/device';
 
 import { log } from '@/services/logger';
@@ -67,4 +66,3 @@ export class Devices  {
     }
 }
 
-export const devices = new Devices(itemper.deviceService);

@@ -1,14 +1,29 @@
 <template>
-<div height="1500">
+<div>
     <v-card  class="mx-auto mt-5">
         <v-card-title>
-            <h3>Login to itemper</h3>
+            <h3>Register an account</h3>
         </v-card-title>
         <v-card-text>
             <v-form v-model="valid" ref="login">
+                <v-text-field 
+                    label="First name"
+                    v-model="user.mFirstName"
+                    :rules="nameRules"
+                    required
+                    clearable
+                ></v-text-field>
+
+                <v-text-field
+                    label="Last name"
+                    v-model="user.mLastName"
+                    :rules="nameRules"
+                    required
+                    clearable
+                ></v-text-field>
+
                 <v-text-field
                     label="E-mail"
-                    prepend-icon="mdi-email"
                     v-model="cred.email"
                     :rules="emailRules"
                     required
@@ -25,18 +40,33 @@
                     required
                     clearable
                 ></v-text-field>
+                <v-text-field
+                    label="Confirm password"
+                    :type="showPassword ? 'text' : 'password'"
+                    prepend-icon="mdi-lock"
+                    @click="showPassword = !showPassword"
+                    v-model="cred.confirmPassword"
+                    :rules="confirmPasswordRules"
+                    required
+                    clearable
+                ></v-text-field>
+                <v-checkbox
+                    label="I agree to iTemper's terms and conditions"
+                    v-model="checkbox"
+                    :rules="[(v) => !!v || 'You must agree to continue!']"
+                    required
+                ></v-checkbox>
             </v-form>
         </v-card-text>
-
-
         <v-divider></v-divider>
         <v-card-actions>
-            <v-btn @click="submit" :loading="submitted" color="info">Login</v-btn>
+            <v-btn @click="submit()" :loading="submitted" color="info">Register</v-btn>
             <v-spacer>
                 <p v-if="error()"  class="red--text" align="center">{{errorMsg}}</p>
-                <p v-else align="center">Register if you don't have an account</p>
+                <p v-else align="center">Allready have an account? </p>
             </v-spacer>
-            <v-btn @click="swap" :disabled="submitted">Register</v-btn>
+            <v-btn @click="swap" :disabled="submitted">Login</v-btn>
+
         </v-card-actions>
     </v-card>
 </div>
@@ -45,7 +75,6 @@
 <script lang="ts">
 import { Component, Prop, Vue } from 'vue-property-decorator';
 import * as itemper from '@/services/itemper';
-import Notice from '@/components/notice.vue';
 import { store } from '@/store/store';
 import { Status } from '@/store/user';
 import { router } from '@/helpers';
@@ -59,12 +88,8 @@ type BooleanOrString = boolean | string;
 type ValidationFunction = (value: string) => BooleanOrString;
 
 
-@Component({
-    components: {
-        Notice,
-    },
-})
-export default class Login extends Vue {
+@Component({})
+export default class Register extends Vue {
     public showPassword: boolean = false;
     public cred = Vue.$store.user.credentials;
     public status = Vue.$store.user.status;
@@ -76,6 +101,7 @@ export default class Login extends Vue {
 
     public submitted: boolean = false;
     public returnUrl: any;
+
     public errorMsg = '';
     public timeout: number = 1250;
 
@@ -99,17 +125,15 @@ export default class Login extends Vue {
     public setEmail(email: string) {
         this.cred.email = email;
     }
-
-    public error(): boolean {
+        public error(): boolean {
         return this.errorMsg !== '';
     }
-    public login(email: string, password: string) {
-        log.debug('Login.vue login');
+    public register() {
         this.submitted = true;
-        this.user.login()
+        this.user.register()
         .then((status: Status) => {
             this.submitted = false;
-            store.notice.publish('Welcome to itemper!');
+            this.notice.publish('Welcome to itemper!');
             log.debug('Login: returnUrl=' + this.returnUrl);
             if (this.returnUrl) {
                 router.push(this.returnUrl);
@@ -117,28 +141,26 @@ export default class Login extends Vue {
                 router.push({name: 'locations'});
             }
         })
-        .catch((error: any) => {
+        .catch((error) => {
             this.submitted = false;
-            this.displayError('Something went wrong: ' + error.response.data);
+            this.displayError('Something went wrong: Cannot create account');
         });
     }
-
     public submit() {
         if (!this.valid) {
+            this.displayError('Register form not vallid, please enter all information');
             return;
         } else {
             this.submitted = true;
-            this.login(this.cred.mEmail, this.cred.mPassword);
+            this.register();
         }
     }
-
     public swap() {
-        router.push({name: 'register'});
+        router.push({name: 'login'});
     }
-        private reset(): void {
+    private reset(): void {
         this.errorMsg = '';
     }
-
     private displayError(msg: string) {
         this.errorMsg = msg;
         this.setTimer();

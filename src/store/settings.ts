@@ -46,4 +46,3 @@ export class Settings {
 
 }
 
-export const settings = new Settings();

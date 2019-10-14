@@ -1,6 +1,6 @@
 <template>
     <div>
-        <v-navigation-drawer v-if="loggedIn()" transition="scale-transition" bottom nudge-left=16 nudge-top=5 
+        <v-navigation-drawer v-if="user.isLoggedIn()" transition="scale-transition" nudge-left=16 nudge-top=5 
         v-model="drawer"
         app
         >
@@ -20,34 +20,35 @@
         color="indigo"
         dark
         >
-            <v-app-bar-nav-icon @click.stop="drawer = !drawer"></v-app-bar-nav-icon>
+            <v-app-bar-nav-icon v-if="user.isLoggedIn()" @click.stop="drawer = !drawer"></v-app-bar-nav-icon>
             <v-toolbar-title>iTemper</v-toolbar-title>
+
             <v-spacer></v-spacer>
-            <v-btn  v-if="!loggingIn" outlined class="signlog" @click="signup">Sign up</v-btn>
-            <v-btn  v-if="!loggingIn" transition="scale-transition" outlined class="signlog" @click="login">Login</v-btn>
+            <v-btn  v-if="user.isLoggedOut()" outlined class="signlog" @click="signup">Sign up</v-btn>
+            <v-btn  v-if="user.isLoggedOut()" transition="scale-transition" outlined class="signlog" @click="login">Login</v-btn>
             <v-chip @click="logout()" ripple
-                v-if="loggedIn()" 
+                v-if="user.isLoggedIn()" 
                 transition="scale-transition"  
                 class="signlog" 
                 close>
                     <v-icon >mdi-account-circle</v-icon>
-                    {{user.mEmail}}
+                    {{user.credentials.mEmail}}
             </v-chip>
         </v-app-bar>
-
     </div>
 </template>
 
 
 
 <script lang="ts">
+import Notice from '@/components/notice.vue';
 import {Vue, Component, Prop} from 'vue-property-decorator';
 import {router} from '@/helpers';
 
 import {log} from '@/services/logger';
 import {json} from '@/helpers';
 
-import { Status } from '@/models/user';
+import { Status } from '@/store/user';
 
 import * as itemper from '@/services/itemper';
 
@@ -57,10 +58,12 @@ interface MenuItem {
     color: string;
     route: string;
 }
-@Component({})
+@Component({components: {
+        Notice,
+    },
+  })
 export default class Toolbar extends Vue {
     public user = Vue.$store.user;
-    public loggingIn: boolean = false;
     public drawer: boolean = false;
 
     public menuItems = [
@@ -72,42 +75,36 @@ export default class Toolbar extends Vue {
 
     public name() {
         log.debug('Toolbar.name()' );
-        return this.user.mEmail;
-    }
-    public loggedIn() {
-        log.debug('Toolbar.loggedOut()' + this.user.status);
-        return this.user.status === Status.LOGGED_IN;
+        return this.user.credentials.mEmail;
     }
     public menuItemClicked(item: MenuItem) {
         log.debug('Toolbar.menuItemClicked()' );
         if (item.action === 'logout') {
-            this.logout();
+            this.user.logout();
         } else {
             router.push({name: item.route});
         }
-
     }
-
     public signup() {
         log.debug('Toolbar.signup()' );
+        this.user.status =  Status.LOGGING_IN;
+        router.push({name: 'register'});
     }
     public login() {
-        this.loggingIn = true;
         log.debug('Toolbar.login()' );
+        this.user.status =  Status.LOGGING_IN;
         router.push({name: 'login'});
     }
 
 
     public logout() {
         log.debug('Toolbar.logout()' );
-        itemper.loginService.logout();
-        this.user.status = Status.LOGGED_OUT;
+        this.user.logout();
         router.push({name: 'home'});
-        this.loggingIn = false;
     }
 
     public created() {
-        log.debug('Toolbar.created(), loggedIn=' + this.loggedIn());
+        log.debug('Toolbar.created(), user status=' + this.user.status.toString());
     }
 
 

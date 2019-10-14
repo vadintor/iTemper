@@ -4,4 +4,3 @@ export class Locations {
 
 }
 
-export const locations: Locations = new Locations();

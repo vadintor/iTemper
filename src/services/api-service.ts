@@ -1,6 +1,6 @@
 import axios, { Method, AxiosInstance } from 'axios';
 
-import { User } from '@/models/user';
+import { Credentials } from '@/models/credentials';
 
 import { iTemperAPI } from '@/config';
 import { json } from '@/helpers/';
@@ -8,8 +8,8 @@ import { log } from '@/services/logger';
 
 export interface IApiService {
     isLoggedIn: boolean;
-    register(email: string, password: string, confirmPassword: string): Promise<User>;
-    login(email: string, password: string): Promise<User>;
+    register(email: string, password: string, confirmPassword: string): Promise<Credentials>;
+    login(email: string, password: string): Promise<Credentials>;
     logout(): void;
     request(method: Method, url: string, body?: any): Promise<any>;
 }
@@ -31,16 +31,13 @@ export class ApiService implements IApiService {
         });
     }
 
-    // public get isLoggedIn(): boolean {
-    //     return this.token !== undefined;
-    // }
-    public register(email: string, password: string, confirmPassword: string): Promise<User> {
+    public register(email: string, password: string, confirmPassword: string): Promise<Credentials> {
         log.debug('ApiService.register');
         const url = '/signup';
         const body = JSON.stringify({email, password, confirmPassword});
         return this.post(url, body);
     }
-    public login(email: string, password: string): Promise<User> {
+    public login(email: string, password: string): Promise<Credentials> {
         log.debug('ApiService.login');
         const url = '/login';
         const body = JSON.stringify({email, password});
@@ -51,15 +48,6 @@ export class ApiService implements IApiService {
         log.debug('ApiService.logout');
         this.token = undefined;
         this.isLoggedIn = false;
-    }
-
-    public Authorization() {
-        log.debug('ApiService.Authorization');
-        if (this.token) {
-            return {value: 'Bearer ' + this.token};
-        } else {
-            return { value: 'Bearer '};
-        }
     }
 
     public request(method: Method, url: string, body?: any): Promise<any> {
@@ -75,7 +63,7 @@ export class ApiService implements IApiService {
                         resolve(data);
                 })
                 .catch((error: any) => {
-                    let msg = 'Something happened, try again later';
+                    let msg = error.message;
                     if (error.response) {
                         msg = error.response.status + ': ' + error.response.data;
                     } else if (error.request) {
@@ -83,24 +71,43 @@ export class ApiService implements IApiService {
                     } else {
                         log.debug('request Error=' + error.message);
                     }
-                    reject(msg);
+                    reject(error);
                 });
         });
     }
-    private post(url: string, body: string): Promise<User> {
-        return new Promise<User> ((resolve, reject) => {
+
+    private Authorization() {
+        log.debug('ApiService.Authorization');
+        if (this.token) {
+            return {value: 'Bearer ' + this.token};
+        } else {
+            return { value: 'Bearer '};
+        }
+    }
+    private post(url: string, body: string): Promise<Credentials> {
+        return new Promise<Credentials> ((resolve, reject) => {
             this.io.post(url, body)
             .then((response) => {
+                log.debug(json(response));
                 this.token = response.data.token;
                 const email = response.data.email;
                 const password = response.data.password;
-                const user = new User(email, password);
+                const credentials = new Credentials(email, password);
+                credentials.token = this.token || '';
                 this.isLoggedIn = true;
-                resolve(user);
+                resolve(credentials);
             })
-            .catch((err: any) => {
-                log.debug('ApiService.login: error=' + json(err.response));
-                reject(err.response);
+            .catch((error: any) => {
+                this.isLoggedIn = false;
+                let msg = error.message;
+                if (error.response) {
+                    msg = error.response.status + ': ' + error.response.data;
+                } else if (error.request) {
+                    log.debug(error.request);
+                } else {
+                    log.debug('request Error=' + error.message);
+                }
+                reject(error);
             });
         });
     }
