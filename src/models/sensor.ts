@@ -99,7 +99,7 @@ export class Sensor {
     public get lastSample(): Data {
         return this.mSamples[this.mSamples.length];
     }
-    public get lastValue(): string {
+    public lastValue(): string {
         log.debug('lastValue');
         if (this.hasSamples()) {
             return this.mSamples[this.mSamples.length].value.toString();

@@ -87,7 +87,7 @@ export default class DeviceCard extends Vue {
         return this.device.name;
     }
     public lastValue(sensor: Sensor): string {
-        return sensor.lastValue;
+        return sensor.lastValue();
     }
     public editName(): void {
         this.state.devices.renameDevice(this.newName, this.device);
