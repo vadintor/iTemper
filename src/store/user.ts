@@ -41,8 +41,8 @@ export class User  {
                 this.status = Status.LOGGED_IN;
                 resolve(this.status);
             })
-            .catch((error) => {
-                reject(this.status);
+            .catch((error: any) => {
+                reject(error);
             });
         });
     }
@@ -55,7 +55,7 @@ export class User  {
                 this.status = Status.LOGGED_IN;
                 resolve(this.status);
             })
-            .catch((error) => {
+            .catch((error: any) => {
                 reject(error);
             });
         });

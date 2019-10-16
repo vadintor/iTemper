@@ -60,7 +60,7 @@
         </v-card-text>
         <v-divider></v-divider>
         <v-card-actions>
-            <v-btn @click="submit()" :loading="submitted" color="info">Register</v-btn>
+            <v-btn @click="submit()" :disabled="!valid" :loading="submitted" color="info">Register</v-btn>
             <v-spacer>
                 <p v-if="error()"  class="red--text" align="center">{{errorMsg}}</p>
                 <p v-else align="center">Allready have an account? </p>
@@ -143,7 +143,7 @@ export default class Register extends Vue {
         })
         .catch((error) => {
             this.submitted = false;
-            this.displayError('Something went wrong: Cannot create account');
+            this.displayError('Something went wrong: (' + error.status + '): ' + error.message );
         });
     }
     public submit() {

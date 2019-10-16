@@ -31,7 +31,7 @@
 
         <v-divider></v-divider>
         <v-card-actions>
-            <v-btn @click="submit" :loading="submitted" color="info">Login</v-btn>
+            <v-btn @click="submit" :disabled="!valid" :loading="submitted" color="info">Login</v-btn>
             <v-spacer>
                 <p v-if="error()"  class="red--text" align="center">{{errorMsg}}</p>
                 <p v-else align="center">Register if you don't have an account</p>
@@ -119,12 +119,13 @@ export default class Login extends Vue {
         })
         .catch((error: any) => {
             this.submitted = false;
-            this.displayError('Something went wrong: ' + error.response.data);
+            this.displayError('Something went wrong: (' + error.status + '): ' + error.message );
         });
     }
 
     public submit() {
         if (!this.valid) {
+            this.displayError('Login form not vallid');
             return;
         } else {
             this.submitted = true;
@@ -135,10 +136,9 @@ export default class Login extends Vue {
     public swap() {
         router.push({name: 'register'});
     }
-        private reset(): void {
+    private reset(): void {
         this.errorMsg = '';
     }
-
     private displayError(msg: string) {
         this.errorMsg = msg;
         this.setTimer();

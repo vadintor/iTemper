@@ -23,4 +23,4 @@ class Debug {
 //     })
 // }));
 // }
-export const log = new Debug('[itemper-Frontend]');
+export const log = new Debug('[iTemper-web]');

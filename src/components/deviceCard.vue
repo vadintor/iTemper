@@ -13,20 +13,26 @@
 
             </div>
         </v-card-title>
-        <v-data-table
-            :headers="headers"
-            :items="rows"
-            disable-pagination
-        >
-            <template v-slot:items="props">
-                <td >{{ props.item.desc }}</td>
-                <td >{{ props.item.category }}</td>
-                <td >{{ props.item.value }}</td>
-                <td >{{ props.item.time }}</td>
+          <v-simple-table>
+            <template v-slot:default>
+                <thead>
+                <tr>
+                    <th class="text-left">Givare</th>
+                    <th class="text-left">Kategori</th>
+                    <th class="text-left">Mätvärde</th>
+                    <th class="text-left">Tidpunkt</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr v-for="(item,id) in state.sensors.filterByDeviceID(device.deviceID)" :key="id" >
+                    <td>{{ item.desc.SN + '/' +  item.desc.port }}</td>
+                    <td>{{ item.attr.category }}</td>
+                    <td>{{ lastValue(item)}}</td>
+                    <td>{{ item.lastTime }}</td>
+                </tr>
+                </tbody>
             </template>
-        </v-data-table>
-
-
+          </v-simple-table>
         <v-card-actions>
             <v-btn text color="orange" @click.native="editName()">Ändra</v-btn>
             <v-btn text color="orange" @click.native="deleteDEvice()">Radera</v-btn>
@@ -44,6 +50,7 @@ import {Vue, Component, Watch, Prop} from 'vue-property-decorator';
 // Models
 // import * as locations from '@/models/locations'
 import { Device } from '@/models/device';
+import { Sensor } from '@/models/sensor';
 
 import { log } from '@/services/logger';
 
@@ -55,20 +62,23 @@ export default class DeviceCard extends Vue {
     @Prop() public id!: number;
 
     public state = Vue.$store;
+    public sensors = Vue.$store.sensors;
     public newName: string = '';
     public headers = [
         {
         text: 'Givare',
         align: 'left',
         sortable: false,
-        value: 'desc',
+        value: 'name',
         },
         { text: 'Typ', value: 'category' },
-        { text: 'Mätvärde', value: 'value' },
-        { text: 'Sensast', value: 'time' },
+        { text: 'Mätvärde', value: 'lastValue' },
+        { text: 'Sensast', value: 'lastTime' },
     ];
-    public rows: any = [];
 
+    public filterSensors(sensors: Sensor[], deviceID: string): Sensor[] {
+        return this.sensors.filterByDeviceID(deviceID);
+    }
     public overlay(id: number): string {
         return 'overlay-' + id.toString();
     }
@@ -76,20 +86,9 @@ export default class DeviceCard extends Vue {
     public name(): string {
         return this.device.name;
     }
-
-    public mySensors(): any {
-        this.rows = this.state.sensors.filterByDeviceID(this.device.deviceID).map((el) => {
-            return  {desc: el.desc.SN + '/' + el.desc.port,
-            category: el.attr.category,
-            value: el.samples[0].value,
-            time: new Date(el.samples[0].date).toLocaleString()};
-        });
-        log.debug('DEVICECARD.mySensors=' + JSON.stringify(this.rows));
-
+    public lastValue(sensor: Sensor): string {
+        return sensor.lastValue;
     }
-
-
-
     public editName(): void {
         this.state.devices.renameDevice(this.newName, this.device);
     }

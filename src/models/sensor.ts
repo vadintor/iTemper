@@ -14,7 +14,7 @@
 //     port: 7,
 // },
 // },
-
+import {log} from '@/services/logger';
 export interface Data {
     value: number;
     date: number;
@@ -73,6 +73,48 @@ export class Sensor {
         return this.mSamples;
     }
 
+    public get name(): string {
+        log.debug('sensor.name');
+        return this.mDesc.SN + '/' + this.mDesc.port;
+    }
+    public get category(): string {
+        return this.mAttr.category;
+    }
+    public get model(): string {
+        return this.mAttr.model;
+    }
+    public get accuracy(): number {
+        return this.mAttr.accuracy;
+    }
+    public get resolution(): number {
+        return this.mAttr.resolution;
+    }
+    public get maxSampleRate(): number {
+        return this.mAttr.maxSampleRate;
+    }
+    public hasSamples(): boolean {
+        return this.mSamples.length > 0;
+    }
+
+    public get lastSample(): Data {
+        return this.mSamples[this.mSamples.length];
+    }
+    public get lastValue(): string {
+        log.debug('lastValue');
+        if (this.hasSamples()) {
+            return this.mSamples[this.mSamples.length].value.toString();
+        } else {
+            return '-';
+        }
+    }
+
+    public get lastTime(): string {
+        if (this.hasSamples()) {
+            return new Date(this.mSamples[this.mSamples.length].date).toLocaleTimeString();
+        } else {
+            return '-';
+        }
+    }
     // public set samples(samples: Data[]) {
     //     this.mSamples = samples;
     // }
