@@ -22,7 +22,8 @@
         >
             <v-app-bar-nav-icon v-if="user.isLoggedIn()" @click.stop="drawer = !drawer"></v-app-bar-nav-icon>
             <v-toolbar-title>iTemper</v-toolbar-title>
-            <new-device-dialogue v-if="showNewDeviceDialogue"></new-device-dialogue>
+            <new-device-dialogue v-if="user.isLoggedIn() && showNewDeviceDialogue"></new-device-dialogue>
+            <new-location-dialogue v-if="user.isLoggedIn() && showNewLocationDialogue"></new-location-dialogue>
             <v-spacer></v-spacer>
             <v-btn  v-if="user.isLoggedOut()" outlined class="signlog" @click="signup">Sign up</v-btn>
             <v-btn  v-if="user.isLoggedOut()" transition="scale-transition" outlined class="signlog" @click="login">Login</v-btn>
@@ -38,10 +39,6 @@
         </v-app-bar>
     </div>
 </template>
-
-
-
-
 <script lang="ts">
 import Notice from '@/components/notice.vue';
 import {Vue, Component, Prop} from 'vue-property-decorator';
@@ -55,6 +52,7 @@ import { Status } from '@/store/user';
 import * as itemper from '@/services/itemper';
 
 import NewDeviceDialogue from './new-device-dialogue.vue';
+import NewLocationDialogue from './new-location-dialogue.vue';
 
 type BooleanOrString = boolean | string;
 type ValidationFunction = (value: string) => BooleanOrString;
@@ -68,6 +66,7 @@ interface MenuItem {
 @Component({components: {
         Notice,
         NewDeviceDialogue,
+        NewLocationDialogue,
     },
   })
 export default class Toolbar extends Vue {
@@ -75,6 +74,7 @@ export default class Toolbar extends Vue {
     public drawer: boolean = false;
 
     public showNewDeviceDialogue: boolean = false;
+    public showNewLocationDialogue: boolean = true;
 
     public menuItems = [
             { action: 'mdi-home', title: 'Platser',  color: 'blue-grey darken-2', route: 'locations' },
@@ -82,15 +82,14 @@ export default class Toolbar extends Vue {
             { action: 'mdi-settings', title: 'Inställningar', color: 'blue-grey darken-2', route: 'settings' },
             { action: 'mdi-logout', title: 'Logout', color: 'blue darken-2', route: 'login'},
       ];
-
-
     public name() {
         log.debug('Toolbar.name()' );
         return this.user.credentials.mEmail;
     }
     public menuItemClicked(item: MenuItem) {
         log.debug('Toolbar.menuItemClicked(): ' +  json(item));
-        item.route === 'devices' ? this.showNewDeviceDialogue = true : this.showNewDeviceDialogue = false;
+        this.showNewDeviceDialogue = (item.route === 'devices') ? true : false;
+        this.showNewLocationDialogue = (item.route === 'locations') ? true : false;
         if (item.action === 'logout') {
             this.user.logout();
         } else {
@@ -107,20 +106,15 @@ export default class Toolbar extends Vue {
         this.user.status =  Status.LOGGING_IN;
         router.push({name: 'login'});
     }
-
-
     public logout() {
         log.debug('Toolbar.logout()' );
         this.user.logout();
         this.showNewDeviceDialogue = false;
         router.push({name: 'home'});
     }
-
     public created() {
         log.debug('Toolbar.created(), user status=' + this.user.status.toString());
     }
-
-
 }
 </script>
 

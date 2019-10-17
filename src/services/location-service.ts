@@ -1,15 +1,14 @@
-import { iTemperAPI } from '@/config';
-import { Device} from '@/models/device';
+import { Location } from '@/models/location';
 
 import {json} from '@/helpers';
 import { log } from '@/services/logger';
 import { IApiService, Method } from '@/services/api-service';
 
 export interface ILocationService {
-        getDevices(): Promise<Device[]>;
-        createDevice(name: string): Promise<Device>;
-        renameDevice(name: string, device: Device): Promise<Device>;
-        deleteDevice(device: Device): Promise<Device>;
+        getLocations(): Promise<Location[]>;
+        createLocation(location: Location): Promise<Location>;
+        updateLocation(location: Location): Promise<Location>;
+        deleteLocation(location: Location): Promise<Location>;
 }
 
 export class LocationService implements ILocationService {
@@ -19,42 +18,22 @@ export class LocationService implements ILocationService {
     constructor(apiService: IApiService) {
         this.api = apiService;
     }
-
-    public getDevices(): Promise<Device[]> {
-            const method: Method = 'get';
-            return this.request(method, this.path);
+    public getLocations(): Promise<Location[]> {
+        const method: Method = 'get';
+        return this.api.request(method, this.path);
     }
-    public createDevice(name: string): Promise<Device> {
-        const url = iTemperAPI + '/devices';
+    public createLocation(location: Location): Promise<Location> {
         const method: Method = 'post';
-        return this.request(method, url, {name});
+        return this.api.request(method, this.path, location);
     }
-    public renameDevice(name: string, device: Device): Promise<Device> {
-        const url = iTemperAPI + '/devices/' + device.deviceID;
+    public updateLocation(location: Location): Promise<Location> {
+        const path = this.path + '/' + location.id;
         const method: Method = 'put';
-        return this.request(method, url, {name});
+        return this.api.request(method, path, location);
     }
-    public deleteDevice(device: Device): Promise<Device> {
-        const url = iTemperAPI + '/devices/' + device.deviceID;
+    public deleteLocation(location: Location): Promise<Location> {
+        const path = this.path + '/' + location.id;
         const method: Method = 'delete';
-        return this.request(method, url);
-    }
-
-    private request(method: Method, url: string, body?: any): Promise<any> {
-        log.debug('DeviceService.request: ' + method.toUpperCase() + ' ' + url);
-        return new Promise<any> ((resolve, reject) => {
-                if (!this.api.isLoggedIn) {
-                        reject('DeviceService.request: user is not logged');
-                }
-                this.api.request(method, url, body)
-                .then ((response) => {
-                        const data = response.data.slice();
-                        log.debug('DeviceService.getDevices:  axios - response sensors=' + json(data));
-                        resolve(data);
-                })
-                .catch((error: any) => {
-                        reject(error);
-                });
-        });
+        return this.api.request(method, path, location);
     }
 }
