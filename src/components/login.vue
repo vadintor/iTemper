@@ -77,7 +77,7 @@ export default class Login extends Vue {
     public submitted: boolean = false;
     public returnUrl: any;
     public errorMsg = '';
-    public timeout: number = 1250;
+    public timeout: number = 2_000;
 
     public passwordRules: ValidationFunction[] = [
           (v) => !!v || 'Enter password',

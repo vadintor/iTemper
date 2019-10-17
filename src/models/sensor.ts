@@ -72,7 +72,23 @@ export class Sensor {
     public get samples(): Data[] {
         return this.mSamples;
     }
+    public lastValue(): string {
 
+        if (this.hasSamples()) {
+            return this.mSamples[0].value.toString();
+        } else {
+            return '-';
+        }
+    }
+
+    public get lastTime(): string {
+        log.debug('lastValue');
+        if (this.hasSamples()) {
+            return new Date(this.mSamples[0].date).toLocaleTimeString();
+        } else {
+            return '-';
+        }
+    }
     public get name(): string {
         log.debug('sensor.name');
         return this.mDesc.SN + '/' + this.mDesc.port;
@@ -99,22 +115,7 @@ export class Sensor {
     public get lastSample(): Data {
         return this.mSamples[this.mSamples.length];
     }
-    public lastValue(): string {
-        log.debug('lastValue');
-        if (this.hasSamples()) {
-            return this.mSamples[this.mSamples.length].value.toString();
-        } else {
-            return '-';
-        }
-    }
 
-    public get lastTime(): string {
-        if (this.hasSamples()) {
-            return new Date(this.mSamples[this.mSamples.length].date).toLocaleTimeString();
-        } else {
-            return '-';
-        }
-    }
     // public set samples(samples: Data[]) {
     //     this.mSamples = samples;
     // }

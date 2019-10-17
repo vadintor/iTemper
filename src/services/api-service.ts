@@ -62,7 +62,7 @@ export class ApiService implements IApiService {
             const Authorization = {Authorization: this.Authorization().value};
             this.io.request({url, method, headers: Authorization, data: body})
             .then ((response) => {
-                    const data = response.data.slice();
+                    const data = response.data;
                     resolve(data);
             })
             .catch((error: any) => {
@@ -75,12 +75,18 @@ export class ApiService implements IApiService {
         let message = 'Unknown error';
         let status = 99;
         if (error.message) {
-            message =  error.message.slice();
+            message =  error.message;
             status = 98;
         }
         if (error.response) {
-            message = error.response.data.slice();
             status  = error.response.status;
+            if (status === 422) {
+                message = 'Invalid field value(s)';
+            } else {
+                message = error.response.data;
+            }
+
+
         } else if (error.request) {
             log.debug(error.request);
             message = 'Invalid request';

@@ -27,15 +27,15 @@
                 <tr v-for="(item,id) in state.sensors.filterByDeviceID(device.deviceID)" :key="id" >
                     <td>{{ item.desc.SN + '/' +  item.desc.port }}</td>
                     <td>{{ item.attr.category }}</td>
-                    <td>{{ lastValue(item)}}</td>
-                    <td>{{ item.lastTime }}</td>
+                    <td>{{ item.samples[0].value}}</td>
+                    <td>{{ time(item.samples[0].date)}}</td>
                 </tr>
                 </tbody>
             </template>
           </v-simple-table>
         <v-card-actions>
             <v-btn text color="orange" @click.native="editName()">Ändra</v-btn>
-            <v-btn text color="orange" @click.native="deleteDEvice()">Radera</v-btn>
+            <v-btn text color="orange" @click.native="deleteDevice()">Radera</v-btn>
         </v-card-actions>
 
     </v-card>
@@ -83,12 +83,13 @@ export default class DeviceCard extends Vue {
         return 'overlay-' + id.toString();
     }
 
+    public time(date: number): string {
+        return new Date(date).toLocaleTimeString();
+    }
     public name(): string {
         return this.device.name;
     }
-    public lastValue(sensor: Sensor): string {
-        return sensor.lastValue();
-    }
+
     public editName(): void {
         this.state.devices.renameDevice(this.newName, this.device);
     }

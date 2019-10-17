@@ -27,13 +27,16 @@ export class Devices  {
         })
         .catch((e) => this.handleError(e));
     }
-    public createDevice(name: string): void {
+    public createDevice(name: string): Promise<Device> {
         this.resetError();
-        this.deviceService.createDevice(name)
-        .then((device) => {
-            this.mDevices.push(device);
-        })
-        .catch((e) => this.handleError(e));
+        return new Promise ((resolve, reject) => {
+            this.deviceService.createDevice(name)
+            .then((device) => {
+                this.mDevices.push(device);
+                resolve(device);
+            })
+            .catch((e) => reject(e));
+        });
     }
     public renameDevice(name: string, device: Device): void {
         this.resetError();
