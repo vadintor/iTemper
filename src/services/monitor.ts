@@ -45,8 +45,11 @@ export class Monitor implements IMonitor {
         }
     }
 
+    public sensorDesc(desc: Descriptor): string {
+        return desc.SN + '/' + desc.port;
+    }
     public SubscribeSensorLog(desc: Descriptor, publish: (log: SensorLog) => void): void {
-        const sensorDesc = JSON.stringify(desc);
+        const sensorDesc = this.sensorDesc(desc);
         log.debug('Monitor.SubscribeSensorLog: sensorDesc=' + sensorDesc);
         this.subscribe<SensorLog>(sensorDesc, publish, JSON.parse );
     }
@@ -76,14 +79,17 @@ export class Monitor implements IMonitor {
 
         let messageSubscribers: Array<{publish: (message: T) => void,
                                 factory: (payload: string) => T }> = Monitor.allSubscribers.get(messageDesc);
-
+        log.debug('Monitor.subscribe');
         if (!messageSubscribers) {
+            log.debug('Monitor.subscribe: First subscriber of messageDesc=' + messageDesc);
             messageSubscribers = [messageSubscriber];
             Monitor.allSubscribers.set(messageDesc, messageSubscribers);
         } else {
+            log.debug('Monitor.subscribe: subscribers of messageDesc=' + messageSubscribers.length);
             const alreadySubscribed = messageSubscribers.find((s) => s.publish === publish && s.factory === factory);
 
             if (!alreadySubscribed) {
+                log.debug('Monitor.subscribe: Added a NEW subscriber of messageDesc=' + messageDesc);
                 messageSubscribers.push(messageSubscriber);
                 Monitor.allSubscribers.set(messageDesc, messageSubscribers);
             }
@@ -94,13 +100,14 @@ export class Monitor implements IMonitor {
         const serverMessage: ServerMessage = JSON.parse(msg.data);
 
         if (serverMessage.command === 'log') {
-            log.debug('Monitor.parse: serverMessage.data.desc=' + JSON.stringify(serverMessage.data.desc));
-            const subscribers = Monitor.allSubscribers.get(serverMessage.data.desc);
+            const desc = serverMessage.data.desc;
+            log.debug('Monitor.parse: serverMessage.data.desc=' + this.sensorDesc(desc));
+            const subscribers = Monitor.allSubscribers.get(this.sensorDesc(desc));
             if (subscribers) {
                 log.debug('Monitor.parse: publish message to subscribers=' + subscribers.length);
                 subscribers.forEach((subscriber: any) => {
-                    const message = subscriber.factory(serverMessage.data);
-                    subscriber.publish(message);
+                    // const message = subscriber.factory(serverMessage.data);
+                    subscriber.publish(serverMessage.data);
                 });
             } else {
                 log.debug('Monitor.parse: no subscribers for server message=' + serverMessage.data);

@@ -18,7 +18,7 @@
             <v-card-title class="headline">New location</v-card-title>
             <v-card-text>
                 <p>Create a NEW location.</p>
-                <v-form v-model="valid" ref="login">
+                <v-form v-model="valid" ref="location">
                     <v-text-field
                         label="Enter location name"
                         prepend-icon="mdi-radio-tower"
@@ -29,8 +29,9 @@
                         :loading="submitted"
                     ></v-text-field>
                     <v-file-input
-                        label="File input"
-                        filled
+                        label="Background image"
+                        show-size counter chips
+                        v-model="locationImage"
                         prepend-icon="mdi-camera"
                     ></v-file-input>
                     <v-color-picker
@@ -72,8 +73,10 @@ type ValidationFunction = (value: string) => BooleanOrString;
 
 @Component({})
 export default class NewLocationDialogue extends Vue {
+    public settings = Vue.$store.settings;
     public locationName: string = '';
     public locationKey: string = '';
+    public locationImage = null;
     public color: string = '#e39900';
     public swatches =  [
         ['#e39900', '#990ae3', '#990000'],
@@ -91,16 +94,29 @@ export default class NewLocationDialogue extends Vue {
           (v) => !!v || 'Enter name',
           (v) => /^[a-zA-Z0-9]+$/.test(v) && v.length >= 4 || 'Must be at least 4 characters, no white spaces or special characters allowed',
         ];
+
+    public red: string = '';
+    public green: string = '';
+    public blue: string = '';
     public store = Vue.$store;
     public locations = Vue.$store.locations;
-
+    public image(id: number): string {
+            return '/img/' + 'uterum' + '.jpg';
+    }
+    public rgba() {
+      return `RGBA(${this.red},${this.green},${this.blue},0.7)`;
+    }
+    public background() {
+      return `background: ${this.rgba}`;
+    }
     public submit() {
         if (!this.valid) {
             this.displayError('Locations form not valid');
             return;
         } else {
+            log.debug('Image file' + json(this.locationImage));
             this.submitted = true;
-            this.createDevice(this.locationName);
+            this.createLocation(this.locationName);
         }
     }
     public close() {
@@ -110,8 +126,8 @@ export default class NewLocationDialogue extends Vue {
     public error(): boolean {
         return this.errorMsg !== '';
     }
-    private createDevice(name: string) {
-        log.debug('new-device-dialogue.createDevice');
+    private createLocation(name: string) {
+        log.debug('new-device-dialogue.createLocation');
         this.submitted = true;
     }
     private reset(): void {
@@ -124,11 +140,6 @@ export default class NewLocationDialogue extends Vue {
     private setTimer() {
         const timeout = 1_250;
         setTimeout(() => {this.reset(); }, timeout);
-    }
-    private copy() {
-        if (!copyToClipboard('deviceKey')) {
-                this.displayError('Error: Cannot copy key to clipboard');
-        }
     }
 }
 

@@ -18,7 +18,7 @@
             <v-card-title class="headline">New device</v-card-title>
             <v-card-text>
                 <p>Create a NEW device.</p>
-                <v-form v-model="valid" ref="login">
+                <v-form v-model="valid" ref="device">
                     <v-text-field
                         label="Enter device name"
                         prepend-icon="mdi-radio-tower"
