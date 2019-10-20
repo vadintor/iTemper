@@ -1,4 +1,4 @@
-import axios, { Method, AxiosInstance } from 'axios';
+import axios, { Method, AxiosInstance, AxiosRequestConfig } from 'axios';
 
 import { iTemperAPI } from '@/config';
 import { json } from '@/helpers/';
@@ -9,7 +9,7 @@ export interface IApiService {
     register(email: string, password: string, confirmPassword: string): Promise<boolean>;
     login(email: string, password: string): Promise<boolean>;
     logout(): void;
-    request(method: Method, url: string, body?: any): Promise<any>;
+    request(method: Method, url: string, body?: any, config?: AxiosRequestConfig): Promise<any>;
 }
 
 export interface IError {
@@ -53,14 +53,30 @@ export class ApiService implements IApiService {
         this.isLoggedIn = false;
     }
 
-    public request(method: Method, url: string, body?: any): Promise<any> {
+    public request(method: Method, url: string, body?: any, config?: AxiosRequestConfig): Promise<any> {
         log.debug('ApiService.request: ' + method.toUpperCase() + ' ' + url);
         return new Promise<any> ((resolve, reject) => {
             if (!this.isLoggedIn) {
                     reject('User is not logged');
             }
+            let conf: AxiosRequestConfig;
             const Authorization = {Authorization: this.Authorization().value};
-            this.io.request({url, method, headers: Authorization, data: body})
+            if (config) {
+                conf = config;
+                conf.method = method;
+                conf.url = url;
+                if (conf.headers) {
+                    conf.headers.Authorization = this.Authorization().value;
+                } else {
+                    conf.headers = Authorization;
+                }
+                if (body) {
+                    conf.data = body;
+                }
+            } else {
+                conf = {url, method, headers: Authorization, data: body};
+            }
+            this.io.request(conf)
             .then ((response) => {
                     const data = response.data;
                     resolve(data);

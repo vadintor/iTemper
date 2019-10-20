@@ -1,5 +1,6 @@
 import { ApiService } from '@/services/api-service';
 import { DeviceService } from '@/services/device-service';
+import { LocationService } from '@/services/location-service';
 import { SensorService } from '@/services/sensor-service';
 
 import { Itemper } from '@/services/itemper';
@@ -13,10 +14,11 @@ import { User } from '@/store/user';
 const apiService = new ApiService();
 export const itemper = new Itemper({apiService,
     deviceService: new DeviceService(apiService),
+    locationService: new LocationService(apiService),
     sensorService: new SensorService(apiService)});
 
 export const devices = new Devices(itemper.deviceService);
-export const locations = new Locations();
+export const locations = new Locations(itemper.locationService);
 export const notice = new Notice();
 export const sensors = new Sensors(itemper.sensorService);
 export const settings = new Settings();

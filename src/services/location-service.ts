@@ -6,9 +6,9 @@ import { IApiService, Method } from '@/services/api-service';
 
 export interface ILocationService {
         getLocations(): Promise<Location[]>;
-        createLocation(location: Location): Promise<Location>;
-        updateLocation(location: Location): Promise<Location>;
-        deleteLocation(location: Location): Promise<Location>;
+        createLocation(form: FormData): Promise<Location>;
+        // updateLocation(location: Location): Promise<Location>;
+        // deleteLocation(location: Location): Promise<Location>;
 }
 
 export class LocationService implements ILocationService {
@@ -22,9 +22,12 @@ export class LocationService implements ILocationService {
         const method: Method = 'get';
         return this.api.request(method, this.path);
     }
-    public createLocation(location: Location): Promise<Location> {
+    public createLocation(form: FormData): Promise<Location> {
         const method: Method = 'post';
-        return this.api.request(method, this.path, location);
+        const config = { headers: {
+            'Content-Type': 'multipart/form-data',
+        }};
+        return this.api.request(method, this.path, form, config);
     }
     public updateLocation(location: Location): Promise<Location> {
         const path = this.path + '/' + location.id;

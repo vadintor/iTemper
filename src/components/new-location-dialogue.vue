@@ -73,10 +73,11 @@ type ValidationFunction = (value: string) => BooleanOrString;
 
 @Component({})
 export default class NewLocationDialogue extends Vue {
+
     public settings = Vue.$store.settings;
     public locationName: string = '';
     public locationKey: string = '';
-    public locationImage = null;
+    public locationImage: File = null;
     public color: string = '#e39900';
     public swatches =  [
         ['#e39900', '#990ae3', '#990000'],
@@ -100,6 +101,12 @@ export default class NewLocationDialogue extends Vue {
     public blue: string = '';
     public store = Vue.$store;
     public locations = Vue.$store.locations;
+
+    public data() {
+    return {
+        locationImage: null,
+    }
+    }
     public image(id: number): string {
             return '/img/' + 'uterum' + '.jpg';
     }
@@ -114,21 +121,28 @@ export default class NewLocationDialogue extends Vue {
             this.displayError('Locations form not valid');
             return;
         } else {
-            log.debug('Image file' + json(this.locationImage));
             this.submitted = true;
-            this.createLocation(this.locationName);
+            log.debug('Image file' + json(this.locationImage));
+            this.createLocation();
+            this.submitted = false;
         }
     }
     public close() {
         this.dialog = false;
+        this.submitted = false;
         this.locationName = '';
     }
     public error(): boolean {
         return this.errorMsg !== '';
     }
-    private createLocation(name: string) {
-        log.debug('new-device-dialogue.createLocation');
+    private createLocation() {
+        log.debug('new-location-dialogue.createLocation');
+        const form = new FormData();
+        form.append('name', this.locationName);
+        form.append('color', this.color);
+        form.append('file', this.locationImage);
         this.submitted = true;
+        this.locations.createLocation(form);
     }
     private reset(): void {
         this.errorMsg = '';
