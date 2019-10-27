@@ -21,3 +21,8 @@ export function copyToClipboard(id: string): boolean {
     }
     return true;
 }
+
+export function toTime(date: number): string {
+    return new Date(date).toLocaleTimeString();
+}
+

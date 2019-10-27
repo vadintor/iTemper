@@ -101,12 +101,10 @@ export class ApiService implements IApiService {
             } else {
                 message = error.response.data;
             }
-
-
         } else if (error.request) {
             log.debug(error.request);
-            message = 'Invalid request';
-            status = 97;
+            message = error.request.data;
+            status = error.request.status;
         } else {
             log.debug('request Error=' + error.message);
         }

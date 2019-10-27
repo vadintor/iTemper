@@ -3,7 +3,7 @@
     <v-app>
         <Toolbar></Toolbar>
         <v-content>
-            <v-container>
+            <v-container fluid>
                 <router-view transition='scale-transition' ></router-view>
             </v-container>
         </v-content>
@@ -17,7 +17,6 @@ import { Vue, Component } from 'vue-property-decorator';
 
 import { store } from '@/store/store';
 Vue.$store = store;
-import Home from '@/components/home.vue';
 import Login from '@/components/login.vue';
 import MyDevices from '@/components/mydevices.vue';
 import MyLocations from '@/components/mylocations.vue';
@@ -28,7 +27,6 @@ import Toolbar from '@/components/toolbar.vue';
 
 @Component( {components: {
         Toolbar,
-        Home,
         Login,
         Register,
         MyDevices,
@@ -42,6 +40,3 @@ export default class App extends Vue {
 }
 </script>
 
-<style>
-
-</style>

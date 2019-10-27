@@ -6,21 +6,22 @@ export class Locations {
     public mLocations: Location[] = [];
     public mError: string = '';
 
-    private loginService: ILocationService;
+    private locationService: ILocationService;
 
     constructor(loginService: ILocationService) {
-        this.loginService = loginService;
+        this.locationService = loginService;
     }
     public get all(): Location[] {
         return this.mLocations;
     }
-    public getLocation(): void {
+    public getLocations(): void {
+        log.debug('Locations.getLocations');
         this.resetError();
-        this.loginService.getLocations()
+        this.locationService.getLocations()
         .then((response: Location[]) => {
             response.forEach((location) => {
-                const deviceFound = this.mLocations.find((l) => l.id === location.id);
-                if (!deviceFound) {
+                const locationFound = this.mLocations.find((l) => l._id === location._id);
+                if (!locationFound) {
                     this.mLocations.push(location);
                 }
             });
@@ -30,12 +31,24 @@ export class Locations {
     public createLocation(form: FormData): Promise<Location> {
         this.resetError();
         return new Promise ((resolve, reject) => {
-            this.loginService.createLocation(form)
+            this.locationService.createLocation(form)
             .then((location: Location) => {
                 this.mLocations.push(location);
                 resolve(location);
             })
             .catch((e) => reject(e));
+        });
+    }
+
+    public updateLocation(form: FormData): Promise<Location> {
+        this.resetError();
+        return new Promise ((resolve, reject) => {
+            this.locationService.updateLocation(form)
+            .then((location: Location) => {
+                this.mLocations.push(location);
+                resolve(location);
+            })
+            .catch((e: any) => reject(e));
         });
     }
     private resetError() {

@@ -1,19 +1,4 @@
 <template>
-    <v-dialog v-model="dialog" persistent max-width="500">
-        <template v-slot:activator="{ on }">
-            <v-fab-transition>
-                <v-btn class="mx-2" 
-                    v-on="on"
-                    fab 
-                    absolute
-                    small
-                    color="#2591E9"
-                    bottom
-                    left>
-                    <v-icon>mdi-plus</v-icon>
-                </v-btn>
-            </v-fab-transition>
-        </template>
         <v-card>
             <v-img v-if="location.path.length > 0" :src="location.path"></v-img>
             <v-card-title class="headline">New location</v-card-title>
@@ -56,7 +41,6 @@
                 <v-btn text  @click="close">Close</v-btn>
             </v-card-actions>
         </v-card>
-    </v-dialog>
 </template>
 <script lang="ts">
 
@@ -72,22 +56,23 @@ import { log } from '@/services/logger';
 import {json, copyToClipboard } from '@/helpers';
 
 import { Location } from '@/models/location';
-interface FileSelection {
+
+type BooleanOrString = boolean | string;
+type ValidationFunction = (value: string) => BooleanOrString;
+interface FileProperties {
     name: string;
     size: number;
     type: string;
 }
-type BooleanOrString = boolean | string;
-type ValidationFunction = (value: string) => BooleanOrString;
 type FileValidationFunction = (value: any) => BooleanOrString;
 @Component({})
-export default class NewLocationDialogue extends Vue {
+export default class EditLocationDialogue extends Vue {
+    @Prop() public location!: Location;
 
     public settings = Vue.$store.settings;
     public locationName: string = '';
     public locationKey: string = '';
-    public locationImage: File = new File([''], '', {type: 'text/plain'});
-    public location: Location = new Location('', '#e39900' );
+    public locationImage: File = new File([''], '');
     public color: string = '#e39900';
     public swatches =  [
         ['#e39900', '#990ae3', '#990000'],
@@ -147,13 +132,29 @@ export default class NewLocationDialogue extends Vue {
         return this.errorMsg !== '';
     }
     private createLocation() {
-        log.debug('new-location-dialogue.createLocation');
+        log.debug('edit-location-card.createLocation');
         const form = new FormData();
         form.append('name', this.locationName);
         form.append('color', this.color);
         form.append('locationImage', this.locationImage);
         this.submitted = true;
         this.locations.createLocation(form)
+        .then((location) => {
+            this.location = location;
+        })
+        .catch((err) => {
+            this.displayError('error (' + err.status + '): ' + err.message);
+        });
+    }
+
+        private updateLocation() {
+        log.debug('edit-location-card.updateLocation');
+        const form = new FormData();
+        form.append('name', this.locationName);
+        form.append('color', this.color);
+        form.append('locationImage', this.locationImage);
+        this.submitted = true;
+        this.locations.updateLocation(form)
         .then((location) => {
             this.location = location;
         })

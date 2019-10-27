@@ -29,10 +29,12 @@ export class Sensors  {
     private firstTime: boolean = true;
 
     constructor(sensorService: ISensorService) {
-        log.debug('Sensor sensorservice' + (sensorService !== undefined));
+        log.debug('Sensor sensorService' + (sensorService !== undefined));
         this.sensorService = sensorService;
     }
-
+    public get all(): Sensor[] {
+        return this.mSensors;
+    }
     public getSensorsFrom(from: number) {
         this.sensorService.getSensorsFrom(from)
         .then((response: Sensor[]) => {
@@ -71,9 +73,7 @@ export class Sensors  {
     public find(desc: Descriptor): Sensor | undefined {
         return this.mSensors.find((sensor) => sensor.desc.SN === desc.SN && sensor.desc.port === desc.port);
     }
-    public get all(): Sensor[] {
-        return this.mSensors;
-    }
+
     public filterByDeviceID(deviceID: string): Sensor[] {
         return this.mSensors.filter((sensor) => sensor.deviceID === deviceID);
     }
@@ -104,14 +104,16 @@ export class Sensors  {
         this.mErrorMessage = '';
         this.mError = false;
     }
-
     public getSensorsLast24h() {
-        const self = this;
         const ms = 1000;
         const period = this.firstTime ? 24 * 60 * 60 * ms : store.settings.interval * ms ;
+        this.getSensorsLast(period);
+    }
+    public getSensorsLast(period: number) {
+        const self = this;
         this.sensorService.getSensorsFrom(Date.now() - period)
         .then ((response: Sensor[]) => {
-
+            log.debug('getSensorsLast response.length=' + response.length);
             if (this.firstTime ) {
                 this.firstTime = false;
             }

@@ -2,21 +2,34 @@ import { Position } from '@/models/position';
 import { Sensor } from './sensor';
 
 export class Location {
-    public id: string = '';
+    public mId: string = '';
     public mName: string = '';
     public mColor: string = '';
-    private mPosition: Position;
-    private mSensors: Sensor[] = [];
+    public mPath: string = '';
+//    private mPosition: Position;
+    public mSensors: Sensor[] = [];
 
-    constructor(name: string, position: Position) {
+    constructor(name: string, color: string) {
         this.mName = name;
-        this.mPosition = position;
+        this.mColor = color;
+    }
+    public get id(): string {
+        return this.mId;
+    }
+    public set id(value: string) {
+        this.mId = value;
+    }
+    public get _id(): string {
+        return this.mId;
+    }
+    public set _id(value: string) {
+        this.mId = value;
     }
     public get name(): string {
         return this.mName;
     }
-    public set name(name: string) {
-        this.mName = name;
+    public set name(value: string) {
+        this.mName = value;
     }
     public get color(): string {
         return this.mColor;
@@ -24,11 +37,21 @@ export class Location {
     public set color(value: string) {
         this.mColor = value;
     }
-    public get position(): Position {
-        return this.mPosition;
+    public get path(): string {
+        return this.mPath;
     }
-    public set position(position: Position) {
-        this.mPosition = position;
+    public set path(value: string) {
+        this.mPath = value;
+    }
+    // public get position(): Position {
+    //     return this.mPosition;
+    // }
+    // public set position(position: Position) {
+    //     this.mPosition = position;
+    // }
+
+    public get sensors(): Sensor[] {
+        return this.mSensors;
     }
     public addSensor(sensor: Sensor) {
         const existing = this.mSensors.find((s) => s.desc.SN === sensor.desc.SN && s.desc.port === sensor.desc.port);

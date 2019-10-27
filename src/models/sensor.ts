@@ -72,8 +72,8 @@ export class Sensor {
     public get samples(): Data[] {
         return this.mSamples;
     }
-    public lastValue(): string {
-
+    public get lastValue(): string {
+        log.debug('sensor.lastValue ' + this.name + ', #samples' + this.mSamples.length);
         if (this.hasSamples()) {
             return this.mSamples[0].value.toString();
         } else {
