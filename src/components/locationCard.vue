@@ -12,7 +12,7 @@
                         <v-card light v-show="editSensors">
                             <v-card-text transition="slide-y-transition">
                             <v-list>
-                            <v-list-item-group
+                            <v-list-item-group 
                                 v-model="value"
                                 max="2"
                                 multiple
@@ -30,7 +30,7 @@
                                 >
                                     <template v-slot:default="{ active, toggle }">
                                     <v-list-item-content>
-                                        <v-list-item-title >{{name(item)}}</v-list-item-title>
+                                        <v-list-item-title >{{sensorName(item)}}</v-list-item-title>
                                     </v-list-item-content>
 
                                     <v-list-item-action>
@@ -66,7 +66,7 @@
                                         :show-size="fileSize()>0"
                                         counter chips
                                         v-model="newImage"
-                                        prepend-icon="mdi-camera"
+                                        prepend-icon="fa-file-image"
                                     ></v-file-input>
                                 </v-form>
                             </v-card-text>
@@ -81,7 +81,7 @@
                             </v-card-actions>
                         </v-card>
                         <v-card light v-show="editColor">
-                            <card-text>
+                            <v-card-text>
                                 <v-color-picker
                                         v-model="location.color"
                                         hide-canvas
@@ -91,30 +91,31 @@
                                         light
                                         :swatches="swatches" 
                                         class="mx-auto"
+                                        :disabled="submitted"
                                 >
                                 </v-color-picker>
-                            </card-text>
+                            </v-card-text>
                             <v-card-actions>
-                                <v-btn class="ma-2" color="blue" text @click.native="editColor=!editColor">
+                                <v-btn :disabled="submitted" class="ma-2" color="blue" text @click.native="submitColor()">
                                     Spara
                                 </v-btn>
-                                <v-btn class="ma-2" color="orange" text @click.native="editColor=!editColor">
+                                <v-btn class="ma-2" color="orange" text @click.native="cancelEditColor()">
                                     Avbryt
                                 </v-btn>
                             </v-card-actions>
                         </v-card>
                         <div v-show="showConfiguration && !editFile && !editColor && !editSensors">
                             <v-btn  class="ma-2"  icon @click.native="editSensors=!editSensors">
-                                <v-icon x-large>mdi-leak</v-icon>
+                                <v-icon x-large>fa-biohazard</v-icon>
                             </v-btn>
                             <v-btn  class="ma-2"  icon @click.native="editFile=!editFile">
-                                <v-icon x-large>mdi-camera</v-icon>
+                                <v-icon x-large>fa-file-image</v-icon>
                             </v-btn>
-                            <v-btn class="ma-2"  icon @click.native="editColor=!editColor">
-                                <v-icon x-large>mdi-format-color-fill</v-icon>
+                            <v-btn class="ma-2"  icon @click.native="onEditColor()">
+                                <v-icon x-large>fa-fill</v-icon>
                             </v-btn>
                         </div>
-                        <SensorTable v-show="!showConfiguration" :sensors="value"></SensorTable>
+                        <SensorTable v-show="!editSensors" :sensors="value"></SensorTable>
 
                         </v-overlay>
                     </v-fade-transition>
@@ -124,24 +125,37 @@
         <v-card-title primary-title>
             <div>
                 <div v-if="!showConfiguration" class="headline">{{ location.name }}</div>
+                <v-text-field v-else-if="locationName===location.name"  class="headline"
+                            prepend-inner-icon="fa-edit"
+                            v-model="locationName"
+                            :rules="nameRules"
+                            dense
+                            required
+                            :disabled="submitted"
+                            :loading="submitted"
+                ></v-text-field>
                 <v-text-field v-else  class="headline"
-                            prepend-inner-icon="mdi-square-edit-outline"
-                            v-model="location.name"
+                            prepend-inner-icon="fa-edit"
+                            v-model="locationName"
                             :rules="nameRules"
                             dense
                             required
                             :loading="submitted"
+                            :disabled="submitted"
+                            append-icon="fa-check"
+                            append-outer-icon="fa-times"
+                            @click:append="submitName()"
+                            @click:append-outer="cancelEditName()"
                 ></v-text-field>
             </div>
         </v-card-title>
         <v-card-actions v-show="showConfiguration">
-                <v-btn text :disabled="showConfiguration && (editColor || editFile)" color="blue" @click.native="toggleConfiguration()">Spara</v-btn>
-                <v-btn text :disabled="showConfiguration && (editColor || editFile)" color="orange" @click.native="toggleConfiguration()">Avbryt</v-btn>
+                <v-btn text :disabled="showConfiguration && (submitted || editSensors || editColor || editFile)" color="orange" @click.native="toggleConfiguration()">Stäng</v-btn>
         </v-card-actions>
         
         <v-card-actions v-show="!showConfiguration">
             <div>
-                <v-btn text color="orange" @click.native="toggleConfiguration()">Ändra</v-btn>
+                <v-btn text :disabled="showConfiguration && (submitted || editSensors || editColor || editFile)" color="orange" @click.native="toggleConfiguration()">Ändra</v-btn>
             </div>
         </v-card-actions>
     </v-card>
@@ -159,13 +173,14 @@ import {Vue, Component, Watch, Prop} from 'vue-property-decorator';
 import { Sensor, SensorLog, Data } from '@/models/sensor';
 import { Location } from '@/models/location';
 
+import { Locations } from '@/store/locations';
 import { Settings } from '@/store/settings';
 import { Sensors } from '@/store/sensors';
 // import * as messages from '@/models/messages';
 // Services
 
 import { log } from '@/services/logger';
-
+import {json } from '@/helpers';
 
 import SensorTable from '@/components/sensorTable.vue';
 type BooleanOrString = boolean | string;
@@ -205,23 +220,37 @@ export default class LocationCard extends Vue {
     public state = Vue.$store;
     public settings: Settings = Vue.$store.settings;
     public sensors: Sensors = Vue.$store.sensors;
+    public locations: Locations =  Vue.$store.locations;
+
     public showConfiguration: boolean = false;
+    public editName: boolean = false;
     public editColor: boolean = false;
     public editFile: boolean = false;
     public fileFormValid: boolean = false;
     public editSensors: boolean = false;
-    public submitted: boolean = false;
 
-    public savedName: string = '';
-    public savedColor: string = '';
+    public locationName: string = '';
+    public locationColor: string = '';
     public newImage: File = new File([''], 'current');
+
+    public submitted: boolean = false;
+    public errorMsg = '';
+    public timeout: number = 2_000;
+
+    public toggleConfiguration() {
+        this.showConfiguration = !this.showConfiguration;
+        this.editName = this.showConfiguration;
+        if (this.showConfiguration) {
+            this.locationColor = this.location.color.slice();
+            this.locationName = this.location.name.slice();
+        }
+    }
 
     public fileSize(): number {
         return this.newImage.size;
     }
     public locationImage(): string {
         const path = iTemperAPI + this.location.path;
-        log.debug('locationCard locationImage path=' + path);
         return path;
     }
     public sensorNames() {
@@ -243,7 +272,89 @@ export default class LocationCard extends Vue {
         this.locationSensors();
     }
 
-    public toggle(e: any) {
+    public submitSensors() {
+        if (this.location.sensors === this.value) {
+            log.debug('locationCard.submitColor: no changes');
+            return;
+        } else {
+            log.debug('locationCard.submitColor: update overlay color');
+            this.submitted = true;
+            this.locations.updateColor(this.location.color, this.location)
+            .then((location) => {
+                this.submitted = false;
+                this.editColor = false;
+            })
+            .catch((err: any) => {
+                this.submitted = false;
+                this.displayError('error (' + err.status + '): ' + err.message);
+            });
+            }
+    }public submitFile() {
+        if (!this.fileFormValid) {
+            this.displayError('File form not valid');
+            return;
+        } else {
+            log.debug('locationCard.submitFile: Save file ' + json(this.newImage));
+            const form = new FormData();
+            form.append('locationImage', this.newImage);
+            this.submitted = true;
+            this.locations.updateFile(form, this.location)
+            .then((location) => {
+                this.submitted = false;
+            })
+            .catch((err: any) => {
+                this.submitted = false;
+                this.displayError('error (' + err.status + '): ' + err.message);
+            });
+        }
+    }
+    public submitName() {
+        if (this.location.name === this.locationName) {
+            log.debug('locationCard.submitName: no changes');
+            return;
+        } else {
+            log.debug('locationCard.submitName: update location name');
+            this.submitted = true;
+            this.locations.updateName(this.locationName, this.location)
+            .then((received) => {
+                this.submitted = false;
+            })
+            .catch((err) => {
+                this.submitted = false;
+                this.displayError('error (' + err.status + '): ' + err.message);
+            });
+        }
+    }
+    public submitColor() {
+        if (this.location.color === this.locationColor) {
+            log.debug('locationCard.submitColor: no changes');
+            return;
+        } else {
+            log.debug('locationCard.submitColor: update overlay color');
+            this.submitted = true;
+            this.locations.updateColor(this.location.color, this.location)
+            .then((location) => {
+                this.submitted = false;
+                this.editColor = false;
+            })
+            .catch((err: any) => {
+                this.submitted = false;
+                this.displayError('error (' + err.status + '): ' + err.message);
+            });
+            }
+    }
+    public cancelEditName() {
+            this.locationName = this.location.name.slice();
+    }
+    public onEditColor() {
+        this.editColor = true;
+        this.locationColor = this.location.color.slice();
+    }
+    public cancelEditColor() {
+            this.editColor = false;
+            this.location.color = this.locationColor.slice();
+    }
+     public toggle(e: any) {
         log.debug('toggle' + JSON.stringify(e));
         return false;
     }
@@ -253,18 +364,28 @@ export default class LocationCard extends Vue {
     public mounted() {
         log.debug('locationCard.mounted');
     }
-    public toggleConfiguration() {
-        this.showConfiguration = !this.showConfiguration;
-        // this.showMonitor = false;
-    }
 
     public toggleMonitor() {
         this.showConfiguration = false;
        // this.showMonitor = !this.showMonitor;
     }
 
-    public name(sensor: Sensor) {
+    public sensorName(sensor: Sensor) {
         return sensor.desc.SN + ', port: ' + sensor.desc.port;
+    }
+    public error(): boolean {
+        return this.errorMsg !== '';
+    }
+    private reset(): void {
+        this.errorMsg = '';
+    }
+    private displayError(msg: string) {
+        this.errorMsg = msg;
+        this.setTimer();
+    }
+    private setTimer() {
+        const timeout = 2_250;
+        setTimeout(() => {this.reset(); }, timeout);
     }
 }
 

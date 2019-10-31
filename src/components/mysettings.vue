@@ -10,7 +10,7 @@
                     </v-list-tile-sub-title>
                 </v-list-tile-content>
                 <v-list-tile-action>
-                    <v-icon :color="'teal'">mdi-check-circle</v-icon>
+                    <v-icon :color="'teal'">fa-check-circle</v-icon>
                 </v-list-tile-action>
             </v-list-tile>
             <v-list-tile @click="">
@@ -21,7 +21,7 @@
                     </v-list-tile-sub-title>
                 </v-list-tile-content>
                 <v-list-tile-action>
-                    <v-icon :color="'teal'">mdi-check-circle</v-icon>
+                    <v-icon :color="'teal'">fa-check-circle</v-icon>
                 </v-list-tile-action>
             </v-list-tile>
             <v-list-tile @click="">
@@ -32,7 +32,7 @@
                     </v-list-tile-sub-title>
                 </v-list-tile-content>
                 <v-list-tile-action>
-                    <v-icon :color="'teal'">mdi-check-circle</v-icon>
+                    <v-icon :color="'teal'">fa-check-circle</v-icon>
                 </v-list-tile-action>
             </v-list-tile>
             <v-list-tile@click="">
@@ -43,7 +43,7 @@
                     </v-list-tile-sub-title>
                 </v-list-tile-content>
                 <v-list-tile-action>
-                    <v-icon :color="'teal'">mdi-check-circle</v-icon>
+                    <v-icon :color="'teal'">fa-check-circle</v-icon>
                 </v-list-tile-action>
             </v-list-tile>
             <v-list-tile@click="">
@@ -54,7 +54,7 @@
                     </v-list-tile-sub-title>
                 </v-list-tile-content>
                 <v-list-tile-action>
-                    <v-icon :color="'teal'">mdi-check-circle</v-icon>
+                    <v-icon :color="'teal'">fa-check-circle</v-icon>
                 </v-list-tile-action>
             </v-list-tile>                           
     </v-list>
@@ -68,7 +68,7 @@ import { Vue, Component } from 'vue-property-decorator';
 
 import { log } from '@/services/logger';
 
-
+import { Category} from '@/models/sensor';
 
 // export interface RootState {
 //     settings: Settings.GlobalSettings;
@@ -81,7 +81,7 @@ export default class MySettings extends Vue {
     public state = Vue.$store;
 
     public unitSymbol(): string {
-        return this.state.settings.unitSymbol;
+        return this.state.settings.unit(Category.Temperature);
     }
     public limit(): number {
         return this.state.settings.limit;

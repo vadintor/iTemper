@@ -13,12 +13,6 @@ export class Location {
         this.mName = name;
         this.mColor = color;
     }
-    public get id(): string {
-        return this.mId;
-    }
-    public set id(value: string) {
-        this.mId = value;
-    }
     public get _id(): string {
         return this.mId;
     }

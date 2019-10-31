@@ -36,8 +36,8 @@ export class SensorService implements ISensorService {
                 return new Promise<Sensor[]> ((resolve, reject) => {
                         this.api.request(method, path)
                         .then ((response) => {
-                                log.debug('SensorService.getSensors: axios - response sensors=' + json(response));
                                 const data: Sensor[] = response;
+                                log.debug('SensorService.getSensors: axios - sensors=' + json(data));
                                 resolve(data);
                         });
                 });

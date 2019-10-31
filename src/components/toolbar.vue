@@ -33,7 +33,7 @@
                 color="#2591E9"
                 class="signlog" 
                 close>
-                    <v-icon >mdi-account-circle</v-icon>
+                    <v-icon >fa-user</v-icon>
                     {{user.credentials.mEmail}}
             </v-chip>
         </v-app-bar>
@@ -77,10 +77,10 @@ export default class Toolbar extends Vue {
     public showNewLocationDialogue: boolean = true;
 
     public menuItems = [
-            { action: 'mdi-home', title: 'Platser',  color: 'blue-grey darken-2', route: 'locations' },
-            { action: 'mdi-radio-tower', title: 'Enheter',  color: 'blue-grey darken-2', route: 'devices' },
-            { action: 'mdi-settings', title: 'Inställningar', color: 'blue-grey darken-2', route: 'settings' },
-            { action: 'mdi-logout', title: 'Logout', color: 'blue darken-2', route: 'login'},
+            { action: 'fa-home', title: 'Platser',  color: 'blue-grey darken-2', route: 'locations' },
+            { action: 'fa-broadcast-tower', title: 'Enheter',  color: 'blue-grey darken-2', route: 'devices' },
+            { action: 'fa-cog', title: 'Inställningar', color: 'blue-grey darken-2', route: 'settings' },
+            { action: 'fa-sign-out-alt', title: 'Logout', color: 'blue darken-2', route: 'login'},
       ];
     public name() {
         log.debug('Toolbar.name()' );

@@ -1,3 +1,6 @@
+import { Category } from '@/models/sensor';
+
+import { log } from '@/services/logger';
 export class Settings {
     private mResolution: number = 1;
     private mUnitSymbol: string = '°C';
@@ -13,11 +16,11 @@ export class Settings {
         this.mResolution = value;
     }
 
-    get unitSymbol(): string {
-        return this.mUnitSymbol;
+    public unit(category: Category): string {
+        return '°C';
     }
 
-    set unitSymbol(value: string) {
+    set setUnit(value: string) {
         this.mUnitSymbol = value;
     }
     get limit(): number {

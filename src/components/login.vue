@@ -8,7 +8,7 @@
             <v-form v-model="valid" ref="login">
                 <v-text-field
                     label="E-mail"
-                    prepend-icon="mdi-email"
+                    prepend-icon="fa-envelope"
                     v-model="cred.email"
                     :rules="emailRules"
                     required
@@ -18,7 +18,7 @@
                 <v-text-field
                     label="Password"
                     :type="showPassword ? 'text' : 'password'"
-                    prepend-icon="mdi-lock"
+                    prepend-icon="fa-lock"
                     @click="showPassword = !showPassword"
                     v-model="cred.password"
                     :rules="passwordRules"

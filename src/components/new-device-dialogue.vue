@@ -10,7 +10,7 @@
                     color="#2591E9"
                     bottom
                     left>
-                    <v-icon>mdi-plus</v-icon>
+                    <v-icon>fa-plus</v-icon>
                 </v-btn>
             </v-fab-transition>
         </template>
@@ -21,7 +21,7 @@
                 <v-form v-model="valid" ref="device">
                     <v-text-field
                         label="Enter device name"
-                        prepend-icon="mdi-radio-tower"
+                        prepend-icon="fa-broadcast-tower"
                         v-model="deviceName"
                         :rules="nameRules"
                         required
@@ -34,14 +34,14 @@
                         <span   class="d-inline-block text-truncate" 
                                 style="max-width: 400px;">
                         <v-btn text icon @click="copy">
-                            <v-icon >mdi-content-copy</v-icon>
+                            <v-icon >fa-clone</v-icon>
                         </v-btn>
                         <span id="deviceKey">{{ deviceKey }}</span>
                         </span>
 
                     </p>
                     <p class="font-weight-medium"><span>Copy the shared access key by clicking on the icon</span>
-                    <v-icon >mdi-content-copy</v-icon><span>above and store it securily. iTemper does not store the key for security reasons.</span></p>
+                    <v-icon >fa-clone</v-icon><span>above and store it securily. iTemper does not store the key for security reasons.</span></p>
                     </div>
                 </v-form>
             </v-card-text>

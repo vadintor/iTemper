@@ -33,7 +33,7 @@
                 <v-text-field
                     label="Password"
                     :type="showPassword ? 'text' : 'password'"
-                    prepend-icon="mdi-lock"
+                    prepend-icon="fa-lock"
                     @click="showPassword = !showPassword"
                     v-model="cred.password"
                     :rules="passwordRules"
@@ -43,7 +43,7 @@
                 <v-text-field
                     label="Confirm password"
                     :type="showPassword ? 'text' : 'password'"
-                    prepend-icon="mdi-lock"
+                    prepend-icon="fa-lock"
                     @click="showPassword = !showPassword"
                     v-model="cred.confirmPassword"
                     :rules="confirmPasswordRules"

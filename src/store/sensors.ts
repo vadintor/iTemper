@@ -22,7 +22,7 @@ import { store } from '@/store/store';
 import { log } from '@/services/logger';
 
 export class Sensors  {
-    private mSensors: Sensor[] = [];
+    public mSensors: Sensor[] = [];
     private sensorService: ISensorService;
     private mError: boolean = false;
     private mErrorMessage: string = '';

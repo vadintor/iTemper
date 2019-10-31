@@ -10,7 +10,7 @@
                     color="#2591E9"
                     bottom
                     left>
-                    <v-icon>mdi-plus</v-icon>
+                    <v-icon>fa-plus</v-icon>
                 </v-btn>
             </v-fab-transition>
         </template>
@@ -22,7 +22,7 @@
                 <v-form v-model="valid" ref="location">
                     <v-text-field
                         label="Enter location name"
-                        prepend-icon="mdi-radio-tower"
+                        prepend-icon="fa-broadcast-tower"
                         v-model="locationName"
                         :rules="nameRules"
                         required
@@ -35,7 +35,7 @@
                         accept="image/png, image/jpeg"
                         show-size counter chips
                         v-model="locationImage"
-                        prepend-icon="mdi-camera"
+                        prepend-icon="fa-image"
                     ></v-file-input>
                     <v-color-picker
                         v-model="color"

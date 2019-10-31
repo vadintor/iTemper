@@ -14,19 +14,19 @@
 //     port: 7,
 // },
 // },
-import {log} from '@/services/logger';
-export interface Data {
-    value: number;
-    date: number;
-}
+import { log } from '@/services/logger';
 
 export enum Category {
     Temperature,
 }
 
+export interface Data {
+    value: number;
+    date: number;
+}
 export interface Attributes {
     model: string;
-    category: string;
+    category: Category;
     accuracy: number;
     resolution: number;
     maxSampleRate: number;
@@ -41,14 +41,22 @@ export interface SensorLog {
     samples: Data[];
 }
 export class Sensor {
+    public mId: string = '';
     public mDeviceID: string = '';
-    public mDesc: Descriptor;
-    public mAttr: Attributes;
-    public mSamples: Data[] = [];
+    public mDesc: Descriptor = {SN: '', port: 0};
+    public mAttr: Attributes = {model: '',
+                            category: Category.Temperature, accuracy: 0, resolution: 0, maxSampleRate: 0};
+    public samples: Data[] = [];
 
-    constructor(desc: Descriptor, attr: Attributes) {
+    constructor(desc: Descriptor, attr: Attributes, samples: Data[] = []) {
        this.mDesc = desc;
        this.mAttr = attr;
+    }
+    public get _id(): string {
+        return this.mId;
+    }
+    public set _id(value: string) {
+        this.mId = value;
     }
     public get deviceID(): string {
         return this.mDeviceID;
@@ -69,22 +77,18 @@ export class Sensor {
     //     this.mAttr = attr;
     // }
 
-    public get samples(): Data[] {
-        return this.mSamples;
-    }
+
     public get lastValue(): string {
-        log.debug('sensor.lastValue ' + this.name + ', #samples' + this.mSamples.length);
         if (this.hasSamples()) {
-            return this.mSamples[0].value.toString();
+            return this.samples[this.samples.length - 1].value.toString();
         } else {
             return '-';
         }
     }
 
     public get lastTime(): string {
-        log.debug('lastValue');
         if (this.hasSamples()) {
-            return new Date(this.mSamples[0].date).toLocaleTimeString();
+            return new Date(this.samples[this.samples.length - 1].date).toLocaleTimeString();
         } else {
             return '-';
         }
@@ -93,7 +97,7 @@ export class Sensor {
         log.debug('sensor.name');
         return this.mDesc.SN + '/' + this.mDesc.port;
     }
-    public get category(): string {
+    public get category(): Category {
         return this.mAttr.category;
     }
     public get model(): string {
@@ -109,11 +113,11 @@ export class Sensor {
         return this.mAttr.maxSampleRate;
     }
     public hasSamples(): boolean {
-        return this.mSamples.length > 0;
+        return this.samples.length > 0;
     }
 
     public get lastSample(): Data {
-        return this.mSamples[this.mSamples.length];
+        return this.samples[this.samples.length];
     }
 
     // public set samples(samples: Data[]) {

@@ -18,7 +18,7 @@ import {Vue, Component, Watch, Prop} from 'vue-property-decorator';
 
 // Models
 // import * as locations from '@/models/locations'
-import { Sensor, SensorLog, Data } from '@/models/sensor';
+import { Sensor, SensorLog, Data, Category } from '@/models/sensor';
 
 
 import { Settings } from '@/store/settings';
@@ -118,7 +118,7 @@ export default class HistoryChart extends Vue {
         return data;
     }
     public unitSymbol(): string {
-        return this.settings.unitSymbol;
+        return this.settings.unit(Category.Temperature);
     }
     public limit(): number {
         return this.settings.limit;

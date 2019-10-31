@@ -21,7 +21,7 @@ import {log} from '@/services/logger';
 export default class Notice extends Vue {
       public sticky: boolean = false;
       public singleLine: boolean = true;
-      public icon: string = 'mdi-message';
+      public icon: string = 'fa-comment';
       public elevation: number = 4;
       public notice = Vue.$store.notice;
 
