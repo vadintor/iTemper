@@ -1,5 +1,5 @@
 import { Position } from '@/models/position';
-import { Sensor } from './sensor';
+import { Descriptor, Sensor } from './sensor';
 
 export class Location {
     public mId: string = '';
@@ -8,6 +8,7 @@ export class Location {
     public mPath: string = '';
 //    private mPosition: Position;
     public mSensors: Sensor[] = [];
+    public mSensorDesc: Descriptor[] = [];
 
     constructor(name: string, color: string) {
         this.mName = name;
@@ -18,6 +19,12 @@ export class Location {
     }
     public set _id(value: string) {
         this.mId = value;
+    }
+    public get sensorDesc(): Descriptor[] {
+        return this.mSensorDesc;
+    }
+    public set sensorDesc(value: Descriptor[]) {
+        this.mSensorDesc = value;
     }
     public get name(): string {
         return this.mName;
@@ -47,6 +54,10 @@ export class Location {
     public get sensors(): Sensor[] {
         return this.mSensors;
     }
+
+    public set sensors(sensors: Sensor[]) {
+        this.mSensors = sensors;
+    }
     public addSensor(sensor: Sensor) {
         const existing = this.mSensors.find((s) => s.desc.SN === sensor.desc.SN && s.desc.port === sensor.desc.port);
         if (!existing) {
@@ -59,7 +70,6 @@ export class Location {
             this.mSensors.splice(index, 1);
         }
     }
-
     public removeSensorIndex(index: number) {
         if (0 <= index && index <  this.mSensors.length) {
             this.mSensors.splice(index, 1);

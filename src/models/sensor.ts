@@ -17,7 +17,7 @@
 import { log } from '@/services/logger';
 
 export enum Category {
-    Temperature,
+    Temperature, Humidity,
 }
 
 export interface Data {

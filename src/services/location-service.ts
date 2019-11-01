@@ -1,4 +1,6 @@
 import { Location } from '@/models/location';
+import { Descriptor, Sensor } from '@/models/sensor';
+
 
 import {json} from '@/helpers';
 import { log } from '@/services/logger';
@@ -10,8 +12,9 @@ export interface ILocationService {
         updateFile(form: FormData, location: Location): Promise<Location>;
         updateName(newName: string, location: Location): Promise<Location>;
         updateColor(newColor: string, location: Location): Promise<Location>;
+        updateSensors(newSensors: Sensor[], location: Location): Promise<Location>;
         // updateLocation(location: Location): Promise<Location>;
-        // deleteLocation(location: Location): Promise<Location>;
+        deleteLocation(location: Location): Promise<Location>;
 }
 
 export class LocationService implements ILocationService {
@@ -50,6 +53,16 @@ export class LocationService implements ILocationService {
         const path = this.path + '/' + location._id + '/color';
         const method: Method = 'put';
         const body = { color: newColor };
+        return this.api.request(method, path, body);
+    }
+    public updateSensors(newSensors: Sensor[], location: Location): Promise<Location> {
+        const path = this.path + '/' + location._id + '/sensors';
+        const method: Method = 'put';
+        const sensorDesc: Descriptor[] = [];
+        for (const sensor of newSensors) {
+            sensorDesc.push(sensor.desc);
+        }
+        const body = { sensorDesc };
         return this.api.request(method, path, body);
     }
     public deleteLocation(location: Location): Promise<Location> {

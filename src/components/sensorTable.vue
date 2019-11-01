@@ -53,8 +53,11 @@ export default class SensorTable extends Vue {
         }
     }
     public icon(sensor: Sensor): string {
-        switch(sensor.attr.category) {
+        switch (sensor.attr.category) {
             case Category.Temperature: {
+                return 'fa-thermometer-half';
+            }
+            case Category.Humidity: {
                 return 'fa-thermometer-half';
             }
             default: {
