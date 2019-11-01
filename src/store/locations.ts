@@ -67,9 +67,9 @@ export class Locations {
                 if (!thisLocation) {
                     reject({status: 96, message: 'location id not available'});
                 } else {
-                    location = received;
+                    location.path = received.path;
+                    resolve(location);
                 }
-                resolve(location);
             })
             .catch((e: any) => reject(e));
         });

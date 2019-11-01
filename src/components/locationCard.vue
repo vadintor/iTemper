@@ -72,10 +72,10 @@
                             </v-card-text>
 
                             <v-card-actions>
-                                <v-btn class="ma-2" :disabled="!fileFormValid" color="blue" text @click.native="editFile=!editFile">
+                                <v-btn class="ma-2" :disabled="!fileFormValid" color="blue" text @click.native="submitFile()">
                                     Spara
                                 </v-btn>
-                                 <v-btn class="ma-2" color="orange" text @click.native="editFile=!editFile">
+                                 <v-btn class="ma-2" color="orange" text @click.native="cancelEditFile()">
                                     Avbryt
                                 </v-btn>                               
                             </v-card-actions>
@@ -108,7 +108,7 @@
                             <v-btn  class="ma-2"  icon @click.native="onEditSensors()">
                                 <v-icon x-large>fa-biohazard</v-icon>
                             </v-btn>
-                            <v-btn  class="ma-2"  icon @click.native="editFile=!editFile">
+                            <v-btn  class="ma-2"  icon @click.native="onEditFile()">
                                 <v-icon x-large>fa-file-image</v-icon>
                             </v-btn>
                             <v-btn class="ma-2"  icon @click.native="onEditColor()">
@@ -242,7 +242,7 @@ export default class LocationCard extends Vue {
 
     public mySensors(): Sensor[] {
         for (const desc of this.location.sensorDesc) {
-            const mapped = this.location.sensors.find((s) => s.desc.SN === desc.SN && s.desc.port === desc.port)
+            const mapped = this.location.sensors.find((s) => s.desc.SN === desc.SN && s.desc.port === desc.port);
             if (!mapped) {
                 const sensor =  this.sensors.find(desc);
                 if (sensor) {
@@ -285,7 +285,12 @@ export default class LocationCard extends Vue {
         log.debug('locationCard.updateLocationSensors ' + JSON.stringify(e));
         this.locationSensors();
     }
-
+    public onEditSensors() {
+        this.editSensors = true;
+    }
+    public cancelEditSensors() {
+            this.editSensors = false;
+    }
     public submitSensors() {
         log.debug('locationCard.submitSensors: update sensors');
         this.submitted = true;
@@ -299,6 +304,12 @@ export default class LocationCard extends Vue {
             this.displayError('error (' + err.status + '): ' + err.message);
         });
     }
+    public onEditFile() {
+        this.editFile = true;
+    }
+    public cancelEditFile() {
+        this.editFile = false;
+    }
     public submitFile() {
         if (!this.fileFormValid) {
             this.displayError('File form not valid');
@@ -311,12 +322,18 @@ export default class LocationCard extends Vue {
             this.locations.updateFile(form, this.location)
             .then((location) => {
                 this.submitted = false;
+                this.editFile = false;
+                this.location.path = location.path;
+                this.newImage = new File([''], 'current');
             })
             .catch((err: any) => {
                 this.submitted = false;
                 this.displayError('error (' + err.status + '): ' + err.message);
             });
         }
+    }
+    public cancelEditName() {
+            this.locationName = this.location.name.slice();
     }
     public submitName() {
         if (this.location.name === this.locationName) {
@@ -352,15 +369,6 @@ export default class LocationCard extends Vue {
                 this.displayError('error (' + err.status + '): ' + err.message);
             });
             }
-    }
-    public cancelEditName() {
-            this.locationName = this.location.name.slice();
-    }
-    public onEditSensors() {
-        this.editSensors = true;
-    }
-    public cancelEditSensors() {
-            this.editSensors = false;
     }
     public onEditColor() {
         this.editColor = true;
