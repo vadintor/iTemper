@@ -32,6 +32,12 @@ export class Sensors  {
         log.debug('Sensor sensorService' + (sensorService !== undefined));
         this.sensorService = sensorService;
     }
+    public reset(): void {
+        this.mError = false;
+        this.mSensors = [];
+        this.mErrorMessage = '';
+        this.firstTime = true;
+    }
     public get all(): Sensor[] {
         return this.mSensors;
     }

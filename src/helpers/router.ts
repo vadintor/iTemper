@@ -9,8 +9,6 @@ import MySensors from '@/components/mysensors.vue';
 import MySettings from '@/components/mysettings.vue';
 import Register from '@/components/register.vue';
 
-import * as itemper from '@/services/itemper';
-
 import {log} from '@/services/logger';
 
 import {json} from '@/helpers';

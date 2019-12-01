@@ -1,6 +1,6 @@
 import { Location } from '@/models/location';
 import { Sensor } from '@/models/sensor';
-import { sensors } from '@/store/store';
+import { store } from '@/store/store';
 import { ILocationService } from '@/services/location-service';
 
 import { log } from '@/services/logger';
@@ -12,6 +12,10 @@ export class Locations {
 
     constructor(loginService: ILocationService) {
         this.locationService = loginService;
+    }
+    public reset(): void {
+        this.mError = '';
+        this.mLocations = [];
     }
     public get all(): Location[] {
         return this.mLocations;
@@ -116,9 +120,9 @@ export class Locations {
                 if (!thisLocation) {
                     reject({status: 96, message: 'location id not available'});
                 } else {
-                    location.sensorDesc = received.sensorDesc;
-                    this.mapSensorDesc(location);
-                    resolve(location);
+                    thisLocation.sensorDesc = received.sensorDesc;
+                    this.mapSensorDesc(thisLocation);
+                    resolve(thisLocation);
                 }
 
             })
@@ -133,7 +137,7 @@ export class Locations {
     private mapSensorDesc(location: Location) {
         location.sensors = [];
         for (const desc of location.sensorDesc) {
-            const sensor = sensors.find(desc);
+            const sensor = store.sensors.find(desc);
             if (sensor) {
                 location.addSensor(sensor);
             }

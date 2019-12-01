@@ -9,114 +9,119 @@
                             :color="location.color"
                             opacity="0.8"
                         >
-                        <v-card light v-show="editSensors">
-                            <v-card-text transition="slide-y-transition">
-                            <v-list>
-                            <v-list-item-group 
-                                v-model="value"
-                                max="5"
-                                multiple
-                            >
-                                <template v-for="(item, i) in sensors.all">
-                                <v-divider
-                                    v-if="!item"
-                                    :key="`divider-${i}`"
-                                ></v-divider>
-                                <v-list-item
-                                    v-else
-                                    :key="`item-${i}`"
-                                    :value="item"
-                                    active-class="deep-purple--text text--accent-4"
-                                >
-                                    <template v-slot:default="{ active, toggle }">
-                                    <v-list-item-content>
-                                        <v-list-item-title >{{sensorName(item)}}</v-list-item-title>
-                                    </v-list-item-content>
+                            <v-container fluid>
+                                <v-row>
+                                    <v-col align-self="start">
+                                        <v-card light v-show="editSensors">
+                                            <v-card-text transition="slide-y-transition">
+                                            <v-list>
+                                            <v-list-item-group 
+                                                v-model="value"
+                                                max="5"
+                                                multiple
+                                            >
+                                                <template v-for="(item, i) in sensors.all">
+                                                <v-divider
+                                                    v-if="!item"
+                                                    :key="`divider-${i}`"
+                                                ></v-divider>
+                                                <v-list-item
+                                                    v-else
+                                                    :key="`item-${i}`"
+                                                    :value="item"
+                                                    active-class="deep-purple--text text--accent-4"
+                                                >
+                                                    <template v-slot:default="{ active, toggle }">
+                                                    <v-list-item-content>
+                                                        <v-list-item-title >{{sensorName(item)}}</v-list-item-title>
+                                                    </v-list-item-content>
 
-                                    <v-list-item-action>
-                                        <v-checkbox
-                                        :input-value="active"
-                                        :true-value="item"
-                                        color="deep-purple accent-4"
-                                        @click="toggle"
-                                        ></v-checkbox>
-                                    </v-list-item-action>
-                                    </template>
-                                </v-list-item>
-                                </template>
-                            </v-list-item-group>
-                            </v-list>
-                            </v-card-text>
-                            <v-card-actions>
-                                <v-btn class="ma-2" color="blue" text @click.native="submitSensors()">
-                                    Spara
-                                </v-btn>
-                                 <v-btn class="ma-2" color="orange" text @click.native="cancelEditSensors()">
-                                    Avbryt
-                                </v-btn>                               
-                            </v-card-actions>
-                        </v-card>
-                        <v-card light v-show="editFile">
-                            <v-card-text>
-                                <v-form v-model="fileFormValid" ref="locations">
-                                    <v-file-input
-                                        label="Bakgrundbild"
-                                        :rules="Filerules"
-                                        accept="image/png, image/jpeg"
-                                        :show-size="fileSize()>0"
-                                        counter chips
-                                        v-model="newImage"
-                                        prepend-icon="fa-file-image"
-                                    ></v-file-input>
-                                </v-form>
-                            </v-card-text>
+                                                    <v-list-item-action>
+                                                        <v-checkbox
+                                                        :input-value="active"
+                                                        :true-value="item"
+                                                        color="deep-purple accent-4"
+                                                        @click="toggle"
+                                                        ></v-checkbox>
+                                                    </v-list-item-action>
+                                                    </template>
+                                                </v-list-item>
+                                                </template>
+                                            </v-list-item-group>
+                                            </v-list>
+                                            </v-card-text>
+                                            <v-card-actions>
+                                                <v-btn class="ma-2" color="blue" text @click.native="submitSensors()">
+                                                    Spara
+                                                </v-btn>
+                                                <v-btn class="ma-2" color="orange" text @click.native="cancelEditSensors()">
+                                                    Avbryt
+                                                </v-btn>                               
+                                            </v-card-actions>
+                                        </v-card>
+                                        <v-card light v-show="editFile">
+                                            <v-card-text>
+                                                <v-form v-model="fileFormValid" ref="locations">
+                                                    <v-file-input
+                                                        label="Bakgrundbild"
+                                                        :rules="Filerules"
+                                                        accept="image/png, image/jpeg"
+                                                        :show-size="fileSize()>0"
+                                                        counter chips
+                                                        v-model="newImage"
+                                                        prepend-icon="fa-file-image"
+                                                    ></v-file-input>
+                                                </v-form>
+                                            </v-card-text>
 
-                            <v-card-actions>
-                                <v-btn class="ma-2" :disabled="!fileFormValid" color="blue" text @click.native="submitFile()">
-                                    Spara
-                                </v-btn>
-                                 <v-btn class="ma-2" color="orange" text @click.native="cancelEditFile()">
-                                    Avbryt
-                                </v-btn>                               
-                            </v-card-actions>
-                        </v-card>
-                        <v-card light v-show="editColor">
-                            <v-card-text>
-                                <v-color-picker
-                                        v-model="location.color"
-                                        hide-canvas
-                                        hide-inputs
-                                        hide-mode-switch
-                                        show-swatches
-                                        light
-                                        :swatches="swatches" 
-                                        class="mx-auto"
-                                        :disabled="submitted"
-                                >
-                                </v-color-picker>
-                            </v-card-text>
-                            <v-card-actions>
-                                <v-btn :disabled="submitted" class="ma-2" color="blue" text @click.native="submitColor()">
-                                    Spara
-                                </v-btn>
-                                <v-btn class="ma-2" color="orange" text @click.native="cancelEditColor()">
-                                    Avbryt
-                                </v-btn>
-                            </v-card-actions>
-                        </v-card>
-                        <div v-show="showConfiguration && !editFile && !editColor && !editSensors">
-                            <v-btn  class="ma-2"  icon @click.native="onEditSensors()">
-                                <v-icon x-large>fa-biohazard</v-icon>
-                            </v-btn>
-                            <v-btn  class="ma-2"  icon @click.native="onEditFile()">
-                                <v-icon x-large>fa-file-image</v-icon>
-                            </v-btn>
-                            <v-btn class="ma-2"  icon @click.native="onEditColor()">
-                                <v-icon x-large>fa-fill</v-icon>
-                            </v-btn>
-                        </div>
-                        <SensorTable v-show="!editSensors" :sensors="mySensors()"></SensorTable>
-
+                                            <v-card-actions>
+                                                <v-btn class="ma-2" :disabled="!fileFormValid" color="blue" text @click.native="submitFile()">
+                                                    Spara
+                                                </v-btn>
+                                                <v-btn class="ma-2" color="orange" text @click.native="cancelEditFile()">
+                                                    Avbryt
+                                                </v-btn>                               
+                                            </v-card-actions>
+                                        </v-card>
+                                        <v-card light v-show="editColor">
+                                            <v-card-text>
+                                                <v-color-picker
+                                                        v-model="location.color"
+                                                        hide-canvas
+                                                        hide-inputs
+                                                        hide-mode-switch
+                                                        show-swatches
+                                                        light
+                                                        :swatches="swatches" 
+                                                        class="mx-auto"
+                                                        :disabled="submitted"
+                                                >
+                                                </v-color-picker>
+                                            </v-card-text>
+                                            <v-card-actions>
+                                                <v-btn :disabled="submitted" class="ma-2" color="blue" text @click.native="submitColor()">
+                                                    Spara
+                                                </v-btn>
+                                                <v-btn class="ma-2" color="orange" text @click.native="cancelEditColor()">
+                                                    Avbryt
+                                                </v-btn>
+                                            </v-card-actions>
+                                        </v-card>
+                                        <div v-show="showConfiguration && !editFile && !editColor && !editSensors">
+                                            <v-btn  class="ma-2"  icon @click.native="onEditSensors()">
+                                                <v-icon x-large>fa-biohazard</v-icon>
+                                            </v-btn>
+                                            <v-btn  class="ma-2"  icon @click.native="onEditFile()">
+                                                <v-icon x-large>fa-file-image</v-icon>
+                                            </v-btn>
+                                            <v-btn class="ma-2"  icon @click.native="onEditColor()">
+                                                <v-icon x-large>fa-fill</v-icon>
+                                            </v-btn>
+                                        </div>
+                                        <SensorTable v-show="!editSensors" :sensors="mySensors()"></SensorTable>
+                                    </v-col>
+                                </v-row>
+                            </v-container>
                         </v-overlay>
                     </v-fade-transition>
             </v-img>
@@ -125,15 +130,14 @@
         <v-card-title primary-title>
             <div>
                 <div v-if="!showConfiguration" class="headline">{{ location.name }}</div>
-                <v-text-field v-else-if="locationName===location.name"  class="headline"
+                <v-text-field v-else-if="!editName"  class="headline"
                             prepend-inner-icon="fa-edit"
                             v-model="locationName"
                             :rules="nameRules"
                             dense
                             required
-                            :disabled="submitted"
-                            :loading="submitted"
-                ></v-text-field>
+                            @focus="onEditName()"
+                ></v-text-field>                
                 <v-text-field v-else  class="headline"
                             prepend-inner-icon="fa-edit"
                             v-model="locationName"
@@ -141,7 +145,6 @@
                             dense
                             required
                             :loading="submitted"
-                            :disabled="submitted"
                             append-icon="fa-check"
                             append-outer-icon="fa-times"
                             @click:append="submitName()"
@@ -149,13 +152,12 @@
                 ></v-text-field>
             </div>
         </v-card-title>
-        <v-card-actions v-show="showConfiguration">
+        <v-card-actions v-if="showConfiguration">
                 <v-btn text :disabled="showConfiguration && (submitted || editSensors || editColor || editFile)" color="orange" @click.native="toggleConfiguration()">Stäng</v-btn>
                 <v-spacer></v-spacer>
                 <v-btn text :disabled="showConfiguration && (submitted || editSensors || editColor || editFile)" color="orange" @click.native="deleteLocation()">Radera</v-btn>
         </v-card-actions>
-        
-        <v-card-actions v-show="!showConfiguration">
+        <v-card-actions v-else>
             <div>
                 <v-btn text :disabled="showConfiguration && (submitted || editSensors || editColor || editFile)" color="orange" @click.native="toggleConfiguration()">Ändra</v-btn>
             </div>
@@ -254,7 +256,6 @@ export default class LocationCard extends Vue {
     }
     public toggleConfiguration() {
         this.showConfiguration = !this.showConfiguration;
-        this.editName = this.showConfiguration;
         if (this.showConfiguration) {
             this.locationColor = this.location.color.slice();
             this.locationName = this.location.name.slice();
@@ -284,6 +285,10 @@ export default class LocationCard extends Vue {
     public updateLocationSensors(e: any) {
         log.debug('locationCard.updateLocationSensors ' + JSON.stringify(e));
         this.locationSensors();
+    }
+    public onEditName() {
+        this.editName = true;
+        this.locationName = this.location.name.slice();
     }
     public onEditSensors() {
         this.editSensors = true;
@@ -334,6 +339,7 @@ export default class LocationCard extends Vue {
     }
     public cancelEditName() {
             this.locationName = this.location.name.slice();
+            this.editName = false;
     }
     public submitName() {
         if (this.location.name === this.locationName) {
@@ -344,7 +350,9 @@ export default class LocationCard extends Vue {
             this.submitted = true;
             this.locations.updateName(this.locationName, this.location)
             .then((received) => {
+                this.location.name = received.name;
                 this.submitted = false;
+                this.editName = false;
             })
             .catch((err) => {
                 this.submitted = false;

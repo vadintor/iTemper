@@ -1,6 +1,5 @@
 import { IDeviceService } from '@/services/device-service';
 import { Device } from '../models/device';
-
 import { log } from '@/services/logger';
 
 export class Devices  {
@@ -10,6 +9,10 @@ export class Devices  {
 
     constructor(deviceService: IDeviceService) {
         this.deviceService = deviceService;
+    }
+    public reset(): void {
+        this.mError = '';
+        this.mDevices = [];
     }
     public get all(): Device[] {
         return this.mDevices;
@@ -38,11 +41,21 @@ export class Devices  {
             .catch((e) => reject(e));
         });
     }
-    public renameDevice(name: string, device: Device): void {
-        this.resetError();
-        this.deviceService.renameDevice(name, device)
-        .then((d: Device) => device.name = d.name)
-        .catch((e) => this.handleError(e));
+    public renameDevice(name: string, device: Device): Promise<Device> {
+        return new Promise((resolve, reject) => {
+            this.resetError();
+            this.deviceService.renameDevice(name, device)
+            .then((received: Device) => {
+                const thisDevice = this.mDevices.find((d) => d.deviceID === received.deviceID);
+                if (!thisDevice) {
+                    reject({status: 95, message: 'Device id not available'});
+                } else {
+                    device.name = received.name;
+                }
+                resolve(device);
+            } )
+            .catch((e) => this.handleError(e));
+        });
     }
     public deleteDevice(device: Device): void {
         this.resetError();

@@ -3,16 +3,30 @@
         <v-container fill-height fluid :class="overlay(id)">
             <v-layout fill-height>
                 <v-flex  align-end flexbox>
-                    <span class="display-1">{{ name() }} </span>
-
+                    <span  v-if="!showConfiguration" class="display-1">{{ name() }} </span>
+                    <v-text-field v-else-if="!editName"  class="display-1"
+                                prepend-inner-icon="fa-edit"
+                                v-model="newName"
+                                :rules="nameRules"
+                                dense
+                                required
+                                @focus="onEditName()"
+                    ></v-text-field>                
+                    <v-text-field v-else  class="display-1"
+                                prepend-inner-icon="fa-edit"
+                                v-model="newName"
+                                :rules="nameRules"
+                                dense
+                                required
+                                :loading="submitted"
+                                append-icon="fa-check"
+                                append-outer-icon="fa-times"
+                                @click:append="submitName()"
+                                @click:append-outer="cancelEditName()"
+                    ></v-text-field>
                 </v-flex>
             </v-layout>
         </v-container>
-        <v-card-title primary-title>
-            <div>
-
-            </div>
-        </v-card-title>
           <v-simple-table>
             <template v-slot:default>
                 <thead>
@@ -32,12 +46,29 @@
                 </tr>
                 </tbody>
             </template>
-          </v-simple-table>
-        <v-card-actions>
-            <v-btn text color="orange" @click.native="editName()">Ändra</v-btn>
-            <v-btn text color="orange" @click.native="deleteDevice()">Radera</v-btn>
-        </v-card-actions>
+            </v-simple-table>
+            <div v-if="device.key !== ''">
+                <p>
+                    <span   class="d-inline-block text-truncate" 
+                            style="max-width: 400px;">
+                    <v-btn text icon @click="copy()">
+                        <v-icon >fa-clone</v-icon>
+                    </v-btn>
+                    <span :id="htmlID()">{{ device.key }}</span>
+                    </span>
 
+                </p>
+            </div>
+        <v-card-actions v-if="showConfiguration">
+                <v-btn text :disabled="showConfiguration && (submitted || editName)" color="orange" @click.native="toggleConfiguration()">Stäng</v-btn>
+                <v-spacer></v-spacer>
+                <v-btn text :disabled="showConfiguration && (submitted || editName)" color="orange" @click.native="deleteDevice()">Radera</v-btn>
+        </v-card-actions>
+        <v-card-actions v-else>
+            <div>
+                <v-btn text :disabled="showConfiguration && (submitted || editName)" color="orange" @click.native="toggleConfiguration()">Ändra</v-btn>
+            </div>
+        </v-card-actions>
     </v-card>
 </template>
 
@@ -53,9 +84,11 @@ import { Device } from '@/models/device';
 import { Sensor } from '@/models/sensor';
 
 import { log } from '@/services/logger';
-
+import {json, copyToClipboard } from '@/helpers';
 import { Monitor } from '@/services/monitor';
 
+type BooleanOrString = boolean | string;
+type ValidationFunction = (value: string) => BooleanOrString;
 @Component({})
 export default class DeviceCard extends Vue {
     @Prop() public device!: Device;
@@ -63,7 +96,17 @@ export default class DeviceCard extends Vue {
 
     public state = Vue.$store;
     public sensors = Vue.$store.sensors;
+    public devices = Vue.$store.devices;
+    public showConfiguration: boolean = false;
     public newName: string = '';
+    public editName: boolean = false;
+    public submitted: boolean = false;
+    public errorMsg = '';
+
+    public nameRules: ValidationFunction[] = [
+          (v) => !!v || 'Enter name',
+          (v) => /^[a-zA-Z0-9]+$/.test(v) && v.length >= 4 || 'Must be at least 4 characters, no white spaces or special characters allowed',
+        ];
     public headers = [
         {
         text: 'Givare',
@@ -76,6 +119,15 @@ export default class DeviceCard extends Vue {
         { text: 'Sensast', value: 'lastTime' },
     ];
 
+    public htmlID() {
+        return this.device.name + this.id;
+    }
+    public toggleConfiguration() {
+        this.showConfiguration = !this.showConfiguration;
+        if (this.showConfiguration) {
+            this.newName = this.device.name.slice();
+        }
+    }
     public filterSensors(sensors: Sensor[], deviceID: string): Sensor[] {
         return this.sensors.filterByDeviceID(deviceID);
     }
@@ -89,15 +141,56 @@ export default class DeviceCard extends Vue {
     public name(): string {
         return this.device.name;
     }
-
-    public editName(): void {
+    public onEditName() {
+        this.editName = true;
+    }
+    public cancelEditName() {
+            this.newName = this.device.name.slice();
+            this.editName = false;
+    }
+    public submitName(): void {
         this.state.devices.renameDevice(this.newName, this.device);
+        if (this.device.name === this.newName) {
+            log.debug('deviceCard.submitName: no changes');
+            return;
+        } else {
+            log.debug('deviceCard.submitName: update device name');
+            this.submitted = true;
+            this.devices.renameDevice(this.newName, this.device)
+            .then((received) => {
+                this.device.name = received.name;
+                this.submitted = false;
+                this.editName = false;
+            })
+            .catch((err) => {
+                this.submitted = false;
+                this.displayError('error (' + err.status + '): ' + err.message);
+            });
+        }
     }
 
     public deleteDevice() {
         this.state.devices.deleteDevice(this.device);
     }
-
+    public error(): boolean {
+        return this.errorMsg !== '';
+    }
+    private copy() {
+        if (!copyToClipboard(this.htmlID())) {
+                this.displayError('Error: Cannot copy key to clipboard');
+        }
+    }
+    private reset(): void {
+        this.errorMsg = '';
+    }
+    private displayError(msg: string) {
+        this.errorMsg = msg;
+        this.setTimer();
+    }
+    private setTimer() {
+        const timeout = 2_250;
+        setTimeout(() => {this.reset(); }, timeout);
+    }
 }
 
 </script>

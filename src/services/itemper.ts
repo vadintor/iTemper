@@ -10,15 +10,8 @@ export interface IiTemper {
     sensorService: SensorService;
 }
 export class Itemper implements IiTemper {
-    public apiService: ApiService;
-    public deviceService: DeviceService;
-    public locationService: LocationService;
-    public sensorService: SensorService;
-    public constructor(itemper: IiTemper) {
-        this.apiService = itemper.apiService;
-        this.deviceService = itemper.deviceService;
-        this.locationService = itemper.locationService;
-        this.sensorService = itemper.sensorService;
-    }
-
+    public apiService = new ApiService();
+    public deviceService =  new DeviceService(this.apiService);
+    public locationService =  new LocationService(this.apiService);
+    public sensorService =  new SensorService(this.apiService);
 }

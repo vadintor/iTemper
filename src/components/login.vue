@@ -44,9 +44,7 @@
 
 <script lang="ts">
 import { Component, Prop, Vue } from 'vue-property-decorator';
-import * as itemper from '@/services/itemper';
 import Notice from '@/components/notice.vue';
-import { store } from '@/store/store';
 import { Status } from '@/store/user';
 import { router } from '@/helpers';
 
@@ -66,6 +64,7 @@ type ValidationFunction = (value: string) => BooleanOrString;
 })
 export default class Login extends Vue {
     public showPassword: boolean = false;
+    public store = Vue.$store;
     public cred = Vue.$store.user.credentials;
     public status = Vue.$store.user.status;
     public notice = Vue.$store.notice;
@@ -109,7 +108,7 @@ export default class Login extends Vue {
         this.user.login()
         .then((status: Status) => {
             this.submitted = false;
-            store.notice.publish('Welcome to itemper!');
+            this.store.notice.publish('Welcome to itemper!');
             log.debug('Login: returnUrl=' + this.returnUrl);
             if (this.returnUrl) {
                 router.push(this.returnUrl);

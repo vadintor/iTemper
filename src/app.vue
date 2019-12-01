@@ -15,8 +15,9 @@
 
 import { Vue, Component } from 'vue-property-decorator';
 
-import { store } from '@/store/store';
-Vue.$store = store;
+import { init } from '@/store/store';
+init();
+
 import Login from '@/components/login.vue';
 import MyDevices from '@/components/mydevices.vue';
 import MyLocations from '@/components/mylocations.vue';

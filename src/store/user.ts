@@ -21,6 +21,12 @@ export class User  {
         this.api = apiService;
         this.credentials = new Credentials();
     }
+    public reset(): void {
+        this.mFirstName = '';
+        this.mLastName = '';
+        this.credentials = new Credentials();
+        this.status = Status.LOGGED_OUT;
+    }
     public isLoggedIn(): boolean {
         return this.status === Status.LOGGED_IN;
     }
