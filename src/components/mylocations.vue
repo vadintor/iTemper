@@ -15,6 +15,9 @@
 <script lang="ts">
 import {Vue, Component, Watch} from 'vue-property-decorator';
 
+// Store
+import { Status } from '@/store/user';
+
 // Services
 import { log } from '@/services/logger';
 
@@ -39,7 +42,10 @@ export default class MyLocations extends Vue {
         this.state.locations.getLocations();
     }
     public getSensorData() {
-        this.state.sensors.getSensorsLast24h();
+        if (this.state.user.status === Status.LOGGED_IN) {
+            this.state.sensors.getSensorsLast24h();
+        }
+
     }
     public created(): void {
         log.debug('MyLocations.created()');

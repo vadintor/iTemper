@@ -1,59 +1,52 @@
-filename, language, Ignore, Properties, YAML, Dockerfile, Markdown, JSON, TypeScript, HTML, CSS, Pug, comment, blank, total
-.dockerignore, Ignore, 15, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 17
-.editorconfig, Properties, 0, 14, 0, 0, 0, 0, 0, 0, 0, 0, 1, 5, 20
-.resin-sync.yml, YAML, 0, 0, 6, 0, 0, 0, 0, 0, 0, 0, 0, 1, 7
-CHANGELOG.md, Markdown, 0, 0, 0, 0, 6, 0, 0, 0, 0, 0, 0, 4, 10
-Dockerfile, Dockerfile, 0, 0, 0, 15, 0, 0, 0, 0, 0, 0, 19, 13, 47
-README.md, Markdown, 0, 0, 0, 0, 45, 0, 0, 0, 0, 0, 0, 14, 59
-build\app.d.ts, TypeScript, 0, 0, 0, 0, 0, 0, 2, 0, 0, 0, 1, 1, 4
-build\config.d.ts, TypeScript, 0, 0, 0, 0, 0, 0, 9, 0, 0, 0, 0, 1, 10
-build\logger.d.ts, TypeScript, 0, 0, 0, 0, 0, 0, 4, 0, 0, 0, 0, 1, 5
-build\models\browser-server.d.ts, TypeScript, 0, 0, 0, 0, 0, 0, 14, 0, 0, 0, 0, 1, 15
-build\models\browser-service.d.ts, TypeScript, 0, 0, 0, 0, 0, 0, 26, 0, 0, 0, 0, 1, 27
-build\models\sensor-attributes.d.ts, TypeScript, 0, 0, 0, 0, 0, 0, 15, 0, 0, 0, 0, 1, 16
-build\models\sensor-data.d.ts, TypeScript, 0, 0, 0, 0, 0, 0, 14, 0, 0, 0, 0, 1, 15
-build\models\sensor-log.d.ts, TypeScript, 0, 0, 0, 0, 0, 0, 27, 0, 0, 0, 0, 1, 28
-build\models\sensor-state.d.ts, TypeScript, 0, 0, 0, 0, 0, 0, 33, 0, 0, 0, 0, 1, 34
-build\models\settings.d.ts, TypeScript, 0, 0, 0, 0, 0, 0, 20, 0, 0, 0, 0, 1, 21
-build\models\temper-8.d.ts, TypeScript, 0, 0, 0, 0, 0, 0, 21, 0, 0, 0, 0, 1, 22
-build\models\temper-gold.d.ts, TypeScript, 0, 0, 0, 0, 0, 0, 10, 0, 0, 0, 0, 1, 11
-build\models\usb-controller.d.ts, TypeScript, 0, 0, 0, 0, 0, 0, 20, 0, 0, 0, 0, 1, 21
-build\models\usb-device.d.ts, TypeScript, 0, 0, 0, 0, 0, 0, 25, 0, 0, 0, 0, 1, 26
-build\public\index.html, HTML, 0, 0, 0, 0, 0, 0, 0, 31, 0, 0, 0, 9, 40
-build\public\itemper-device.css, CSS, 0, 0, 0, 0, 0, 0, 0, 0, 33, 0, 0, 6, 39
-build\public\stylesheets\main.css, CSS, 0, 0, 0, 0, 0, 0, 0, 0, 7, 0, 0, 2, 9
-build\routes\api.d.ts, TypeScript, 0, 0, 0, 0, 0, 0, 3, 0, 0, 0, 0, 1, 4
-build\routes\index.d.ts, TypeScript, 0, 0, 0, 0, 0, 0, 3, 0, 0, 0, 0, 1, 4
-build\routes\settings.d.ts, TypeScript, 0, 0, 0, 0, 0, 0, 3, 0, 0, 0, 0, 1, 4
-build\views\error.pug, Pug, 0, 0, 0, 0, 0, 0, 0, 0, 0, 5, 0, 1, 6
-build\views\index.pug, Pug, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4, 0, 1, 5
-build\views\layout.pug, Pug, 0, 0, 0, 0, 0, 0, 0, 0, 0, 7, 0, 0, 7
-package-lock.json, JSON, 0, 0, 0, 0, 0, 11093, 0, 0, 0, 0, 0, 1, 11094
-package.json, JSON, 0, 0, 0, 0, 0, 83, 0, 0, 0, 0, 0, 0, 83
-src\app.ts, TypeScript, 0, 0, 0, 0, 0, 0, 37, 0, 0, 0, 76, 35, 148
-src\browser\client.ts, TypeScript, 0, 0, 0, 0, 0, 0, 182, 0, 0, 0, 1, 31, 214
-src\config.ts, TypeScript, 0, 0, 0, 0, 0, 0, 10, 0, 0, 0, 0, 3, 13
-src\logger.ts, TypeScript, 0, 0, 0, 0, 0, 0, 26, 0, 0, 0, 0, 7, 33
-src\models\browser-service.ts, TypeScript, 0, 0, 0, 0, 0, 0, 120, 0, 0, 0, 4, 20, 144
-src\models\sensor-attributes.ts, TypeScript, 0, 0, 0, 0, 0, 0, 27, 0, 0, 0, 0, 3, 30
-src\models\sensor-data.ts, TypeScript, 0, 0, 0, 0, 0, 0, 35, 0, 0, 0, 0, 8, 43
-src\models\sensor-log.ts, TypeScript, 0, 0, 0, 0, 0, 0, 107, 0, 0, 0, 27, 29, 163
-src\models\sensor-state.ts, TypeScript, 0, 0, 0, 0, 0, 0, 108, 0, 0, 0, 0, 18, 126
-src\models\settings.ts, TypeScript, 0, 0, 0, 0, 0, 0, 70, 0, 0, 0, 0, 12, 82
-src\models\temper-8.ts, TypeScript, 0, 0, 0, 0, 0, 0, 162, 0, 0, 0, 41, 28, 231
-src\models\temper-gold.ts, TypeScript, 0, 0, 0, 0, 0, 0, 57, 0, 0, 0, 17, 19, 93
-src\models\usb-controller.ts, TypeScript, 0, 0, 0, 0, 0, 0, 78, 0, 0, 0, 2, 17, 97
-src\models\usb-device.ts, TypeScript, 0, 0, 0, 0, 0, 0, 99, 0, 0, 0, 10, 17, 126
-src\public\index.html, HTML, 0, 0, 0, 0, 0, 0, 0, 31, 0, 0, 0, 9, 40
-src\public\itemper-device.css, CSS, 0, 0, 0, 0, 0, 0, 0, 0, 33, 0, 0, 6, 39
-src\public\stylesheets\main.css, CSS, 0, 0, 0, 0, 0, 0, 0, 0, 7, 0, 0, 2, 9
-src\routes\api.ts, TypeScript, 0, 0, 0, 0, 0, 0, 20, 0, 0, 0, 3, 12, 35
-src\routes\index.ts, TypeScript, 0, 0, 0, 0, 0, 0, 9, 0, 0, 0, 21, 10, 40
-src\routes\settings.ts, TypeScript, 0, 0, 0, 0, 0, 0, 49, 0, 0, 0, 3, 8, 60
-src\views\error.pug, Pug, 0, 0, 0, 0, 0, 0, 0, 0, 0, 5, 0, 1, 6
-src\views\index.pug, Pug, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4, 0, 1, 5
-src\views\layout.pug, Pug, 0, 0, 0, 0, 0, 0, 0, 0, 0, 7, 0, 0, 7
-tsconfig.browser.json, JSON, 0, 0, 0, 0, 0, 12, 0, 0, 0, 0, 1, 1, 14
-tsconfig.json, JSON, 0, 0, 0, 0, 0, 25, 0, 0, 0, 0, 0, 1, 26
-tslint.json, JSON, 0, 0, 0, 0, 0, 51, 0, 0, 0, 0, 0, 1, 52
-Total, -, 15, 14, 6, 15, 51, 11264, 1445, 62, 80, 32, 228, 374, 13586
+filename, language, Vue, TypeScript, XML, comment, blank, total
+e:\gitrepos\Dev\iTemper-Web\src\app.vue, Vue, 32, 0, 0, 2, 10, 44
+e:\gitrepos\Dev\iTemper-Web\src\assets\logo.svg, XML, 0, 0, 1, 0, 1, 2
+e:\gitrepos\Dev\iTemper-Web\src\components\deviceCard.vue, Vue, 204, 0, 0, 2, 23, 229
+e:\gitrepos\Dev\iTemper-Web\src\components\historyChart.vue, Vue, 177, 0, 0, 8, 34, 219
+e:\gitrepos\Dev\iTemper-Web\src\components\home.vue, Vue, 12, 0, 0, 0, 3, 15
+e:\gitrepos\Dev\iTemper-Web\src\components\locationCard.vue, Vue, 432, 0, 0, 6, 29, 467
+e:\gitrepos\Dev\iTemper-Web\src\components\login.vue, Vue, 136, 0, 0, 0, 18, 154
+e:\gitrepos\Dev\iTemper-Web\src\components\mydevices.vue, Vue, 76, 0, 0, 3, 26, 105
+e:\gitrepos\Dev\iTemper-Web\src\components\mylocations.vue, Vue, 50, 0, 0, 3, 14, 67
+e:\gitrepos\Dev\iTemper-Web\src\components\mysensors.vue, Vue, 18, 0, 0, 11, 5, 34
+e:\gitrepos\Dev\iTemper-Web\src\components\mysettings.vue, Vue, 90, 0, 0, 7, 12, 109
+e:\gitrepos\Dev\iTemper-Web\src\components\new-device-dialogue.vue, Vue, 151, 0, 0, 2, 20, 173
+e:\gitrepos\Dev\iTemper-Web\src\components\new-location-dialogue.vue, Vue, 191, 0, 0, 2, 17, 210
+e:\gitrepos\Dev\iTemper-Web\src\components\notice.vue, Vue, 36, 0, 0, 0, 4, 40
+e:\gitrepos\Dev\iTemper-Web\src\components\register.vue, Vue, 160, 0, 0, 0, 17, 177
+e:\gitrepos\Dev\iTemper-Web\src\components\sensorTable.vue, Vue, 90, 0, 0, 4, 12, 106
+e:\gitrepos\Dev\iTemper-Web\src\components\toolbar.vue, Vue, 115, 0, 0, 0, 7, 122
+e:\gitrepos\Dev\iTemper-Web\src\config.ts, TypeScript, 0, 2, 0, 2, 2, 6
+e:\gitrepos\Dev\iTemper-Web\src\helpers\index.ts, TypeScript, 0, 2, 0, 0, 1, 3
+e:\gitrepos\Dev\iTemper-Web\src\helpers\router.ts, TypeScript, 0, 39, 0, 1, 10, 50
+e:\gitrepos\Dev\iTemper-Web\src\helpers\utils.ts, TypeScript, 0, 25, 0, 0, 4, 29
+e:\gitrepos\Dev\iTemper-Web\src\kalmanjs.d.ts, TypeScript, 0, 1, 0, 0, 0, 1
+e:\gitrepos\Dev\iTemper-Web\src\main.ts, TypeScript, 0, 18, 0, 0, 5, 23
+e:\gitrepos\Dev\iTemper-Web\src\models\credentials.ts, TypeScript, 0, 57, 0, 0, 15, 72
+e:\gitrepos\Dev\iTemper-Web\src\models\device.ts, TypeScript, 0, 35, 0, 7, 11, 53
+e:\gitrepos\Dev\iTemper-Web\src\models\location.ts, TypeScript, 0, 67, 0, 7, 6, 80
+e:\gitrepos\Dev\iTemper-Web\src\models\position.ts, TypeScript, 0, 31, 0, 0, 9, 40
+e:\gitrepos\Dev\iTemper-Web\src\models\sensor.ts, TypeScript, 0, 89, 0, 25, 13, 127
+e:\gitrepos\Dev\iTemper-Web\src\plugins\vuetify.ts, TypeScript, 0, 9, 0, 0, 3, 12
+e:\gitrepos\Dev\iTemper-Web\src\services\api-service.ts, TypeScript, 0, 124, 0, 0, 13, 137
+e:\gitrepos\Dev\iTemper-Web\src\services\device-service.ts, TypeScript, 0, 36, 0, 0, 6, 42
+e:\gitrepos\Dev\iTemper-Web\src\services\itemper.ts, TypeScript, 0, 16, 0, 0, 2, 18
+e:\gitrepos\Dev\iTemper-Web\src\services\location-service.ts, TypeScript, 0, 67, 0, 1, 6, 74
+e:\gitrepos\Dev\iTemper-Web\src\services\logger.ts, TypeScript, 0, 13, 0, 10, 4, 27
+e:\gitrepos\Dev\iTemper-Web\src\services\monitor.ts, TypeScript, 0, 103, 0, 1, 17, 121
+e:\gitrepos\Dev\iTemper-Web\src\services\sensor-service.ts, TypeScript, 0, 37, 0, 0, 9, 46
+e:\gitrepos\Dev\iTemper-Web\src\services\storage-service.ts, TypeScript, 0, 27, 0, 0, 8, 35
+e:\gitrepos\Dev\iTemper-Web\src\shims-tsx.d.ts, TypeScript, 0, 10, 0, 2, 2, 14
+e:\gitrepos\Dev\iTemper-Web\src\shims-vue.d.ts, TypeScript, 0, 4, 0, 0, 1, 5
+e:\gitrepos\Dev\iTemper-Web\src\store-shims..d.ts, TypeScript, 0, 6, 0, 0, 2, 8
+e:\gitrepos\Dev\iTemper-Web\src\store.ts, TypeScript, 0, 11, 0, 0, 6, 17
+e:\gitrepos\Dev\iTemper-Web\src\store\devices.ts, TypeScript, 0, 80, 0, 0, 5, 85
+e:\gitrepos\Dev\iTemper-Web\src\store\locations.ts, TypeScript, 0, 152, 0, 0, 9, 161
+e:\gitrepos\Dev\iTemper-Web\src\store\messages.ts, TypeScript, 0, 6, 0, 0, 1, 7
+e:\gitrepos\Dev\iTemper-Web\src\store\notice.ts, TypeScript, 0, 28, 0, 0, 2, 30
+e:\gitrepos\Dev\iTemper-Web\src\store\sensors.ts, TypeScript, 0, 119, 0, 17, 16, 152
+e:\gitrepos\Dev\iTemper-Web\src\store\settings.ts, TypeScript, 0, 39, 0, 0, 13, 52
+e:\gitrepos\Dev\iTemper-Web\src\store\store.ts, TypeScript, 0, 36, 0, 0, 6, 42
+e:\gitrepos\Dev\iTemper-Web\src\store\user.ts, TypeScript, 0, 73, 0, 0, 6, 79
+e:\gitrepos\Dev\iTemper-Web\src\vue-highcharts.d.ts, TypeScript, 0, 1, 0, 0, 0, 1
+Total, -, 1970, 1363, 1, 123, 465, 3922
