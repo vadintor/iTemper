@@ -1,4 +1,5 @@
 import { Itemper } from '@/services/itemper';
+import { Admin } from '@/store/admin';
 import { Devices} from '@/store/devices';
 import { Locations } from '@/store/locations';
 import { Notice } from '@/store/notice';
@@ -10,6 +11,7 @@ import { Vue } from 'vue-property-decorator';
 
 export interface IStore {
     itemper: Itemper;
+    admin: Admin;
     devices: Devices;
     locations: Locations;
     notice: Notice;
@@ -20,6 +22,7 @@ export interface IStore {
 
 export class Store implements IStore {
     public itemper: Itemper = new Itemper();
+    public admin: Admin = new Admin(this.itemper.adminService);
     public devices: Devices = new Devices(this.itemper.deviceService);
     public locations: Locations  = new Locations(this.itemper.locationService);
     public notice: Notice = new Notice();
@@ -34,6 +37,7 @@ export function init() {
 }
 
 export function reset() {
+    Vue.$store.admin.reset();
     Vue.$store.devices.reset();
     Vue.$store.locations.reset();
     Vue.$store.sensors.reset();
