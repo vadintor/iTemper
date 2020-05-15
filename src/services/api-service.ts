@@ -1,4 +1,4 @@
-import axios, { Method, AxiosInstance, AxiosRequestConfig } from 'axios';
+import axios, {  Method, AxiosInstance, AxiosRequestConfig } from 'axios';
 
 import { iTemperAPI } from '@/config';
 import { json } from '@/helpers/';
@@ -17,7 +17,7 @@ export interface IError {
     status: number;
 }
 
-export type Method = Method;
+export { Method } from 'axios';
 
 export class ApiService implements IApiService {
 

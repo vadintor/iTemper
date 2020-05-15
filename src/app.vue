@@ -17,7 +17,7 @@ import { Vue, Component } from 'vue-property-decorator';
 
 import { init } from '@/store/store';
 init();
-
+import Admin from '@/components/admin.vue';
 import Login from '@/components/login.vue';
 import MyDevices from '@/components/mydevices.vue';
 import MyLocations from '@/components/mylocations.vue';
@@ -27,12 +27,12 @@ import Toolbar from '@/components/toolbar.vue';
 
 
 @Component( {components: {
+        Admin,
         Toolbar,
         Login,
         Register,
         MyDevices,
         MyLocations,
-        // MySensors,
     }})
 export default class App extends Vue {
 
