@@ -1,6 +1,6 @@
 import Vue from 'vue';
 import Router from 'vue-router';
-
+import Admin from '@/components/admin.vue';
 import Home from '@/components/home.vue';
 import Login from '@/components/login.vue';
 import MyDevices from '@/components/mydevices.vue';
@@ -18,8 +18,9 @@ Vue.use(Router);
 
 const routes = [
   { path: '/', name: 'home', component: Home},
+  { path: '/admin', name: 'login', component: Admin},
   { path: '/login', name: 'login', component: Login},
-  { path: '/register', name: 'register', component: Register },
+  { path: '/register', name: 'register', component: Register},
   { path: '/locations', name: 'locations', component: MyLocations},
   { path: '/devices', name: 'devices', component: MyDevices},
   { path: '/settings', name: 'settings', component: MySettings },
