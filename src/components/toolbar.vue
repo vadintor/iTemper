@@ -40,16 +40,13 @@
     </div>
 </template>
 <script lang="ts">
-import Notice from '@/components/notice.vue';
-import {Vue, Component, Prop} from 'vue-property-decorator';
-import {router} from '@/helpers';
-
-import {log} from '@/services/logger';
-import {json} from '@/helpers';
+import { Vue, Component, Prop } from 'vue-property-decorator';
+import { router } from '@/helpers';
+import { reset } from '@/store/store';
+import { log } from '@/services/logger';
+import { json } from '@/helpers';
 
 import { Status } from '@/store/user';
-
-import * as itemper from '@/services/itemper';
 
 import NewDeviceDialogue from './new-device-dialogue.vue';
 import NewLocationDialogue from './new-location-dialogue.vue';
@@ -64,7 +61,6 @@ interface MenuItem {
     route: string;
 }
 @Component({components: {
-        Notice,
         NewDeviceDialogue,
         NewLocationDialogue,
     },
@@ -80,6 +76,7 @@ export default class Toolbar extends Vue {
             { action: 'fa-home', title: 'Platser',  color: 'blue-grey darken-2', route: 'locations' },
             { action: 'fa-broadcast-tower', title: 'Enheter',  color: 'blue-grey darken-2', route: 'devices' },
             { action: 'fa-cog', title: 'Inställningar', color: 'blue-grey darken-2', route: 'settings' },
+            { action: 'fa-hammer', title: 'System', color: 'blue-grey darken-2', route: 'admin' },
             { action: 'fa-sign-out-alt', title: 'Logout', color: 'blue darken-2', route: 'login'},
       ];
     public name() {
@@ -108,8 +105,8 @@ export default class Toolbar extends Vue {
     }
     public logout() {
         log.debug('Toolbar.logout()' );
-        this.user.logout();
         this.showNewDeviceDialogue = false;
+        this.user.logout().then(() => reset());
         router.push({name: 'home'});
     }
     public created() {

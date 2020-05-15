@@ -1,72 +1,65 @@
 # Details
 
-Date : 2019-08-05 09:52:42
+Date : 2019-12-03 20:37:26
 
-Directory e:\gitrepos\Dev\iTemper-Device
+Directory e:\gitrepos\Dev\iTemper-Web\src
 
-Total : 57 files,  12984 codes, 228 comments, 374 blanks, all 13586 lines
+Total : 50 files,  3334 codes, 123 comments, 465 blanks, all 3922 lines
 
 [summary](results.md)
 
 ## Files
 | filename | language | code | comment | blank | total |
 | :--- | :--- | ---: | ---: | ---: | ---: |
-| [.dockerignore](file:///e%3A/gitrepos/Dev/iTemper-Device/.dockerignore) | Ignore | 15 | 1 | 1 | 17 |
-| [.editorconfig](file:///e%3A/gitrepos/Dev/iTemper-Device/.editorconfig) | Properties | 14 | 1 | 5 | 20 |
-| [.resin-sync.yml](file:///e%3A/gitrepos/Dev/iTemper-Device/.resin-sync.yml) | YAML | 6 | 0 | 1 | 7 |
-| [CHANGELOG.md](file:///e%3A/gitrepos/Dev/iTemper-Device/CHANGELOG.md) | Markdown | 6 | 0 | 4 | 10 |
-| [Dockerfile](file:///e%3A/gitrepos/Dev/iTemper-Device/Dockerfile) | Dockerfile | 15 | 19 | 13 | 47 |
-| [README.md](file:///e%3A/gitrepos/Dev/iTemper-Device/README.md) | Markdown | 45 | 0 | 14 | 59 |
-| [build\app.d.ts](file:///e%3A/gitrepos/Dev/iTemper-Device/build/app.d.ts) | TypeScript | 2 | 1 | 1 | 4 |
-| [build\config.d.ts](file:///e%3A/gitrepos/Dev/iTemper-Device/build/config.d.ts) | TypeScript | 9 | 0 | 1 | 10 |
-| [build\logger.d.ts](file:///e%3A/gitrepos/Dev/iTemper-Device/build/logger.d.ts) | TypeScript | 4 | 0 | 1 | 5 |
-| [build\models\browser-server.d.ts](file:///e%3A/gitrepos/Dev/iTemper-Device/build/models/browser-server.d.ts) | TypeScript | 14 | 0 | 1 | 15 |
-| [build\models\browser-service.d.ts](file:///e%3A/gitrepos/Dev/iTemper-Device/build/models/browser-service.d.ts) | TypeScript | 26 | 0 | 1 | 27 |
-| [build\models\sensor-attributes.d.ts](file:///e%3A/gitrepos/Dev/iTemper-Device/build/models/sensor-attributes.d.ts) | TypeScript | 15 | 0 | 1 | 16 |
-| [build\models\sensor-data.d.ts](file:///e%3A/gitrepos/Dev/iTemper-Device/build/models/sensor-data.d.ts) | TypeScript | 14 | 0 | 1 | 15 |
-| [build\models\sensor-log.d.ts](file:///e%3A/gitrepos/Dev/iTemper-Device/build/models/sensor-log.d.ts) | TypeScript | 27 | 0 | 1 | 28 |
-| [build\models\sensor-state.d.ts](file:///e%3A/gitrepos/Dev/iTemper-Device/build/models/sensor-state.d.ts) | TypeScript | 33 | 0 | 1 | 34 |
-| [build\models\settings.d.ts](file:///e%3A/gitrepos/Dev/iTemper-Device/build/models/settings.d.ts) | TypeScript | 20 | 0 | 1 | 21 |
-| [build\models\temper-8.d.ts](file:///e%3A/gitrepos/Dev/iTemper-Device/build/models/temper-8.d.ts) | TypeScript | 21 | 0 | 1 | 22 |
-| [build\models\temper-gold.d.ts](file:///e%3A/gitrepos/Dev/iTemper-Device/build/models/temper-gold.d.ts) | TypeScript | 10 | 0 | 1 | 11 |
-| [build\models\usb-controller.d.ts](file:///e%3A/gitrepos/Dev/iTemper-Device/build/models/usb-controller.d.ts) | TypeScript | 20 | 0 | 1 | 21 |
-| [build\models\usb-device.d.ts](file:///e%3A/gitrepos/Dev/iTemper-Device/build/models/usb-device.d.ts) | TypeScript | 25 | 0 | 1 | 26 |
-| [build\public\index.html](file:///e%3A/gitrepos/Dev/iTemper-Device/build/public/index.html) | HTML | 31 | 0 | 9 | 40 |
-| [build\public\itemper-device.css](file:///e%3A/gitrepos/Dev/iTemper-Device/build/public/itemper-device.css) | CSS | 33 | 0 | 6 | 39 |
-| [build\public\stylesheets\main.css](file:///e%3A/gitrepos/Dev/iTemper-Device/build/public/stylesheets/main.css) | CSS | 7 | 0 | 2 | 9 |
-| [build\routes\api.d.ts](file:///e%3A/gitrepos/Dev/iTemper-Device/build/routes/api.d.ts) | TypeScript | 3 | 0 | 1 | 4 |
-| [build\routes\index.d.ts](file:///e%3A/gitrepos/Dev/iTemper-Device/build/routes/index.d.ts) | TypeScript | 3 | 0 | 1 | 4 |
-| [build\routes\settings.d.ts](file:///e%3A/gitrepos/Dev/iTemper-Device/build/routes/settings.d.ts) | TypeScript | 3 | 0 | 1 | 4 |
-| [build\views\error.pug](file:///e%3A/gitrepos/Dev/iTemper-Device/build/views/error.pug) | Pug | 5 | 0 | 1 | 6 |
-| [build\views\index.pug](file:///e%3A/gitrepos/Dev/iTemper-Device/build/views/index.pug) | Pug | 4 | 0 | 1 | 5 |
-| [build\views\layout.pug](file:///e%3A/gitrepos/Dev/iTemper-Device/build/views/layout.pug) | Pug | 7 | 0 | 0 | 7 |
-| [package-lock.json](file:///e%3A/gitrepos/Dev/iTemper-Device/package-lock.json) | JSON | 11,093 | 0 | 1 | 11,094 |
-| [package.json](file:///e%3A/gitrepos/Dev/iTemper-Device/package.json) | JSON | 83 | 0 | 0 | 83 |
-| [src\app.ts](file:///e%3A/gitrepos/Dev/iTemper-Device/src/app.ts) | TypeScript | 37 | 76 | 35 | 148 |
-| [src\browser\client.ts](file:///e%3A/gitrepos/Dev/iTemper-Device/src/browser/client.ts) | TypeScript | 182 | 1 | 31 | 214 |
-| [src\config.ts](file:///e%3A/gitrepos/Dev/iTemper-Device/src/config.ts) | TypeScript | 10 | 0 | 3 | 13 |
-| [src\logger.ts](file:///e%3A/gitrepos/Dev/iTemper-Device/src/logger.ts) | TypeScript | 26 | 0 | 7 | 33 |
-| [src\models\browser-service.ts](file:///e%3A/gitrepos/Dev/iTemper-Device/src/models/browser-service.ts) | TypeScript | 120 | 4 | 20 | 144 |
-| [src\models\sensor-attributes.ts](file:///e%3A/gitrepos/Dev/iTemper-Device/src/models/sensor-attributes.ts) | TypeScript | 27 | 0 | 3 | 30 |
-| [src\models\sensor-data.ts](file:///e%3A/gitrepos/Dev/iTemper-Device/src/models/sensor-data.ts) | TypeScript | 35 | 0 | 8 | 43 |
-| [src\models\sensor-log.ts](file:///e%3A/gitrepos/Dev/iTemper-Device/src/models/sensor-log.ts) | TypeScript | 107 | 27 | 29 | 163 |
-| [src\models\sensor-state.ts](file:///e%3A/gitrepos/Dev/iTemper-Device/src/models/sensor-state.ts) | TypeScript | 108 | 0 | 18 | 126 |
-| [src\models\settings.ts](file:///e%3A/gitrepos/Dev/iTemper-Device/src/models/settings.ts) | TypeScript | 70 | 0 | 12 | 82 |
-| [src\models\temper-8.ts](file:///e%3A/gitrepos/Dev/iTemper-Device/src/models/temper-8.ts) | TypeScript | 162 | 41 | 28 | 231 |
-| [src\models\temper-gold.ts](file:///e%3A/gitrepos/Dev/iTemper-Device/src/models/temper-gold.ts) | TypeScript | 57 | 17 | 19 | 93 |
-| [src\models\usb-controller.ts](file:///e%3A/gitrepos/Dev/iTemper-Device/src/models/usb-controller.ts) | TypeScript | 78 | 2 | 17 | 97 |
-| [src\models\usb-device.ts](file:///e%3A/gitrepos/Dev/iTemper-Device/src/models/usb-device.ts) | TypeScript | 99 | 10 | 17 | 126 |
-| [src\public\index.html](file:///e%3A/gitrepos/Dev/iTemper-Device/src/public/index.html) | HTML | 31 | 0 | 9 | 40 |
-| [src\public\itemper-device.css](file:///e%3A/gitrepos/Dev/iTemper-Device/src/public/itemper-device.css) | CSS | 33 | 0 | 6 | 39 |
-| [src\public\stylesheets\main.css](file:///e%3A/gitrepos/Dev/iTemper-Device/src/public/stylesheets/main.css) | CSS | 7 | 0 | 2 | 9 |
-| [src\routes\api.ts](file:///e%3A/gitrepos/Dev/iTemper-Device/src/routes/api.ts) | TypeScript | 20 | 3 | 12 | 35 |
-| [src\routes\index.ts](file:///e%3A/gitrepos/Dev/iTemper-Device/src/routes/index.ts) | TypeScript | 9 | 21 | 10 | 40 |
-| [src\routes\settings.ts](file:///e%3A/gitrepos/Dev/iTemper-Device/src/routes/settings.ts) | TypeScript | 49 | 3 | 8 | 60 |
-| [src\views\error.pug](file:///e%3A/gitrepos/Dev/iTemper-Device/src/views/error.pug) | Pug | 5 | 0 | 1 | 6 |
-| [src\views\index.pug](file:///e%3A/gitrepos/Dev/iTemper-Device/src/views/index.pug) | Pug | 4 | 0 | 1 | 5 |
-| [src\views\layout.pug](file:///e%3A/gitrepos/Dev/iTemper-Device/src/views/layout.pug) | Pug | 7 | 0 | 0 | 7 |
-| [tsconfig.browser.json](file:///e%3A/gitrepos/Dev/iTemper-Device/tsconfig.browser.json) | JSON | 12 | 1 | 1 | 14 |
-| [tsconfig.json](file:///e%3A/gitrepos/Dev/iTemper-Device/tsconfig.json) | JSON | 25 | 0 | 1 | 26 |
-| [tslint.json](file:///e%3A/gitrepos/Dev/iTemper-Device/tslint.json) | JSON | 51 | 0 | 1 | 52 |
+| [app.vue](file:///e%3A/gitrepos/Dev/iTemper-Web/src/app.vue) | Vue | 32 | 2 | 10 | 44 |
+| [assets\logo.svg](file:///e%3A/gitrepos/Dev/iTemper-Web/src/assets/logo.svg) | XML | 1 | 0 | 1 | 2 |
+| [components\deviceCard.vue](file:///e%3A/gitrepos/Dev/iTemper-Web/src/components/deviceCard.vue) | Vue | 204 | 2 | 23 | 229 |
+| [components\historyChart.vue](file:///e%3A/gitrepos/Dev/iTemper-Web/src/components/historyChart.vue) | Vue | 177 | 8 | 34 | 219 |
+| [components\home.vue](file:///e%3A/gitrepos/Dev/iTemper-Web/src/components/home.vue) | Vue | 12 | 0 | 3 | 15 |
+| [components\locationCard.vue](file:///e%3A/gitrepos/Dev/iTemper-Web/src/components/locationCard.vue) | Vue | 432 | 6 | 29 | 467 |
+| [components\login.vue](file:///e%3A/gitrepos/Dev/iTemper-Web/src/components/login.vue) | Vue | 136 | 0 | 18 | 154 |
+| [components\mydevices.vue](file:///e%3A/gitrepos/Dev/iTemper-Web/src/components/mydevices.vue) | Vue | 76 | 3 | 26 | 105 |
+| [components\mylocations.vue](file:///e%3A/gitrepos/Dev/iTemper-Web/src/components/mylocations.vue) | Vue | 50 | 3 | 14 | 67 |
+| [components\mysensors.vue](file:///e%3A/gitrepos/Dev/iTemper-Web/src/components/mysensors.vue) | Vue | 18 | 11 | 5 | 34 |
+| [components\mysettings.vue](file:///e%3A/gitrepos/Dev/iTemper-Web/src/components/mysettings.vue) | Vue | 90 | 7 | 12 | 109 |
+| [components\new-device-dialogue.vue](file:///e%3A/gitrepos/Dev/iTemper-Web/src/components/new-device-dialogue.vue) | Vue | 151 | 2 | 20 | 173 |
+| [components\new-location-dialogue.vue](file:///e%3A/gitrepos/Dev/iTemper-Web/src/components/new-location-dialogue.vue) | Vue | 191 | 2 | 17 | 210 |
+| [components\notice.vue](file:///e%3A/gitrepos/Dev/iTemper-Web/src/components/notice.vue) | Vue | 36 | 0 | 4 | 40 |
+| [components\register.vue](file:///e%3A/gitrepos/Dev/iTemper-Web/src/components/register.vue) | Vue | 160 | 0 | 17 | 177 |
+| [components\sensorTable.vue](file:///e%3A/gitrepos/Dev/iTemper-Web/src/components/sensorTable.vue) | Vue | 90 | 4 | 12 | 106 |
+| [components\toolbar.vue](file:///e%3A/gitrepos/Dev/iTemper-Web/src/components/toolbar.vue) | Vue | 115 | 0 | 7 | 122 |
+| [config.ts](file:///e%3A/gitrepos/Dev/iTemper-Web/src/config.ts) | TypeScript | 2 | 2 | 2 | 6 |
+| [helpers\index.ts](file:///e%3A/gitrepos/Dev/iTemper-Web/src/helpers/index.ts) | TypeScript | 2 | 0 | 1 | 3 |
+| [helpers\router.ts](file:///e%3A/gitrepos/Dev/iTemper-Web/src/helpers/router.ts) | TypeScript | 39 | 1 | 10 | 50 |
+| [helpers\utils.ts](file:///e%3A/gitrepos/Dev/iTemper-Web/src/helpers/utils.ts) | TypeScript | 25 | 0 | 4 | 29 |
+| [kalmanjs.d.ts](file:///e%3A/gitrepos/Dev/iTemper-Web/src/kalmanjs.d.ts) | TypeScript | 1 | 0 | 0 | 1 |
+| [main.ts](file:///e%3A/gitrepos/Dev/iTemper-Web/src/main.ts) | TypeScript | 18 | 0 | 5 | 23 |
+| [models\credentials.ts](file:///e%3A/gitrepos/Dev/iTemper-Web/src/models/credentials.ts) | TypeScript | 57 | 0 | 15 | 72 |
+| [models\device.ts](file:///e%3A/gitrepos/Dev/iTemper-Web/src/models/device.ts) | TypeScript | 35 | 7 | 11 | 53 |
+| [models\location.ts](file:///e%3A/gitrepos/Dev/iTemper-Web/src/models/location.ts) | TypeScript | 67 | 7 | 6 | 80 |
+| [models\position.ts](file:///e%3A/gitrepos/Dev/iTemper-Web/src/models/position.ts) | TypeScript | 31 | 0 | 9 | 40 |
+| [models\sensor.ts](file:///e%3A/gitrepos/Dev/iTemper-Web/src/models/sensor.ts) | TypeScript | 89 | 25 | 13 | 127 |
+| [plugins\vuetify.ts](file:///e%3A/gitrepos/Dev/iTemper-Web/src/plugins/vuetify.ts) | TypeScript | 9 | 0 | 3 | 12 |
+| [services\api-service.ts](file:///e%3A/gitrepos/Dev/iTemper-Web/src/services/api-service.ts) | TypeScript | 124 | 0 | 13 | 137 |
+| [services\device-service.ts](file:///e%3A/gitrepos/Dev/iTemper-Web/src/services/device-service.ts) | TypeScript | 36 | 0 | 6 | 42 |
+| [services\itemper.ts](file:///e%3A/gitrepos/Dev/iTemper-Web/src/services/itemper.ts) | TypeScript | 16 | 0 | 2 | 18 |
+| [services\location-service.ts](file:///e%3A/gitrepos/Dev/iTemper-Web/src/services/location-service.ts) | TypeScript | 67 | 1 | 6 | 74 |
+| [services\logger.ts](file:///e%3A/gitrepos/Dev/iTemper-Web/src/services/logger.ts) | TypeScript | 13 | 10 | 4 | 27 |
+| [services\monitor.ts](file:///e%3A/gitrepos/Dev/iTemper-Web/src/services/monitor.ts) | TypeScript | 103 | 1 | 17 | 121 |
+| [services\sensor-service.ts](file:///e%3A/gitrepos/Dev/iTemper-Web/src/services/sensor-service.ts) | TypeScript | 37 | 0 | 9 | 46 |
+| [services\storage-service.ts](file:///e%3A/gitrepos/Dev/iTemper-Web/src/services/storage-service.ts) | TypeScript | 27 | 0 | 8 | 35 |
+| [shims-tsx.d.ts](file:///e%3A/gitrepos/Dev/iTemper-Web/src/shims-tsx.d.ts) | TypeScript | 10 | 2 | 2 | 14 |
+| [shims-vue.d.ts](file:///e%3A/gitrepos/Dev/iTemper-Web/src/shims-vue.d.ts) | TypeScript | 4 | 0 | 1 | 5 |
+| [store-shims..d.ts](file:///e%3A/gitrepos/Dev/iTemper-Web/src/store-shims..d.ts) | TypeScript | 6 | 0 | 2 | 8 |
+| [store.ts](file:///e%3A/gitrepos/Dev/iTemper-Web/src/store.ts) | TypeScript | 11 | 0 | 6 | 17 |
+| [store\devices.ts](file:///e%3A/gitrepos/Dev/iTemper-Web/src/store/devices.ts) | TypeScript | 80 | 0 | 5 | 85 |
+| [store\locations.ts](file:///e%3A/gitrepos/Dev/iTemper-Web/src/store/locations.ts) | TypeScript | 152 | 0 | 9 | 161 |
+| [store\messages.ts](file:///e%3A/gitrepos/Dev/iTemper-Web/src/store/messages.ts) | TypeScript | 6 | 0 | 1 | 7 |
+| [store\notice.ts](file:///e%3A/gitrepos/Dev/iTemper-Web/src/store/notice.ts) | TypeScript | 28 | 0 | 2 | 30 |
+| [store\sensors.ts](file:///e%3A/gitrepos/Dev/iTemper-Web/src/store/sensors.ts) | TypeScript | 119 | 17 | 16 | 152 |
+| [store\settings.ts](file:///e%3A/gitrepos/Dev/iTemper-Web/src/store/settings.ts) | TypeScript | 39 | 0 | 13 | 52 |
+| [store\store.ts](file:///e%3A/gitrepos/Dev/iTemper-Web/src/store/store.ts) | TypeScript | 36 | 0 | 6 | 42 |
+| [store\user.ts](file:///e%3A/gitrepos/Dev/iTemper-Web/src/store/user.ts) | TypeScript | 73 | 0 | 6 | 79 |
+| [vue-highcharts.d.ts](file:///e%3A/gitrepos/Dev/iTemper-Web/src/vue-highcharts.d.ts) | TypeScript | 1 | 0 | 0 | 1 |
 
 [summary](results.md)

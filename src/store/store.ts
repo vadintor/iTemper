@@ -1,9 +1,5 @@
-import { ApiService } from '@/services/api-service';
-import { DeviceService } from '@/services/device-service';
-import { LocationService } from '@/services/location-service';
-import { SensorService } from '@/services/sensor-service';
-
 import { Itemper } from '@/services/itemper';
+import { Admin } from '@/store/admin';
 import { Devices} from '@/store/devices';
 import { Locations } from '@/store/locations';
 import { Notice } from '@/store/notice';
@@ -11,21 +7,11 @@ import { Sensors } from '@/store/sensors';
 import { Settings } from '@/store/settings';
 import { User } from '@/store/user';
 
-const apiService = new ApiService();
-export const itemper = new Itemper({apiService,
-    deviceService: new DeviceService(apiService),
-    locationService: new LocationService(apiService),
-    sensorService: new SensorService(apiService)});
+import { Vue } from 'vue-property-decorator';
 
-export const devices = new Devices(itemper.deviceService);
-export const locations = new Locations(itemper.locationService);
-export const notice = new Notice();
-export const sensors = new Sensors(itemper.sensorService);
-export const settings = new Settings();
-export const user = new User(itemper.apiService);
-
-export interface Store {
+export interface IStore {
     itemper: Itemper;
+    admin: Admin;
     devices: Devices;
     locations: Locations;
     notice: Notice;
@@ -34,22 +20,26 @@ export interface Store {
     user: User;
 }
 
-export const initialStore: Store  = {
-    itemper,
-    devices,
-    locations,
-    notice,
-    sensors,
-    settings,
-    user,
-};
+export class Store implements IStore {
+    public itemper: Itemper = new Itemper();
+    public admin: Admin = new Admin(this.itemper.adminService);
+    public devices: Devices = new Devices(this.itemper.deviceService);
+    public locations: Locations  = new Locations(this.itemper.locationService);
+    public notice: Notice = new Notice();
+    public sensors: Sensors = new Sensors(this.itemper.sensorService);
+    public settings: Settings = new Settings();
+    public user: User  = new User(this.itemper.apiService);
+}
+export let store = new Store();
 
-export const store: Store  = {
-    itemper,
-    devices,
-    locations,
-    notice,
-    sensors,
-    settings,
-    user,
-};
+export function init() {
+    Vue.$store = store;
+}
+
+export function reset() {
+    Vue.$store.admin.reset();
+    Vue.$store.devices.reset();
+    Vue.$store.locations.reset();
+    Vue.$store.sensors.reset();
+    Vue.$store.user.reset();
+}

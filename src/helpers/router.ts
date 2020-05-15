@@ -1,6 +1,6 @@
 import Vue from 'vue';
 import Router from 'vue-router';
-
+import Admin from '@/components/admin.vue';
 import Home from '@/components/home.vue';
 import Login from '@/components/login.vue';
 import MyDevices from '@/components/mydevices.vue';
@@ -8,8 +8,6 @@ import MyLocations from '@/components/mylocations.vue';
 import MySensors from '@/components/mysensors.vue';
 import MySettings from '@/components/mysettings.vue';
 import Register from '@/components/register.vue';
-
-import * as itemper from '@/services/itemper';
 
 import {log} from '@/services/logger';
 
@@ -20,8 +18,9 @@ Vue.use(Router);
 
 const routes = [
   { path: '/', name: 'home', component: Home},
+  { path: '/admin', name: 'admin', component: Admin},
   { path: '/login', name: 'login', component: Login},
-  { path: '/register', name: 'register', component: Register },
+  { path: '/register', name: 'register', component: Register},
   { path: '/locations', name: 'locations', component: MyLocations},
   { path: '/devices', name: 'devices', component: MyDevices},
   { path: '/settings', name: 'settings', component: MySettings },
