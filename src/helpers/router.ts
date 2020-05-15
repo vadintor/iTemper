@@ -18,7 +18,7 @@ Vue.use(Router);
 
 const routes = [
   { path: '/', name: 'home', component: Home},
-  { path: '/admin', name: 'login', component: Admin},
+  { path: '/admin', name: 'admin', component: Admin},
   { path: '/login', name: 'login', component: Login},
   { path: '/register', name: 'register', component: Register},
   { path: '/locations', name: 'locations', component: MyLocations},

@@ -9,28 +9,17 @@
                     outlined
                 >
                     <v-list-item three-line>
-                    <v-list-item-content>
-                        <div class="overline mb-4">OVERLINE</div>
-                        <v-list-item-title class="headline mb-1">Log Level</v-list-item-title>
-                        <v-list-item-subtitle>Sets itemper backend service's Log Level</v-list-item-subtitle>
-                        <v-chip 
-                            transition="scale-transition"  
-                            close>
-                                {{state.admin.mLevel}}
-                        </v-chip>
-                    </v-list-item-content>
-
-                    <v-list-item-avatar
-                        tile
-                        size="80"
-                        color="grey"
-                    ></v-list-item-avatar>
+                        <v-list-item-content>
+                            <v-list-item-title class="headline mb-1">Loggnivå</v-list-item-title>
+                            <v-list-item-subtitle>Anger detaljnivå på tjänsteloggar</v-list-item-subtitle>
+                        </v-list-item-content>
                     </v-list-item>
-
                     <v-card-actions>
-                        <v-btn :disabled="submitted" text color="orange" @click.native="onDebug()">Debug</v-btn>
-                        <v-btn :disabled="submitted" text color="orange" @click.native="onInfo()">Info</v-btn>
-                        <v-btn :disabled="submitted" text color="orange" @click.native="onInfo()">Error</v-btn>
+                        <v-btn-toggle v-model="text" color="orange" group borderless rounded tile>
+                            <v-btn value="debug" :disabled="submitted" text @click.native="onDebug()">Debug</v-btn>
+                            <v-btn value="info" :disabled="submitted" text @click.native="onInfo()">Info</v-btn>
+                            <v-btn value="error" :disabled="submitted" text @click.native="onError()">Error</v-btn>
+                        </v-btn-toggle>
                     </v-card-actions>
                 </v-card>
             </v-flex>
@@ -38,6 +27,7 @@
     </v-container>
 </div>
 </template>
+
 
 <script lang="ts">
 import * as moment from 'moment-timezone';
@@ -51,13 +41,15 @@ import { LogLevel } from '@/models/admin';
 import { log } from '@/services/logger';
 
 
-export default class MyDevices extends Vue {
+@Component({})
+export default class Admin extends Vue {
 
     public state = Vue.$store;
-
     public submitted: boolean = false;
     public errorMsg = '';
     public timeout: number = 2_000;
+
+    public level: LogLevel = LogLevel.undefined;
 
     public created(): void {
         log.debug('Admin.created()');
@@ -80,7 +72,7 @@ export default class MyDevices extends Vue {
             this.submitted = true;
             this.state.admin.updateLevel(newLevel)
             .then(() => {
-                if (this.state.admin.level != newLevel) {
+                if (this.state.admin.level !== newLevel) {
                     // This whole if-statement is a workaround
                     // Since mutation should have been carried out in admin.updateLevel already
                     this.state.admin.level = newLevel;
@@ -92,10 +84,6 @@ export default class MyDevices extends Vue {
                 this.displayError('error (' + err.status + '): ' + err.message);
             });
         }
-    }
-
-    public logLevel() {
-        return this.state.admin.level;
     }
 
     public error(): boolean {
@@ -114,3 +102,37 @@ export default class MyDevices extends Vue {
     }
 
 }
+
+</script>
+
+<style scoped>
+
+.trans-0 {
+    background-color: rgba(227, 153, 0, 0.7);
+}
+
+.trans-1 {
+    background-color: rgba(153, 10, 227, 0.7);
+}
+
+.trans-2 {
+    background-color: rgba(153, 0, 0, 0.7);
+}
+
+.trans-3 {
+    background-color: rgba(10, 153, 227, 0.7);
+}
+
+.trans-4 {
+    background-color: rgba(0, 10, 153, 0.7);
+}
+
+.trans-5 {
+    background-color: rgba(0, 227, 30, 0.7);
+}
+
+.highcharts-background {
+    background-color: rgba(255, 255, 255, 0.1);
+}
+
+</style>

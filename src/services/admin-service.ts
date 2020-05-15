@@ -18,8 +18,8 @@ export class AdminService implements IAdminService {
     }
     public setLogLevel(newLevel: LogLevel): Promise<boolean> {
         const method: Method = 'put';
-        const path = this.path + '/level';
-        const body = { level: newLevel.toString() };
+        const path = this.path;
+        const body = { level: LogLevel[newLevel] };
         return this.api.request(method, path, body);
     }
 }
