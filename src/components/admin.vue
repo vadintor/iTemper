@@ -15,8 +15,8 @@
                         </v-list-item-content>
                     </v-list-item>
                     <v-card-actions>
-                        <v-btn-toggle v-model="text" color="orange" group borderless rounded tile>
-                            <v-btn value="debug" :disabled="submitted" text @click.native="onDebug()">Debug</v-btn>
+                        <v-btn-toggle v-model="level" color="orange" group borderless rounded tile>
+                            <v-btn :loading="submitted && level==1" value="debug" :disabled="submitted" text @click.native="onDebug()">Debug</v-btn>
                             <v-btn value="info" :disabled="submitted" text @click.native="onInfo()">Info</v-btn>
                             <v-btn value="error" :disabled="submitted" text @click.native="onError()">Error</v-btn>
                         </v-btn-toggle>
@@ -55,12 +55,17 @@ export default class Admin extends Vue {
         log.debug('Admin.created()');
     }
     public onDebug() {
+            log.debug('admin.onDebug: level=' + LogLevel[this.level]);
             this.submitLevel(LogLevel.debug);
     }
     public onInfo() {
+            log.debug('admin.onInfo: level=' + LogLevel[this.level]);
+            log.startLogging();
             this.submitLevel(LogLevel.info);
     }
     public onError() {
+            log.debug('admin.onError: level=' + LogLevel[this.level]);
+            log.startLogging();
             this.submitLevel(LogLevel.error);
     }
     public submitLevel(newLevel: LogLevel) {
@@ -68,7 +73,7 @@ export default class Admin extends Vue {
             log.debug('admin.submitlevel: no changes');
             return;
         } else {
-            log.debug('admin.submitlevel: update log level: ' +  newLevel.toString());
+            log.debug('admin.submitlevel: update log level: ' +  LogLevel[newLevel]);
             this.submitted = true;
             this.state.admin.updateLevel(newLevel)
             .then(() => {

@@ -1,26 +1,32 @@
 
 class Debug {
+  private log: boolean = !process.env.production;
   private m: string;
   constructor(m: string) {
     this.m = m;
   }
   public debug(str: string) {
     const debug = 'debug: ';
-    if (!process.env.production) {
+    if (this.log) {
         console.log(debug + new Date().toISOString() + ' ' + this.m + ' ' + str);
     }
 
   }
-}
-  // let v: winston.LoggerOptions;
-// if we're not in production then log to the `console` with the format:
-// `${info.level}: ${info.message} JSON.stringify({ ...rest }) `
-//
-// if (process.env.NODE_ENV !== 'production') {
-// logger.add(new winston.transports.Console({
-//     format: winston.configure({
+  public startLogging(): void {
+    this.log = true;
+    this.debug('debug.start');
+    this.setTimer();
+  }
+  private reset(): void {
+    this.debug('debug.reset');
+    this.log = !process.env.production;
+  }
 
-//     })
-// }));
-// }
+  private setTimer() {
+    const timeout = 30_000;
+    setTimeout(() => {this.reset(); }, timeout);
+  }
+
+}
+
 export const log = new Debug('[iTemper-web]');

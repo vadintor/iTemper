@@ -14,7 +14,7 @@
                                     <v-col align-self="start">
                                         <v-card light v-show="editSensors">
                                             <v-card-text transition="slide-y-transition">
-                                            <v-list>
+                                            <v-list        style="max-height: 150px" class="overflow-y-auto">
                                             <v-list-item-group 
                                                 v-model="value"
                                                 max="5"
