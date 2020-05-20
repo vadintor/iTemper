@@ -10,18 +10,36 @@
                 >
                     <v-list-item three-line>
                         <v-list-item-content>
-                            <v-list-item-title class="headline mb-1">Loggnivå</v-list-item-title>
+                            <v-list-item-title class="headline mb-1">Loggnivå: <v-menu bottom offset-y>
+                                    <template v-slot:activator="{ on }">
+                                        <v-btn  v-on="on" :color="color()" text-color="white" ripple >
+                                            {{levelName()}}
+                                        </v-btn>
+                                    </template>
+                                    <v-list>
+                                        <v-list-item
+                                            @click="onDebug()"
+                                        >
+                                        <v-list-item-title>Debug</v-list-item-title>
+                                        </v-list-item>
+                                        <v-list-item
+                                            @click="onInfo()"
+                                        >
+                                        <v-list-item-title>Info</v-list-item-title>
+                                        </v-list-item>
+                                        <v-list-item
+                                            @click="onError()"
+                                        >
+                                        <v-list-item-title>Error</v-list-item-title>
+                                        </v-list-item>
+                                    </v-list>
+                                </v-menu></v-list-item-title>
                             <v-list-item-subtitle>Anger detaljnivå på tjänsteloggar</v-list-item-subtitle>
                         </v-list-item-content>
                     </v-list-item>
-                    <v-card-actions>
-                        <v-btn-toggle v-model="level" color="orange" group borderless rounded tile>
-                            <v-btn :loading="submitted && level==1" value="debug" :disabled="submitted" text @click.native="onDebug()">Debug</v-btn>
-                            <v-btn value="info" :disabled="submitted" text @click.native="onInfo()">Info</v-btn>
-                            <v-btn value="error" :disabled="submitted" text @click.native="onError()">Error</v-btn>
-                        </v-btn-toggle>
+                    <v-card-actions >
                     </v-card-actions>
-                </v-card>
+                </v-card>                       
             </v-flex>
         </v-layout>
     </v-container>
@@ -48,25 +66,50 @@ export default class Admin extends Vue {
     public submitted: boolean = false;
     public errorMsg = '';
     public timeout: number = 2_000;
-
-    public level: LogLevel = LogLevel.undefined;
+    public level: LogLevel = LogLevel.error;
 
     public created(): void {
         log.debug('Admin.created()');
     }
+
+    public levelName(): string {
+        log.debug('levelName=' + LogLevel[this.level]);
+        return LogLevel[this.state.admin.level];
+    }
+    public color() {
+        log.debug('color, level=' + this.state.admin.level);
+        switch (this.state.admin.level) {
+            case LogLevel.debug: {
+                return 'red';
+            }
+            case LogLevel.info: {
+                return 'orange';
+            }
+            case LogLevel.error: {
+                return 'green';
+            }
+            case LogLevel.undefined: {
+                return 'grey';
+            }
+        }
+    }
     public onDebug() {
             log.debug('admin.onDebug: level=' + LogLevel[this.level]);
-            this.submitLevel(LogLevel.debug);
+            log.startLogging();
+            this.level = LogLevel.debug;
+            this.submitLevel(this.level);
     }
     public onInfo() {
             log.debug('admin.onInfo: level=' + LogLevel[this.level]);
             log.startLogging();
-            this.submitLevel(LogLevel.info);
+            this.level = LogLevel.info;
+            this.submitLevel(this.level);
     }
     public onError() {
             log.debug('admin.onError: level=' + LogLevel[this.level]);
-            log.startLogging();
-            this.submitLevel(LogLevel.error);
+            log.stopLogging();
+            this.level = LogLevel.error;
+            this.submitLevel(this.level);
     }
     public submitLevel(newLevel: LogLevel) {
         if (this.state.admin.level === newLevel) {
@@ -77,12 +120,11 @@ export default class Admin extends Vue {
             this.submitted = true;
             this.state.admin.updateLevel(newLevel)
             .then(() => {
-                if (this.state.admin.level !== newLevel) {
-                    // This whole if-statement is a workaround
-                    // Since mutation should have been carried out in admin.updateLevel already
-                    this.state.admin.level = newLevel;
-                }
+                this.level = this.state.admin.level;
                 this.submitted = false;
+                if (this.level != LogLevel.error) {
+                    this.setLoggingTimeout();
+                }
             })
             .catch((err) => {
                 this.submitted = false;
@@ -91,19 +133,34 @@ export default class Admin extends Vue {
         }
     }
 
-    public error(): boolean {
+    private resetLogging(): void {
+        this.submitted = true;
+        this.state.admin.resetLevel()
+        .then(() => {
+            this.level = this.state.admin.level;
+        })
+        .catch((err) => {
+            this.submitted = false;
+            this.displayError('error (' + err.status + '): ' + err.message);
+        });
+    }
+    private setLoggingTimeout() {
+        const timeout = 60_000;
+        setTimeout(() => {this.resetLogging(); }, timeout);
+    }
+    public isError(): boolean {
         return this.errorMsg !== '';
     }
-    private reset(): void {
+    private resetErrorMsg(): void {
         this.errorMsg = '';
     }
     private displayError(msg: string) {
         this.errorMsg = msg;
-        this.setTimer();
+        this.setErrorMsgTimeout();
     }
-    private setTimer() {
-        const timeout = 2_250;
-        setTimeout(() => {this.reset(); }, timeout);
+    private setErrorMsgTimeout() {
+        const timeout = 2_500;
+        setTimeout(() => {this.resetErrorMsg(); }, timeout);
     }
 
 }

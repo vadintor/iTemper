@@ -17,13 +17,18 @@ class Debug {
     this.debug('debug.start');
     this.setTimer();
   }
+
+  public stopLogging(): void {
+    this.log = false;
+
+  }
   private reset(): void {
     this.debug('debug.reset');
     this.log = !process.env.production;
   }
 
   private setTimer() {
-    const timeout = 30_000;
+    const timeout = 60_000;
     setTimeout(() => {this.reset(); }, timeout);
   }
 
