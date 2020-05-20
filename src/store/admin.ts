@@ -1,8 +1,10 @@
+import { Vue  } from 'vue-property-decorator';
 import { LogLevel } from '@/models/admin';
 import { IAdminService } from '@/services/admin-service';
 export class Admin {
-    public mLevel: LogLevel = LogLevel.undefined;
+
     public mError: string = '';
+    private mLevel: LogLevel = LogLevel.error;
     private adminService: IAdminService;
 
     constructor(adminService: IAdminService) {
@@ -16,8 +18,19 @@ export class Admin {
         this.mLevel = value;
     }
 
-    public reset(): void {
-        this.mLevel = LogLevel.undefined;
+    public resetLevel(): Promise<boolean>  {
+        return new Promise ((resolve, reject) => {
+            this.adminService.setLogLevel(LogLevel.error)
+            .then((updated: boolean) => {
+                if (!updated) {
+                    reject({status: 94, message: 'Log level could not be reset'});
+                } else {
+                    Vue.set(this, 'mLevel', LogLevel.error);
+                    resolve(true);
+                }
+            })
+            .catch((e: any) => reject(e));
+        });
     }
 
     public updateLevel(newLevel: LogLevel): Promise<boolean> {
@@ -26,9 +39,9 @@ export class Admin {
             this.adminService.setLogLevel(newLevel)
             .then((updated: boolean) => {
                 if (!updated) {
-                    reject({status: 94, message: 'Log level could not be changed'});
+                    reject({status: 94, message: 'Log level could not be updated'});
                 } else {
-                    this.level = newLevel;
+                    Vue.set(this, 'mLevel', newLevel);
                     resolve(true);
                 }
             })
