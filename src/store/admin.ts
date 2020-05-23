@@ -51,7 +51,7 @@ export class Admin {
                     this.error =  'Log level could not be updated';
                     reject({status: 94, message: this.error});
                 } else {
-                    this.level = newLevel;
+                    Vue.set(this, 'mLevel', newLevel);
                     resolve(true);
                 }
             })
