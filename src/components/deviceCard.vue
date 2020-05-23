@@ -32,17 +32,31 @@
                 <thead>
                 <tr>
                     <th class="text-left">Givare</th>
+                    <th class="text-left">Modell</th>
                     <th class="text-left">Kategori</th>
-                    <th class="text-left">Mätvärde</th>
+                    <th class="text-left">Senaste mätvärde</th>
                     <th class="text-left">Tidpunkt</th>
+                    <th class="text-left">Nogrannhet, decimaler</th>
+                    <th class="text-left">Max samplingsfrekv. (Hz)</th>
+                    <th class="text-left">Antal mätvärden</th>
                 </tr>
                 </thead>
                 <tbody>
                 <tr v-for="(item,id) in state.sensors.filterByDeviceID(device.deviceID)" :key="id" >
                     <td>{{ item.desc.SN + '/' +  item.desc.port }}</td>
+                    <td>{{ item.attr.model }}</td>
                     <td>{{ item.attr.category }}</td>
-                    <td>{{ item.samples[0].value}}</td>
-                    <td>{{ time(item.samples[0].date)}}</td>
+                    <td>
+                        <span v-if="item.samples.length > 0">{{ item.samples[item.samples.length-1].value }}</span>
+                        <span v-else>-</span>
+                    </td>
+                    <td>
+                        <span v-if="item.samples.length > 0">{{ time(item.samples[item.samples.length-1].date) }}</span>
+                        <span v-else>-</span>
+                    </td>
+                    <td>{{ item.attr.accuracy }}</td>
+                    <td>{{ item.attr.maxSampleRate }}</td>
+                    <td>{{ item.samples.length }}</td>
                 </tr>
                 </tbody>
             </template>
@@ -105,7 +119,7 @@ export default class DeviceCard extends Vue {
 
     public nameRules: ValidationFunction[] = [
           (v) => !!v || 'Enter name',
-          (v) => /^[a-zA-Z0-9]+$/.test(v) && v.length >= 4 || 'Must be at least 4 characters, no white spaces or special characters allowed',
+          (v) => /^[a-zA-Z0-9\-\_]+$/.test(v) && v.length >= 4 || 'Must be at least 4 characters a-z, A-Z, 0-9, - or _, no white spaces or other special characters allowed',
         ];
     public headers = [
         {
@@ -134,7 +148,6 @@ export default class DeviceCard extends Vue {
     public overlay(id: number): string {
         return 'overlay-' + id.toString();
     }
-
     public time(date: number): string {
         return new Date(date).toLocaleTimeString();
     }

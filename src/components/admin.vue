@@ -122,7 +122,7 @@ export default class Admin extends Vue {
             .then(() => {
                 this.level = this.state.admin.level;
                 this.submitted = false;
-                if (this.level != LogLevel.error) {
+                if (this.level !== LogLevel.error) {
                     this.setLoggingTimeout();
                 }
             })
@@ -148,7 +148,7 @@ export default class Admin extends Vue {
         const timeout = 60_000;
         setTimeout(() => {this.resetLogging(); }, timeout);
     }
-    public isError(): boolean {
+    private isError(): boolean {
         return this.errorMsg !== '';
     }
     private resetErrorMsg(): void {
