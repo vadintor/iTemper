@@ -3,10 +3,10 @@ import Router from 'vue-router';
 import Admin from '@/components/admin.vue';
 import Home from '@/components/home.vue';
 import Login from '@/components/login.vue';
-import MyDevices from '@/components/mydevices.vue';
-import MyLocations from '@/components/mylocations.vue';
-import MySensors from '@/components/mysensors.vue';
-import MySettings from '@/components/mysettings.vue';
+import MyDevices from '@/components/my-devices.vue';
+import MyLocations from '@/components/my-locations.vue';
+import MySensors from '@/components/my-sensors.vue';
+import MySettings from '@/components/my-settings.vue';
 import Register from '@/components/register.vue';
 
 import {log} from '@/services/logger';
