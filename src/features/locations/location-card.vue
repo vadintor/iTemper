@@ -175,9 +175,8 @@ import {Vue, Component, Watch, Prop} from 'vue-property-decorator';
 // Models
 // import * as locations from '@/models/locations'
 import { Sensor, SensorLog, Data, Descriptor } from '@/models/sensor';
-import { Location } from '@/models/location';
 
-import { Locations } from '@/store/locations';
+import { Location, Locations } from '@/features/locations';
 import { Settings } from '@/store/settings';
 import { Sensors } from '@/store/sensors';
 // import * as messages from '@/models/messages';

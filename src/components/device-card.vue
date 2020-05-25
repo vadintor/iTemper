@@ -94,7 +94,7 @@ import {Vue, Component, Watch, Prop} from 'vue-property-decorator';
 
 // Models
 // import * as locations from '@/models/locations'
-import { Device } from '@/models/device';
+import { Device } from '@/features/devices';
 import { Sensor } from '@/models/sensor';
 
 import { log } from '@/services/logger';

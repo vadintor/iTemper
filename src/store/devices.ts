@@ -1,5 +1,5 @@
 import { IDeviceService } from '@/services/device-service';
-import { Device } from '../models/device';
+import { Device } from '../features/devices/device-data';
 import { log } from '@/services/logger';
 
 export class Devices  {

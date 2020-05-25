@@ -1,7 +1,7 @@
-import { Location } from '@/models/location';
+import { Location } from '@/features/locations';
 import { Sensor } from '@/models/sensor';
 import { store } from '@/store/store';
-import { ILocationService } from '@/services/location-service';
+import { ILocationService } from '@/features/locations/location-service';
 
 import { log } from '@/services/logger';
 export class Locations {

@@ -66,12 +66,12 @@ import {Vue, Component, Watch, Prop} from 'vue-property-decorator';
 
 // Models
 // import * as locations from '@/models/locations'
-import { Device } from '@/models/device';
+import { Device } from '@/features/devices';
 
 import { log } from '@/services/logger';
 import {json, copyToClipboard } from '@/helpers';
 
-import { Location } from '@/models/location';
+import { Location } from '@/features/locations';
 interface FileSelection {
     name: string;
     size: number;

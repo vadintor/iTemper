@@ -49,7 +49,7 @@ import { json } from '@/helpers';
 import { Status } from '@/store/user';
 
 import NewDeviceDialogue from './new-device-dialogue.vue';
-import NewLocationDialogue from './new-location-dialogue.vue';
+import NewLocationDialogue from '@/features/locations/new-location-dialogue.vue';
 
 type BooleanOrString = boolean | string;
 type ValidationFunction = (value: string) => BooleanOrString;

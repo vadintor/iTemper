@@ -1,4 +1,4 @@
-import {Storage } from './../services/storage-service';
+import {Storage } from '../../services/storage-service';
 
 export class Device {
     public mName: string = '';

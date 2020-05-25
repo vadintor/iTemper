@@ -1,5 +1,5 @@
 import { iTemperAPI } from '@/config';
-import { Device} from '@/models/device';
+import { Device} from '@/features/devices/device-data';
 
 import {json} from '@/helpers';
 import { log } from '@/services/logger';

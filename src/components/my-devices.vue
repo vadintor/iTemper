@@ -20,7 +20,7 @@ import * as moment from 'moment-timezone';
 import {Vue, Component, Watch} from 'vue-property-decorator';
 // Models
 
-import { Device } from '@/models/device';
+import { Device } from '@/features/devices';
 
 // Services
 

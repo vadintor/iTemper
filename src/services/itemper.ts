@@ -1,7 +1,7 @@
 import { ApiService } from './api-service';
 import { AdminService } from './admin-service';
 import { DeviceService } from './device-service';
-import { LocationService } from './location-service';
+import { LocationService } from '../features/locations';
 import { SensorService } from './sensor-service';
 
 export interface IiTemper {

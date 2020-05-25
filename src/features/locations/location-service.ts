@@ -1,4 +1,4 @@
-import { Location } from '@/models/location';
+import { Location } from '@/features/locations';
 import { Descriptor, Sensor } from '@/models/sensor';
 
 

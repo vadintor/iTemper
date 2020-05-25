@@ -1,5 +1,5 @@
 import { Position } from '@/models/position';
-import { Descriptor, Sensor } from './sensor';
+import { Descriptor, Sensor } from '@/models/sensor';
 
 export class Location {
     public mId: string = '';
