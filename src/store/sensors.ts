@@ -15,7 +15,8 @@
 // },
 // },
 import { ISensorService } from '@/services/sensor-service';
-import { Data, Descriptor, Sensor } from '@/models/sensor';
+import { SensorData, Descriptor } from '@/models/sensor-data';
+import { Sensor } from '@/models/sensor';
 
 import { store } from '@/store/store';
 

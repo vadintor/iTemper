@@ -14,8 +14,8 @@
 <script lang="ts">
 import {Vue, Component, Watch, Prop} from 'vue-property-decorator';
 
-import { Category, Sensor, SensorLog } from '@/models/sensor';
-
+import { Category, SensorLog } from '@/models/sensor-data';
+import { Sensor } from '@/models/sensor';
 import { Settings } from '@/store/settings';
 
 import { log } from '@/services/logger';
@@ -61,7 +61,7 @@ export default class SensorTable extends Vue {
                 return 'fa-thermometer-half';
             }
             default: {
-                return sensor.attr.category;
+                return Category[sensor.attr.category];
             }
         }
         return sensor.desc.SN + '/' +  sensor.desc.port;

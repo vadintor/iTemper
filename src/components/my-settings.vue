@@ -68,7 +68,7 @@ import { Vue, Component } from 'vue-property-decorator';
 
 import { log } from '@/services/logger';
 
-import { Category} from '@/models/sensor';
+import { Category} from '@/models/sensor-data';
 
 // export interface RootState {
 //     settings: Settings.GlobalSettings;

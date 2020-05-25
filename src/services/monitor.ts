@@ -2,7 +2,7 @@ import { iTemperWS } from '@/config';
 import { json } from '@/helpers/';
 import { log } from '@/services/logger';
 
-import { Descriptor, SensorLog } from '@/models/sensor';
+import { Descriptor, SensorLog } from '@/models/sensor-data';
 
 export enum ClientCommand {
     START_MONITOR = 'startMonitor',

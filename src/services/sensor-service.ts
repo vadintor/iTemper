@@ -1,6 +1,7 @@
 
 import { iTemperAPI, iTemperWS } from '@/config';
-import { Data, Descriptor, Sensor } from '@/models/sensor';
+import { Sensor } from '@/models/sensor';
+import { SensorData, Descriptor } from '@/models/sensor-data';
 
 import {json} from '@/helpers';
 import { log } from '@/services/logger';

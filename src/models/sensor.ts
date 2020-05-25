@@ -15,40 +15,18 @@
 // },
 // },
 import { log } from '@/services/logger';
+import {Category, Sample, Attributes, Descriptor} from '@/models/sensor-data';
 
-export enum Category {
-    Temperature, Humidity,
-}
 
-export interface Data {
-    value: number;
-    date: number;
-}
-export interface Attributes {
-    model: string;
-    category: Category;
-    accuracy: number;
-    resolution: number;
-    maxSampleRate: number;
-}
-
-export interface Descriptor {
-    SN: string;
-    port: number;
-}
-export interface SensorLog {
-    desc: string;
-    samples: Data[];
-}
 export class Sensor {
     public mId: string = '';
     public mDeviceID: string = '';
     public mDesc: Descriptor = {SN: '', port: 0};
     public mAttr: Attributes = {model: '',
                             category: Category.Temperature, accuracy: 0, resolution: 0, maxSampleRate: 0};
-    public samples: Data[] = [];
+    public samples: Sample[] = [];
 
-    constructor(desc: Descriptor, attr: Attributes, samples: Data[] = []) {
+    constructor(desc: Descriptor, attr: Attributes, samples: Sample[] = []) {
        this.mDesc = desc;
        this.mAttr = attr;
     }
@@ -116,7 +94,7 @@ export class Sensor {
         return this.samples.length > 0;
     }
 
-    public get lastSample(): Data {
+    public get lastSample(): Sample {
         return this.samples[this.samples.length];
     }
 

@@ -1,6 +1,6 @@
 import { Location } from '@/features/locations';
-import { Descriptor, Sensor } from '@/models/sensor';
-
+import { Descriptor } from '@/models/sensor-data';
+import { Sensor } from '@/models/sensor';
 
 import {json} from '@/helpers';
 import { log } from '@/services/logger';
