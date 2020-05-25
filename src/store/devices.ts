@@ -24,7 +24,9 @@ export class Devices  {
             response.forEach((device) => {
                 const deviceFound = this.mDevices.find((d) => d.deviceID === device.deviceID);
                 if (!deviceFound) {
-                    this.mDevices.push(device);
+                    const newDevice = new Device(device.name, device.deviceID);
+                    newDevice.key = device.key;
+                    this.mDevices.push(newDevice);
                 }
             });
         })
@@ -35,7 +37,9 @@ export class Devices  {
         return new Promise ((resolve, reject) => {
             this.deviceService.createDevice(name)
             .then((device) => {
-                this.mDevices.push(device);
+                const newDevice = new Device(device.name, device.deviceID);
+                newDevice.key = device.key;
+                this.mDevices.push(newDevice);
                 resolve(device);
             })
             .catch((e) => reject(e));
@@ -50,9 +54,9 @@ export class Devices  {
                 if (!thisDevice) {
                     reject({status: 95, message: 'Device id not available'});
                 } else {
-                    device.name = received.name;
+                    thisDevice.name = received.name;
+                    resolve(thisDevice);
                 }
-                resolve(device);
             } )
             .catch((e) => this.handleError(e));
         });
@@ -62,7 +66,10 @@ export class Devices  {
         this.deviceService.deleteDevice(device)
         .then((d: Device) => {
             const index = this.mDevices.indexOf(device);
-            this.mDevices.splice(index, 1);
+            if (index >= 0 ) {
+                const deleted = this.mDevices[index];
+                this.mDevices.splice(index, 1);
+            }
         })
         .catch((e) => this.handleError(e));
     }

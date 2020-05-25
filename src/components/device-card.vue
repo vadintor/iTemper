@@ -1,6 +1,6 @@
 <template>
     <v-card>
-        <v-container fill-height fluid :class="overlay(id)">
+        <v-container fill-height fluid :class="color()">
             <v-layout fill-height>
                 <v-flex  align-end flexbox>
                     <span  v-if="!showConfiguration" class="display-1">{{ name() }} </span>
@@ -145,7 +145,8 @@ export default class DeviceCard extends Vue {
     public filterSensors(sensors: Sensor[], deviceID: string): Sensor[] {
         return this.sensors.filterByDeviceID(deviceID);
     }
-    public overlay(id: number): string {
+    public color(): string {
+        const id = this.device.colorID;
         return 'overlay-' + id.toString();
     }
     public time(date: number): string {

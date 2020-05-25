@@ -28,8 +28,11 @@ export class Locations {
             response.forEach((location) => {
                 const locationFound = this.mLocations.find((l) => l._id === location._id);
                 if (!locationFound) {
-                    this.mapSensorDesc(location);
-                    this.mLocations.push(location);
+                    const newLocation = new Location(location.name, location.color);
+                    newLocation._id = location._id;
+                    location.path ? newLocation.path = location.path : newLocation.path = '';
+                    this.mapSensorDesc(newLocation);
+                    this.mLocations.push(newLocation);
                 }
             });
         })
@@ -40,23 +43,31 @@ export class Locations {
         return new Promise ((resolve, reject) => {
             this.locationService.createLocation(form)
             .then((location: Location) => {
-                this.mLocations.push(location);
+                const newLocation = new Location(location.name, location.color);
+                newLocation._id = location._id;
+                location.path ? newLocation.path = location.path : newLocation.path = '';
+                this.mLocations.push(newLocation);
                 resolve(location);
             })
             .catch((e) => reject(e));
         });
     }
 
-    public deleteLocation(location: Location): Promise<Location> {
+    public deleteLocation(location: Location): Promise<Location | undefined> {
         this.resetError();
         return new Promise ((resolve, reject) => {
             this.locationService.deleteLocation(location)
             .then((loc: Location) => {
                 const index = this.mLocations.findIndex((l) => l.mId === loc.mId);
+
                 if (index >= 0 ) {
+                    const deleted = this.mLocations[index];
                     this.mLocations.splice(index, 1);
+                    resolve(deleted);
+                } else {
+                    resolve(undefined);
                 }
-                resolve(location);
+
             })
             .catch((e) => reject(e));
         });
@@ -89,8 +100,8 @@ export class Locations {
                     reject({status: 96, message: 'location id not available'});
                 } else {
                     location.name = received.name;
+                    resolve(location);
                 }
-                resolve(location);
             })
             .catch((e: any) => reject(e));
         });
@@ -105,8 +116,8 @@ export class Locations {
                     reject({status: 96, message: 'location id not available'});
                 } else {
                     location.color = received.color;
+                    resolve(location);
                 }
-                resolve(location);
             })
             .catch((e: any) => reject(e));
         });
@@ -121,6 +132,7 @@ export class Locations {
                     reject({status: 96, message: 'location id not available'});
                 } else {
                     thisLocation.sensorDesc = received.sensorDesc;
+                    log.debug('updateSensors');
                     this.mapSensorDesc(thisLocation);
                     resolve(thisLocation);
                 }
@@ -130,11 +142,13 @@ export class Locations {
         });
     }
     public triggerMapSensorDesc() {
+        log.debug('triggerMapSensorDesc');
         for (const location of this.mLocations) {
             this.mapSensorDesc(location);
         }
     }
     private mapSensorDesc(location: Location) {
+        log.debug('mapSensorDesc, location=' + JSON.stringify(location));
         location.sensors = [];
         for (const desc of location.sensorDesc) {
             const sensor = store.sensors.find(desc);
