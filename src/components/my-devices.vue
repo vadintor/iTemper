@@ -28,7 +28,7 @@ import { log } from '@/services/logger';
 
 
 // Child components
-import DeviceCard from './deviceCard.vue';
+import DeviceCard from '@/components/device-card.vue';
 
 @Component({
     components: {

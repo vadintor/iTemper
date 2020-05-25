@@ -22,7 +22,7 @@ import { Status } from '@/store/user';
 import { log } from '@/services/logger';
 
 // Child components
-import LocationCard from './locationCard.vue';
+import LocationCard from '@/components/location-card.vue';
 
 
 @Component({

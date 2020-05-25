@@ -19,9 +19,9 @@ import { init } from '@/store/store';
 init();
 import Admin from '@/components/admin.vue';
 import Login from '@/components/login.vue';
-import MyDevices from '@/components/mydevices.vue';
-import MyLocations from '@/components/mylocations.vue';
-import MySensors from '@/components/mysensors.vue';
+import MyDevices from '@/components/my-devices.vue';
+import MyLocations from '@/components/my-locations.vue';
+import MySensors from '@/components/my-sensors.vue';
 import Register from '@/components/register.vue';
 import Toolbar from '@/components/toolbar.vue';
 
