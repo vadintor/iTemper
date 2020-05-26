@@ -42,6 +42,7 @@ export default class LocationView extends Vue {
         this.state.locations.getLocations();
     }
     public getSensorData() {
+        log.debug('LocationView.getSensorData, status=' + Status[this.state.user.status]);
         if (this.state.user.status === Status.LOGGED_IN) {
             this.state.sensors.getSensorsLast24h();
         }

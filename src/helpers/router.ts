@@ -37,7 +37,7 @@ router.beforeEach((to, from, next) => {
   const publicPaths: string[] = ['/', '/login', '/register'];
 
   const authRequired = !publicPaths.find( (path) => path === to.path);
-  log.debug('router.beforeEach user.status=' +  Vue.$store.user.status);
+  log.debug('router.beforeEach user.status=' +  Status[Vue.$store.user.status]);
   if (authRequired && Vue.$store.user.status !== Status.LOGGED_IN) {
     log.debug('router.beforeEach Log in required!!!');
     return next({

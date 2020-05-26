@@ -169,7 +169,7 @@ export default class NewLocationDialogue extends Vue {
         this.setTimer();
     }
     private setTimer() {
-        const timeout = 2_250;
+        const timeout = 5_250;
         setTimeout(() => {this.reset(); }, timeout);
     }
 }

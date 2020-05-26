@@ -17,45 +17,51 @@
 import { log } from '@/services/logger';
 import {Category, Sample, Attributes, Descriptor} from '@/models/sensor-data';
 
+import { Vue  } from 'vue-property-decorator';
 
 export class Sensor {
-    public mId: string = '';
-    public mDeviceID: string = '';
-    public mDesc: Descriptor = {SN: '', port: 0};
-    public mAttr: Attributes = {model: '',
+    private mId: string = '';
+    private mDeviceID: string = '';
+    private mDesc: Descriptor = {SN: '', port: 0};
+    private mAttr: Attributes = {model: '',
                             category: Category.Temperature, accuracy: 0, resolution: 0, maxSampleRate: 0};
-    public samples: Sample[] = [];
+    private mSamples: Sample[] = [];
 
     constructor(desc: Descriptor, attr: Attributes, samples: Sample[] = []) {
-       this.mDesc = desc;
-       this.mAttr = attr;
+       this.desc = desc;
+       this.attr = attr;
     }
     public get _id(): string {
         return this.mId;
     }
     public set _id(value: string) {
-        this.mId = value;
+        Vue.set(this, 'mId', value);
     }
     public get deviceID(): string {
         return this.mDeviceID;
     }
+    public set deviceID(value: string) {
+        Vue.set(this, 'mDeviceID', value);
+    }
     public get desc(): Descriptor {
         return this.mDesc;
     }
-
-    // public set desc(desc: Descriptor) {
-    //     this.mDesc = desc;
-    // }
-
+    public set desc(value: Descriptor) {
+        Vue.set(this, 'mDesc', value);
+    }
     public get attr(): Attributes {
         return this.mAttr;
     }
+    public set attr(value: Attributes) {
+        Vue.set(this, 'mAttr', value);
+    }
 
-    // public set attr(attr: Attributes) {
-    //     this.mAttr = attr;
-    // }
-
-
+    public get samples(): Sample[]  {
+        return this.mSamples;
+    }
+    public set samples(value: Sample[]) {
+        Vue.set(this, 'mSamples', value);
+    }
     public get lastValue(): string {
         if (this.hasSamples()) {
             return this.samples[this.samples.length - 1].value.toString();
@@ -63,7 +69,6 @@ export class Sensor {
             return '-';
         }
     }
-
     public get lastTime(): string {
         if (this.hasSamples()) {
             return new Date(this.samples[this.samples.length - 1].date).toLocaleTimeString();
@@ -97,8 +102,4 @@ export class Sensor {
     public get lastSample(): Sample {
         return this.samples[this.samples.length];
     }
-
-    // public set samples(samples: Data[]) {
-    //     this.mSamples = samples;
-    // }
 }

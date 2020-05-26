@@ -1,9 +1,12 @@
 import { Location } from '@/features/locations';
 import { Sensor } from '@/models/sensor';
 import { store } from '@/store/store';
-import { ILocationService } from '@/features/locations/location-service';
+import { ILocationResponse, ILocationService, LocationService } from '@/features/locations/location-service';
+
+import { Vue  } from 'vue-property-decorator';
 
 import { log } from '@/services/logger';
+import { LogLevel } from '@/models/admin';
 export class Locations {
     public mLocations: Location[] = [];
     public mError: string = '';
@@ -24,30 +27,30 @@ export class Locations {
         log.debug('Locations.getLocations');
         this.resetError();
         this.locationService.getLocations()
-        .then((response: Location[]) => {
-            response.forEach((location) => {
+        .then((received: ILocationResponse[]) => {
+            log.debug('getLocations.received=' + JSON.stringify(received));
+            received.forEach((location) => {
                 const locationFound = this.mLocations.find((l) => l._id === location._id);
                 if (!locationFound) {
-                    const newLocation = new Location(location.name, location.color);
-                    newLocation._id = location._id;
-                    location.path ? newLocation.path = location.path : newLocation.path = '';
+                    const newLocation = LocationService.newLocation(location);
                     this.mapSensorDesc(newLocation);
                     this.mLocations.push(newLocation);
                 }
             });
         })
-        .catch((e) => this.handleError(e));
+        .catch((e) => {
+            log.debug('ERROR getLocations.catch error=' + e);
+            this.handleError(e);
+        });
     }
     public createLocation(form: FormData): Promise<Location> {
         this.resetError();
         return new Promise ((resolve, reject) => {
             this.locationService.createLocation(form)
-            .then((location: Location) => {
-                const newLocation = new Location(location.name, location.color);
-                newLocation._id = location._id;
-                location.path ? newLocation.path = location.path : newLocation.path = '';
+            .then((received: ILocationResponse) => {
+                const newLocation = LocationService.newLocation(received);
                 this.mLocations.push(newLocation);
-                resolve(location);
+                resolve(newLocation);
             })
             .catch((e) => reject(e));
         });
@@ -57,9 +60,8 @@ export class Locations {
         this.resetError();
         return new Promise ((resolve, reject) => {
             this.locationService.deleteLocation(location)
-            .then((loc: Location) => {
-                const index = this.mLocations.findIndex((l) => l.mId === loc.mId);
-
+            .then((received: ILocationResponse) => {
+                const index = this.mLocations.findIndex((l) => l.mId === received._id);
                 if (index >= 0 ) {
                     const deleted = this.mLocations[index];
                     this.mLocations.splice(index, 1);
@@ -67,7 +69,6 @@ export class Locations {
                 } else {
                     resolve(undefined);
                 }
-
             })
             .catch((e) => reject(e));
         });
@@ -77,7 +78,7 @@ export class Locations {
         this.resetError();
         return new Promise ((resolve, reject) => {
             this.locationService.updateFile(form, location)
-            .then((received: Location) => {
+            .then((received: ILocationResponse) => {
                 const thisLocation = this.mLocations.find((l) => l._id === received._id);
                 if (!thisLocation) {
                     reject({status: 96, message: 'location id not available'});
@@ -94,7 +95,7 @@ export class Locations {
         this.resetError();
         return new Promise ((resolve, reject) => {
             this.locationService.updateName(newName, location)
-            .then((received: Location) => {
+            .then((received: ILocationResponse) => {
                 const thisLocation = this.mLocations.find((l) => l._id === received._id);
                 if (!thisLocation) {
                     reject({status: 96, message: 'location id not available'});
@@ -110,7 +111,7 @@ export class Locations {
         this.resetError();
         return new Promise ((resolve, reject) => {
             this.locationService.updateColor(newColor, location)
-            .then((received: Location) => {
+            .then((received: ILocationResponse) => {
                 const thisLocation = this.mLocations.find((l) => l._id === received._id);
                 if (!thisLocation) {
                     reject({status: 96, message: 'location id not available'});
@@ -126,7 +127,7 @@ export class Locations {
         this.resetError();
         return new Promise ((resolve, reject) => {
             this.locationService.updateSensors(newSensors, location)
-            .then((received: Location) => {
+            .then((received: ILocationResponse) => {
                 const thisLocation = this.mLocations.find((l) => l._id === received._id);
                 if (!thisLocation) {
                     reject({status: 96, message: 'location id not available'});
@@ -149,7 +150,7 @@ export class Locations {
     }
     private mapSensorDesc(location: Location) {
         log.debug('mapSensorDesc, location=' + JSON.stringify(location));
-        location.sensors = [];
+        Vue.set(location, 'sensors', []);
         for (const desc of location.sensorDesc) {
             const sensor = store.sensors.find(desc);
             if (sensor) {

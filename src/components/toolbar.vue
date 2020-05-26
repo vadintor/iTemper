@@ -48,7 +48,7 @@ import { json } from '@/helpers';
 
 import { Status } from '@/store/user';
 
-import NewDeviceDialogue from './new-device-dialogue.vue';
+import NewDeviceDialogue from '@/components/new-device-dialogue.vue';
 import NewLocationDialogue from '@/features/locations/new-location-dialogue.vue';
 
 type BooleanOrString = boolean | string;
@@ -110,7 +110,7 @@ export default class Toolbar extends Vue {
         router.push({name: 'home'});
     }
     public created() {
-        log.debug('Toolbar.created(), user status=' + this.user.status.toString());
+        log.debug('Toolbar.created(), user status=' + Status[this.user.status]);
     }
 }
 </script>
