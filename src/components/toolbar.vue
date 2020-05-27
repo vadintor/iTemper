@@ -23,17 +23,18 @@
             <v-app-bar-nav-icon v-if="user.isLoggedIn()" @click.stop="drawer = !drawer"></v-app-bar-nav-icon>
             <v-toolbar-title>iTemper</v-toolbar-title>
             <new-device-dialogue v-if="user.isLoggedIn() && showNewDeviceDialogue"></new-device-dialogue>
-            <new-location-dialogue v-if="user.isLoggedIn() && showNewLocationDialogue"></new-location-dialogue>
+            <new-location-dialogue v-if="user.isLoggedIn() && showNewLocationDialogue" @closeDialogue="toggleLocationDialogue"></new-location-dialogue>
             <v-spacer></v-spacer>
             <v-btn  v-if="user.isLoggedOut()" outlined class="signlog" @click="signup">Sign up</v-btn>
             <v-btn  v-if="user.isLoggedOut()" transition="scale-transition" outlined class="signlog" @click="login">Login</v-btn>
-            <v-chip @click="logout()" ripple
+            <v-chip ripple
                 v-if="user.isLoggedIn()" 
                 transition="scale-transition"  
                 color="#2591E9"
                 class="signlog" 
-                close>
-                    <v-icon >fa-user</v-icon>
+                close
+                 @click:close="logout">
+                    <v-icon>fa-user</v-icon>
                     {{user.credentials.mEmail}}
             </v-chip>
         </v-app-bar>
@@ -112,6 +113,11 @@ export default class Toolbar extends Vue {
     public created() {
         log.debug('Toolbar.created(), user status=' + Status[this.user.status]);
     }
+    public toggleLocationDialogue() {
+        this.showNewLocationDialogue =! this.showNewLocationDialogue;
+        log.debug('toolbar.toggleLocationDialogue=' + this.showNewLocationDialogue)
+    }
+
 }
 </script>
 

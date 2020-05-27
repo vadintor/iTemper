@@ -1,29 +1,23 @@
-import { Location } from '@/features/locations';
-import { Descriptor } from '@/models/sensor-data';
+import { Location, ILocationData } from '@/features/locations';
 import { Sensor } from '@/models/sensor';
+import { SensorProxy} from '@/models/sensor-proxy';
+import { Descriptor } from '@/models/sensor-data';
 import { IApiService, Method } from '@/services/api-service';
 import { log } from '@/services/logger';
 
-export interface ILocationResponse {
-    _id: string;
-    name: string;
-    color: string;
-    path: string;
-    sensorDesc: Descriptor[];
-}
 export interface ILocationService {
-        getLocations(): Promise<ILocationResponse[]>;
-        createLocation(form: FormData): Promise<ILocationResponse>;
-        updateFile(form: FormData, location: Location): Promise<ILocationResponse>;
-        updateName(newName: string, location: Location): Promise<ILocationResponse>;
-        updateColor(newColor: string, location: Location): Promise<ILocationResponse>;
-        updateSensors(newSensors: Sensor[], location: Location): Promise<ILocationResponse>;
+        getLocations(): Promise<ILocationData[]>;
+        createLocation(form: FormData): Promise<ILocationData>;
+        updateFile(form: FormData, location: Location): Promise<ILocationData>;
+        updateName(newName: string, location: Location): Promise<ILocationData>;
+        updateColor(newColor: string, location: Location): Promise<ILocationData>;
+        updateSensors(newSensors: Array<Sensor | SensorProxy>, location: Location): Promise<ILocationData>;
         // updateLocation(location: Location): Promise<Location>;
-        deleteLocation(location: Location): Promise<ILocationResponse>;
+        deleteLocation(location: Location): Promise<ILocationData>;
 }
 export class LocationService implements ILocationService {
 
-    public static newLocation(response: ILocationResponse): Location {
+    public static newLocation(response: ILocationData): Location {
         const location = new Location (response.name, response.color);
         location._id = response._id;
         response.path ? location.path = response.path : response.path = '';
@@ -37,19 +31,19 @@ export class LocationService implements ILocationService {
     constructor(apiService: IApiService) {
         this.api = apiService;
     }
-    public getLocations(): Promise<ILocationResponse[]> {
+    public getLocations(): Promise<ILocationData[]> {
         log.debug('LocationService. getLocations');
         const method: Method = 'get';
         return this.api.request(method, this.path);
     }
-    public createLocation(form: FormData): Promise<ILocationResponse> {
+    public createLocation(form: FormData): Promise<ILocationData> {
         const method: Method = 'post';
         const config = { headers: {
             'Content-Type': 'multipart/form-data',
         }};
         return this.api.request(method, this.path, form, config);
     }
-    public  updateFile(form: FormData, location: Location): Promise<ILocationResponse> {
+    public  updateFile(form: FormData, location: Location): Promise<ILocationData> {
         const path = this.path + '/' + location._id + '/file';
         const method: Method = 'put';
         const config = { headers: {
@@ -57,19 +51,19 @@ export class LocationService implements ILocationService {
         }};
         return this.api.request(method, path, form, config);
     }
-    public updateName(newName: string, location: Location): Promise<ILocationResponse> {
+    public updateName(newName: string, location: Location): Promise<ILocationData> {
         const path = this.path + '/' + location._id + '/name';
         const method: Method = 'put';
         const body = { name: newName };
         return this.api.request(method, path, body);
     }
-    public updateColor(newColor: string, location: Location): Promise<ILocationResponse> {
+    public updateColor(newColor: string, location: Location): Promise<ILocationData> {
         const path = this.path + '/' + location._id + '/color';
         const method: Method = 'put';
         const body = { color: newColor };
         return this.api.request(method, path, body);
     }
-    public updateSensors(newSensors: Sensor[], location: Location): Promise<ILocationResponse> {
+    public updateSensors(newSensors: Array<Sensor | SensorProxy>, location: Location): Promise<ILocationData> {
         const path = this.path + '/' + location._id + '/sensors';
         const method: Method = 'put';
         const sensorDesc: Descriptor[] = [];
@@ -79,7 +73,7 @@ export class LocationService implements ILocationService {
         const body = { sensorDesc };
         return this.api.request(method, path, body);
     }
-    public deleteLocation(location: Location): Promise<ILocationResponse> {
+    public deleteLocation(location: Location): Promise<ILocationData> {
         const path = this.path + '/' + location._id;
         const method: Method = 'delete';
         return this.api.request(method, path, location);

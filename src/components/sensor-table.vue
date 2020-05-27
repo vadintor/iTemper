@@ -16,6 +16,7 @@ import {Vue, Component, Watch, Prop} from 'vue-property-decorator';
 
 import { Category, SensorLog } from '@/models/sensor-data';
 import { Sensor } from '@/models/sensor';
+import { SensorProxy } from '@/models/sensor-proxy';
 import { Settings } from '@/store/settings';
 
 import { log } from '@/services/logger';
@@ -25,7 +26,7 @@ import * as utils from '@/helpers';
 @Component({})
 export default class SensorTable extends Vue {
 
-    @Prop() public sensors!: Sensor[];
+    @Prop() public sensors!: Array<Sensor | SensorProxy>;
 
     public state = Vue.$store;
     public settings: Settings = Vue.$store.settings;
@@ -69,26 +70,31 @@ export default class SensorTable extends Vue {
     public unit(category: Category): string {
         return this.settings.unit(category);
     }
-    public sampleValue(sensor: Sensor): string {
+    public sampleValue(sensor: Sensor | SensorProxy): string {
+        if (sensor instanceof Sensor) {
         log.debug('sensorTable.sampleValue:' + JSON.stringify(sensor.samples.length));
-        const lastSample = sensor.samples.length;
-        if (lastSample > 0) {
-            const multiplier = Math.pow(10, this.settings.resolution || 0);
-            const value = sensor.samples[lastSample - 1].value;
-            return this.round(value, 0.5).toString().replace('.', ',') + ' ' + this.unit(sensor.attr.category);
+            const lastSample = sensor.samples.length;
+            if (lastSample > 0) {
+                const multiplier = Math.pow(10, this.settings.resolution || 0);
+                const value = sensor.samples[lastSample - 1].value;
+                return this.round(value, 0.5).toString().replace('.', ',') + ' ' + this.unit(sensor.attr.category);
+            } else {
+                return '-';
+            }
         } else {
-            return '-';
+            return  'Still waiting for samples of ' + sensor.name;
         }
-
     }
     public sampleTime(sensor: Sensor ) {
-        log.debug('sensorTable: lastSample=' + JSON.stringify(sensor.samples.length));
-        const lastSample = sensor.samples.length;
-        if (lastSample > 0) {
-            const date: number = sensor.samples[lastSample - 1].date;
-            return utils.toTime(date);
-        } else {
-            return '-';
+        if (sensor instanceof Sensor) {
+            log.debug('sensorTable: lastSample=' + JSON.stringify(sensor.samples.length));
+            const lastSample = sensor.samples.length;
+            if (lastSample > 0) {
+                const date: number = sensor.samples[lastSample - 1].date;
+                return utils.toTime(date);
+            } else {
+                return '-';
+            }
         }
     }
     // round(2.74, 0.1) = 2.7

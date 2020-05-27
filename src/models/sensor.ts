@@ -15,21 +15,34 @@
 // },
 // },
 import { log } from '@/services/logger';
-import {Category, Sample, Attributes, Descriptor} from '@/models/sensor-data';
-
+import {Category, Sample, Attributes, Descriptor, SensorData} from '@/models/sensor-data';
+import { SensorProxy } from '@/models/sensor-proxy';
 import { Vue  } from 'vue-property-decorator';
 
-export class Sensor {
+export class Sensor extends SensorProxy {
     private mId: string = '';
     private mDeviceID: string = '';
-    private mDesc: Descriptor = {SN: '', port: 0};
-    private mAttr: Attributes = {model: '',
-                            category: Category.Temperature, accuracy: 0, resolution: 0, maxSampleRate: 0};
+    private mAttr: Attributes = {
+        model: '', category: Category.Temperature, accuracy: 0, resolution: 0, maxSampleRate: 0,
+    };
     private mSamples: Sample[] = [];
 
-    constructor(desc: Descriptor, attr: Attributes, samples: Sample[] = []) {
-       this.desc = desc;
-       this.attr = attr;
+    constructor(data: SensorData) {
+            super(data.desc);
+            this.update(data);
+    }
+    public update(sensorData: SensorData) {
+        this._id = sensorData._id;
+        this.deviceID = sensorData.deviceID;
+        this.desc = sensorData.desc;
+        this.attr = sensorData.attr;
+        for (const sample of sensorData.samples) {
+            this.samples.push(sample);
+        }
+
+    }
+    public isProxy() {
+        return false;
     }
     public get _id(): string {
         return this.mId;
@@ -43,19 +56,12 @@ export class Sensor {
     public set deviceID(value: string) {
         Vue.set(this, 'mDeviceID', value);
     }
-    public get desc(): Descriptor {
-        return this.mDesc;
-    }
-    public set desc(value: Descriptor) {
-        Vue.set(this, 'mDesc', value);
-    }
     public get attr(): Attributes {
         return this.mAttr;
     }
     public set attr(value: Attributes) {
         Vue.set(this, 'mAttr', value);
     }
-
     public get samples(): Sample[]  {
         return this.mSamples;
     }
@@ -76,29 +82,24 @@ export class Sensor {
             return '-';
         }
     }
-    public get name(): string {
-        log.debug('sensor.name');
-        return this.mDesc.SN + '/' + this.mDesc.port;
-    }
     public get category(): Category {
-        return this.mAttr.category;
+        return this.attr.category;
     }
     public get model(): string {
-        return this.mAttr.model;
+        return this.attr.model;
     }
     public get accuracy(): number {
-        return this.mAttr.accuracy;
+        return this.attr.accuracy;
     }
     public get resolution(): number {
-        return this.mAttr.resolution;
+        return this.attr.resolution;
     }
     public get maxSampleRate(): number {
-        return this.mAttr.maxSampleRate;
+        return this.attr.maxSampleRate;
     }
     public hasSamples(): boolean {
         return this.samples.length > 0;
     }
-
     public get lastSample(): Sample {
         return this.samples[this.samples.length];
     }

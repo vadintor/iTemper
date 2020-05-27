@@ -14,37 +14,30 @@
                                     <v-col align-self="start">
                                         <v-card light v-show="editSensors">
                                             <v-card-text transition="slide-y-transition">
-                                            <v-list        style="max-height: 150px" class="overflow-y-auto">
+                                            <v-list style="max-height: 150px" class="overflow-y-auto">
                                             <v-list-item-group 
-                                                v-model="value"
+                                                v-model="seletedSensors"
                                                 max="5"
                                                 multiple
                                             >
-                                                <template v-for="(item, i) in sensors.all">
-                                                <v-divider
-                                                    v-if="!item"
-                                                    :key="`divider-${i}`"
-                                                ></v-divider>
+                                                <template v-for="(sensor, i) in sensors.all">
                                                 <v-list-item
-                                                    v-else
-                                                    :key="`item-${i}`"
-                                                    :value="item"
+                                                    :key="`sensor-${i}`"
+                                                    :value="sensor"
                                                     active-class="deep-purple--text text--accent-4"
                                                 >
-                                                    <template v-slot:default="{ active, toggle }">
                                                     <v-list-item-content>
-                                                        <v-list-item-title >{{sensorName(item)}}</v-list-item-title>
+                                                        <v-list-item-title >{{sensorName(sensor)}}</v-list-item-title>
                                                     </v-list-item-content>
 
                                                     <v-list-item-action>
                                                         <v-checkbox
-                                                        :input-value="active"
-                                                        :true-value="item"
+                                                        :input-value="isSelected(sensor)"
+                                                        :true-value="seletedSensors"
                                                         color="deep-purple accent-4"
-                                                        @click="toggle"
+                                                        @click="toggleSensor(sensor)"
                                                         ></v-checkbox>
                                                     </v-list-item-action>
-                                                    </template>
                                                 </v-list-item>
                                                 </template>
                                             </v-list-item-group>
@@ -66,7 +59,7 @@
                                                         label="Bakgrundbild"
                                                         :rules="Filerules"
                                                         accept="image/png, image/jpeg"
-                                                        :show-size="fileSize()>0"
+                                                        show-size
                                                         counter chips
                                                         v-model="newImage"
                                                         prepend-icon="fa-file-image"
@@ -75,7 +68,7 @@
                                             </v-card-text>
 
                                             <v-card-actions>
-                                                <v-btn class="ma-2" :disabled="!fileFormValid" color="blue" text @click.native="submitFile()">
+                                                <v-btn class="ma-2" :disabled="!fileFormValid || !this.newImage" color="blue" text @click.native="submitFile()">
                                                     Spara
                                                 </v-btn>
                                                 <v-btn class="ma-2" color="orange" text @click.native="cancelEditFile()">
@@ -118,7 +111,7 @@
                                                 <v-icon x-large>fa-fill</v-icon>
                                             </v-btn>
                                         </div>
-                                        <SensorTable v-show="!editSensors" :sensors="mySensors()"></SensorTable>
+                                        <SensorTable v-show="!editSensors" :sensors="location.sensors"></SensorTable>
                                     </v-col>
                                 </v-row>
                             </v-container>
@@ -176,10 +169,11 @@ import {Vue, Component, Watch, Prop} from 'vue-property-decorator';
 // import * as locations from '@/models/locations'
 import { SensorLog, Sample, Descriptor } from '@/models/sensor-data';
 import { Sensor } from '@/models/sensor';
-
+import { SensorProxy } from '@/models/sensor-proxy';
 import { Location, Locations } from '@/features/locations';
 import { Settings } from '@/store/settings';
 import { Sensors } from '@/store/sensors';
+
 // import * as messages from '@/models/messages';
 // Services
 
@@ -205,12 +199,12 @@ export default class LocationCard extends Vue {
     @Prop() public height!: number;
 
     public items: string[] =  [];
-    public value: Sensor[] =  [];
+    public seletedSensors: Array<Sensor | SensorProxy> = []
     public sensorDesc: Descriptor[] = [];
 
     public nameRules: ValidationFunction[] = [
           (v) => !!v || 'Enter name',
-          (v) => /^[a-öA-Ö0-9]+$/.test(v) && v.length >= 4 || 'Must be at least 4 characters, no white spaces or special characters allowed',
+          (v) => /^[a-öA-Ö0-9]+$/.test(v) && v.length >= 4 && v.length <=32 || 'Must be 4-32 characters, no white spaces or special characters allowed',
         ];
     public Filerules: FileValidationFunction[] = [
         (v) => !v || v.size < 2_000_000 || 'File size should be less than 2 MB!',
@@ -242,18 +236,6 @@ export default class LocationCard extends Vue {
     public errorMsg = '';
     public timeout: number = 2_000;
 
-    public mySensors(): Sensor[] {
-        for (const desc of this.location.sensorDesc) {
-            const mapped = this.location.sensors.find((s) => s.desc.SN === desc.SN && s.desc.port === desc.port);
-            if (!mapped) {
-                const sensor =  this.sensors.find(desc);
-                if (sensor) {
-                    this.location.sensors.push(sensor);
-                }
-            }
-        }
-        return this.location.sensors;
-    }
     public toggleConfiguration() {
         this.showConfiguration = !this.showConfiguration;
         if (this.showConfiguration) {
@@ -262,7 +244,7 @@ export default class LocationCard extends Vue {
         }
     }
     public fileSize(): number {
-        return this.newImage.size;
+        return (this.newImage === undefined || this.newImage.size === undefined) ? 0 : this.newImage.size;
     }
     public locationImage(): string {
         const path = iTemperAPI + this.location.path;
@@ -275,32 +257,40 @@ export default class LocationCard extends Vue {
             }
         }
     }
-    public locationSensors() {
-        for (const sensor of this.location.sensors) {
-            if (!this.value.find((i) => i.name === sensor.name)) {
-            // this.value.push(sensor.name);
-            }
-        }
+    // public locationSensors() {
+    //     for (const sensor of this.location.sensors) {
+    //         if (!this.seletedSensors.find((i) => i.name === sensor.name)) {
+    //         // this.value.push(sensor.name);
+    //         }
+    //     }
+    // }
+    public isSelected(sensor: Sensor) {
+        return this.seletedSensors.find((s) => s.desc === sensor.desc);
     }
-    public updateLocationSensors(e: any) {
-        log.debug('locationCard.updateLocationSensors ' + JSON.stringify(e));
-        this.locationSensors();
-    }
+    // public updateLocationSensors(e: any) {
+    //     log.debug('locationCard.updateLocationSensors ' + JSON.stringify(e));
+    //     this.locationSensors();
+    // }
     public onEditName() {
         this.editName = true;
         this.locationName = this.location.name.slice();
     }
     public onEditSensors() {
+        this.seletedSensors = [];
+        for (const sensor of this.location.sensors) {
+            this.seletedSensors.push(sensor);
+        }
         this.editSensors = true;
     }
     public cancelEditSensors() {
             this.editSensors = false;
     }
     public submitSensors() {
-        log.debug('locationCard.submitSensors: update sensors');
+        log.debug('locationCard.submitSensors: update sensors='  + JSON.stringify(this.seletedSensors));
         this.submitted = true;
-        this.locations.updateSensors(this.value, this.location)
+        this.locations.updateSensors(this.seletedSensors, this.location)
         .then((location) => {
+
             this.submitted = false;
             this.editSensors = false;
         })
@@ -396,9 +386,15 @@ export default class LocationCard extends Vue {
                 this.displayError('error (' + err.status + '): ' + err.message);
             });
     }
-     public toggle(e: any) {
-        log.debug('toggle' + JSON.stringify(e));
-        return false;
+     public toggleSensor(sensor: Sensor) {
+         const index = this.seletedSensors.indexOf(sensor);
+         if (index >= 0) {
+             // remove
+             this.seletedSensors.splice(index, 1);
+         } else {
+             // add
+             this.seletedSensors.push(sensor);
+         }
     }
     public overlay() {
         return 'background-color: ' + hexToRgba(this.location.color, 0.3);
