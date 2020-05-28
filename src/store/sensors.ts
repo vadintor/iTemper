@@ -85,8 +85,24 @@ export class Sensors  {
     // getSensorSamples(desc: Descriptor): Promise<Data[]>
 
     public find(desc: Descriptor): Sensor | SensorProxy | undefined {
-        return this.all.find((s) =>
+        const found = this.all.find((s) =>
         s.desc.SN === desc.SN && s.desc.port === desc.port);
+        log.debug('sensors.find');
+        const isSensor = found && found instanceof Sensor;
+        const isSensorProxy = found && found instanceof SensorProxy;
+
+        if (!found) {
+            log.debug('sensors.find: nothing found');
+        } else {
+            log.debug('sensors.find: found=' + JSON.stringify(found.desc));
+            if (isSensor) {
+                log.debug('sensors.find: found is Sensor');
+            }
+            if (isSensorProxy) {
+                log.debug('sensors.find: found is SensorProxy');
+            }
+        }
+        return found;
     }
 
     public filterByDeviceID(deviceID: string): Sensor[] {
@@ -138,8 +154,12 @@ export class Sensors  {
     }
 
     private upgradeProxy(proxy: SensorProxy, sensorData: SensorData) {
+        // Delete proxy and insert real sensor
+        const index = this.all.indexOf(proxy);
+        const deleted = this.all[index];
+        this.all.splice(index, 1);
         const newSensor = new Sensor (sensorData);
-        this.all[this.indexOf(proxy)] = newSensor;
+        this.all.push (newSensor);
         log.debug('Sensors.upgradeProxy: sensors.all=' + JSON.stringify(this.all));
     }
 
@@ -147,14 +167,18 @@ export class Sensors  {
         response.forEach((sensorData) => {
             const found = this.find(sensorData.desc);
             if (!found) {
-
                 this.createSensor(sensorData);
-            } else if (found instanceof SensorProxy) {
-                this.upgradeProxy(found, sensorData);
-            } else {
+            } else if (found instanceof Sensor) {
+                log.debug('Sensors.parseSensorData: push samples + ' + sensorData.samples.length);
                 for (const sample of sensorData.samples) {
                     (found as Sensor).samples.push(sample);
                 }
+                return;
+            } else if (found instanceof SensorProxy) {
+                log.debug('Sensors.parseSensorData: upgrade');
+                this.upgradeProxy(found, sensorData);
+            } else {
+                log.debug('Sensors.parseSensorData: foobar');
             }
         });
     }
