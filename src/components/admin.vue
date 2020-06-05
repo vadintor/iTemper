@@ -65,7 +65,7 @@ export default class Admin extends Vue {
     public state = Vue.$store;
     public submitted: boolean = false;
     public errorMsg = '';
-    public timeout: number = 2_000;
+    public timeout: number = 5_000;
     public level: LogLevel = LogLevel.error;
 
     public created(): void {
@@ -147,7 +147,7 @@ export default class Admin extends Vue {
         });
     }
     private setLoggingTimeout() {
-        const timeout = 60_000;
+        const timeout = 15*60_000;
         setTimeout(() => {this.resetLogging(); }, timeout);
     }
     private resetErrorMsg(): void {
