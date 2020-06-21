@@ -1,26 +1,36 @@
 import { config } from '@/config';
+import util from 'util';
+enum Level { Debug, Info, Error }
 class Debug {
   private logging: boolean = config.development;
   private m: string;
   constructor(m: string) {
     this.m = m;
   }
-  public debug(str: string) {
-    const debug = 'debug: ';
+  public debug(str: string, ...args: any[]) {
+    this.log(Level.Debug, str, ...args);
+  }
+  public info(str: string, ...args: any[]) {
+    this.log(Level.Info, str, ...args);
+  }
+  public error(str: string, ...args: any[]) {
+    this.log(Level.Error, str, ...args);
+  }
+  public log(level: Level, str: string, ...args: any[]) {
+    const msg = util.format(str, ...args);
     if (this.logging) {
-        console.log(debug + new Date().toISOString() + ' ' + this.m + ' ' + str);
+        console.log(Level[level] + ' ' + new Date().toISOString() + ' ' + this.m + ' ' + msg);
     }
-
   }
   public startLogging(): void {
     this.logging = true;
-    this.debug('debug.start');
+    this.debug('debug.startLogging');
     this.setTimer();
   }
 
   public stopLogging(): void {
+    this.debug('debug.stopLogging');
     this.logging = false;
-
   }
   private reset(): void {
     this.debug('debug.reset');
