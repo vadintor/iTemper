@@ -1,7 +1,7 @@
 import { Itemper } from '@/services/itemper';
 import { Admin } from '@/store/admin';
 import { Devices} from '@/store/devices';
-import { Locations } from '@/store/locations';
+import { Locations } from '@/features/locations';
 import { Notice } from '@/store/notice';
 import { Sensors } from '@/store/sensors';
 import { Settings } from '@/store/settings';

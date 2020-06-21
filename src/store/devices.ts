@@ -1,6 +1,7 @@
 import { IDeviceService } from '@/services/device-service';
-import { Device } from '../models/device';
+import { Device, DeviceData } from '../features/devices/';
 import { log } from '@/services/logger';
+import { Vue  } from 'vue-property-decorator';
 
 export class Devices  {
     public mError: string = '';
@@ -11,16 +12,25 @@ export class Devices  {
         this.deviceService = deviceService;
     }
     public reset(): void {
-        this.mError = '';
-        this.mDevices = [];
+        this.error = '';
+        this.all = [];
     }
     public get all(): Device[] {
         return this.mDevices;
     }
+    public set  all(value: Device[]) {
+        Vue.set(this, 'mDevices', value);
+    }
+    public get error(): string {
+        return this.mError;
+    }
+    public set  error(value: string) {
+        Vue.set(this, 'mError', value);
+    }
     public getDevices(): void {
         this.resetError();
         this.deviceService.getDevices()
-        .then((response: Device[]) => {
+        .then((response: DeviceData[]) => {
             response.forEach((device) => {
                 const deviceFound = this.mDevices.find((d) => d.deviceID === device.deviceID);
                 if (!deviceFound) {
@@ -36,11 +46,11 @@ export class Devices  {
         this.resetError();
         return new Promise ((resolve, reject) => {
             this.deviceService.createDevice(name)
-            .then((device) => {
-                const newDevice = new Device(device.name, device.deviceID);
-                newDevice.key = device.key;
-                this.mDevices.push(newDevice);
-                resolve(device);
+            .then((response) => {
+                const newDevice = new Device(response.name, response.deviceID);
+                newDevice.key = response.key;
+                this.all.push(newDevice);
+                resolve(newDevice);
             })
             .catch((e) => reject(e));
         });
@@ -49,12 +59,12 @@ export class Devices  {
         return new Promise((resolve, reject) => {
             this.resetError();
             this.deviceService.renameDevice(name, device)
-            .then((received: Device) => {
-                const thisDevice = this.mDevices.find((d) => d.deviceID === received.deviceID);
+            .then((response: DeviceData) => {
+                const thisDevice = this.all.find((d) => d.deviceID === response.deviceID);
                 if (!thisDevice) {
                     reject({status: 95, message: 'Device id not available'});
                 } else {
-                    thisDevice.name = received.name;
+                    thisDevice.name = response.name;
                     resolve(thisDevice);
                 }
             } )
@@ -64,16 +74,15 @@ export class Devices  {
     public deleteDevice(device: Device): void {
         this.resetError();
         this.deviceService.deleteDevice(device)
-        .then((d: Device) => {
-            const index = this.mDevices.indexOf(device);
-            if (index >= 0 ) {
-                const deleted = this.mDevices[index];
-                this.mDevices.splice(index, 1);
+        .then((response: DeviceData) => {
+            const index = this.all.indexOf(device);
+            if (index >= 0 && this.all[index].deviceID === response.deviceID) {
+                const deleted = this.all[index];
+                this.all.splice(index, 1);
             }
         })
         .catch((e) => this.handleError(e));
     }
-
     private resetError() {
         this.mError = '';
     }

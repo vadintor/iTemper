@@ -1,4 +1,4 @@
-import { Category } from '@/models/sensor';
+import { Category } from '@/models/sensor-data';
 
 import { log } from '@/services/logger';
 export class Settings {

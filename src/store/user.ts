@@ -1,6 +1,6 @@
 import { Credentials } from '@/models/credentials';
 import { IApiService } from '@/services/api-service';
-
+import { Vue  } from 'vue-property-decorator';
 import { log } from '@/services/logger';
 
 export enum Status {
@@ -12,9 +12,9 @@ export class User  {
     public mFirstName: string = '';
     public mLastName: string = '';
     public credentials: Credentials;
-    public mStatus: Status = Status.LOGGED_OUT;
+    private mStatus: Status = Status.LOGGED_OUT;
 
-    public api: IApiService;
+    private api: IApiService;
 
     constructor(apiService: IApiService) {
         log.debug('user.ts constructor' + JSON.stringify(apiService));
@@ -37,7 +37,7 @@ export class User  {
         return this.mStatus;
     }
     public set status(value: Status) {
-        this.mStatus = value;
+        Vue.set(this, 'mStatus', value);
     }
     public register(): Promise<Status> {
         this.status = Status.LOGGING_IN;

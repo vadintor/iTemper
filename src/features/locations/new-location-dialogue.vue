@@ -66,12 +66,12 @@ import {Vue, Component, Watch, Prop} from 'vue-property-decorator';
 
 // Models
 // import * as locations from '@/models/locations'
-import { Device } from '@/models/device';
+import { Device } from '@/features/devices';
 
 import { log } from '@/services/logger';
 import {json, copyToClipboard } from '@/helpers';
 
-import { Location } from '@/models/location';
+import { Location } from '@/features/locations';
 interface FileSelection {
     name: string;
     size: number;
@@ -100,10 +100,10 @@ export default class NewLocationDialogue extends Vue {
     public valid: boolean =  false;
     public submitted: boolean = false;
     public errorMsg = '';
-    public timeout: number = 2_000;
+    public timeout: number = 5_000;
     public nameRules: ValidationFunction[] = [
           (v) => !!v || 'Enter name',
-          (v) => /^[a-öA-Ö0-9]+$/.test(v) && v.length >= 4 || 'Must be at least 4 characters, no white spaces or special characters allowed',
+          (v) => /^[a-öA-Ö0-9]+$/.test(v) && v.length >= 4  && v.length <= 32 || 'Must be 4-32 characters, no white spaces or special characters allowed',
         ];
     public Filerules: FileValidationFunction[] = [
         (v) => !v || v.size < 2_000_000 || 'File size should be less than 2 MB!',
@@ -132,13 +132,12 @@ export default class NewLocationDialogue extends Vue {
             this.displayError('Locations form not valid');
             return;
         } else {
-            this.submitted = true;
-            log.debug('Image file' + json(this.locationImage));
+            log.debug('new-location-dialogue.Image file' + json(this.locationImage));
             this.createLocation();
-            this.submitted = false;
         }
     }
     public close() {
+        log.debug('new-location-dialogue.close');
         this.dialog = false;
         this.submitted = false;
         this.locationName = '';
@@ -156,8 +155,12 @@ export default class NewLocationDialogue extends Vue {
         this.locations.createLocation(form)
         .then((location) => {
             this.location = location;
+            this.submitted = false;
+            this.locationName = '';
+            this.$emit('closeDialogue');
         })
         .catch((err) => {
+            this.submitted = false;
             this.displayError('error (' + err.status + '): ' + err.message);
         });
     }
@@ -169,7 +172,7 @@ export default class NewLocationDialogue extends Vue {
         this.setTimer();
     }
     private setTimer() {
-        const timeout = 2_250;
+        const timeout = 5_250;
         setTimeout(() => {this.reset(); }, timeout);
     }
 }

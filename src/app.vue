@@ -20,7 +20,7 @@ init();
 import Admin from '@/components/admin.vue';
 import Login from '@/components/login.vue';
 import MyDevices from '@/components/my-devices.vue';
-import MyLocations from '@/components/my-locations.vue';
+import LocationView from '@/features/locations/location-view.vue';
 import MySensors from '@/components/my-sensors.vue';
 import Register from '@/components/register.vue';
 import Toolbar from '@/components/toolbar.vue';
@@ -31,7 +31,7 @@ import Toolbar from '@/components/toolbar.vue';
         Login,
         Register,
         MyDevices,
-        MyLocations,
+        LocationView,
     }})
 export default class App extends Vue {
 

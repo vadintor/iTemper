@@ -34,9 +34,12 @@ import AdminLogLevelCard from './admin-log-level-card.vue';
 export default class Admin extends Vue {
     public state = Vue.$store;
     public errorMsg = '';
-
+    
     public created(): void {
         log.debug('Admin.created()');
+    }
+    public isError(): boolean {
+        return this.errorMsg !== '';
     }
     private resetErrorMsg(): void {
         this.errorMsg = '';

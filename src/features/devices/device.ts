@@ -1,14 +1,12 @@
-import {Storage } from './../services/storage-service';
+import {Storage } from '../../services/storage-service';
+import { Vue  } from 'vue-property-decorator';
 
 export class Device {
-    public mName: string = '';
-    public mDeviceID: string = '';
-    public mKey: string = '';
-    public mColorID: number = 0;
-    // public mLocation: Location;
+    private mName: string = '';
+    private mDeviceID: string = '';
+    private mKey: string = '';
+    private mColorID: number = 0;
     private keyStorage: Storage<string>;
-
-
 
     constructor(name: string, id: string) {
         this.mName = name;
@@ -20,36 +18,29 @@ export class Device {
             this.mKey = item;
         }
     }
-
     public get name(): string {
         return this.mName;
     }
-
     public set name(value: string) {
-        this.mName = value;
+        Vue.set(this, 'mName', value);
     }
     public get deviceID(): string {
         return this.mDeviceID;
     }
-
     public set deviceID(value: string) {
-        this.mDeviceID = value;
+        Vue.set(this, 'mDeviceID', value);
     }
-
     public get key(): string {
         return this.mKey;
     }
-
     public set key(value: string) {
         this.keyStorage.setItem(value);
-        this.mKey = value;
+        Vue.set(this, 'mKey', value);
     }
-
     public get colorID(): number {
         return this.mColorID;
     }
-
     public set colorID(value: number) {
-        this.mColorID = value;
+        Vue.set(this, 'mColorID', value);
     }
 }

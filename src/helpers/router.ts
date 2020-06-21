@@ -4,7 +4,7 @@ import Admin from '@/components/admin.vue';
 import Home from '@/components/home.vue';
 import Login from '@/components/login.vue';
 import MyDevices from '@/components/my-devices.vue';
-import MyLocations from '@/components/my-locations.vue';
+import LocationView from '@/features/locations/location-view.vue';
 import MySensors from '@/components/my-sensors.vue';
 import MySettings from '@/components/my-settings.vue';
 import Register from '@/components/register.vue';
@@ -21,7 +21,7 @@ const routes = [
   { path: '/admin', name: 'admin', component: Admin},
   { path: '/login', name: 'login', component: Login},
   { path: '/register', name: 'register', component: Register},
-  { path: '/locations', name: 'locations', component: MyLocations},
+  { path: '/locations', name: 'locations', component: LocationView},
   { path: '/devices', name: 'devices', component: MyDevices},
   { path: '/settings', name: 'settings', component: MySettings },
   { path: '/sensors', name: 'sensors', component: MySensors },
@@ -37,7 +37,7 @@ router.beforeEach((to, from, next) => {
   const publicPaths: string[] = ['/', '/login', '/register'];
 
   const authRequired = !publicPaths.find( (path) => path === to.path);
-  log.debug('router.beforeEach user.status=' +  Vue.$store.user.status);
+  log.debug('router.beforeEach user.status=' +  Status[Vue.$store.user.status]);
   if (authRequired && Vue.$store.user.status !== Status.LOGGED_IN) {
     log.debug('router.beforeEach Log in required!!!');
     return next({

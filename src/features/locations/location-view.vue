@@ -22,7 +22,7 @@ import { Status } from '@/store/user';
 import { log } from '@/services/logger';
 
 // Child components
-import LocationCard from '@/components/location-card.vue';
+import LocationCard from './location-card.vue';
 
 
 @Component({
@@ -30,7 +30,7 @@ import LocationCard from '@/components/location-card.vue';
     LocationCard,
   },
 })
-export default class MyLocations extends Vue {
+export default class LocationView extends Vue {
 
     public state = Vue.$store;
 
@@ -38,20 +38,26 @@ export default class MyLocations extends Vue {
         return this.state.locations.all.length;
     }
     public getLocations() {
-        log.debug('MyLocations.getLocations');
+        log.debug('LocationView.getLocations');
         this.state.locations.getLocations();
     }
-    public getSensorData() {
+    public getSensorDataLast24() {
+        log.debug('LocationView.getSensorData, status=' + Status[this.state.user.status]);
         if (this.state.user.status === Status.LOGGED_IN) {
             this.state.sensors.getSensorsLast24h();
         }
+    }
+    public getAllSensors() {
+        const count = 2;
+        log.debug('LocationView.getAllSensors, status=' + Status[this.state.user.status]);
+        this.state.sensors.getSensorsSamples(count);
 
     }
     public created(): void {
-        log.debug('MyLocations.created()');
-        this.getSensorData();
+        log.debug('LocationView.created()');
+        this.getAllSensors();
         this.getLocations();
-        setInterval(this.getSensorData, 1000 * this.state.settings.interval);
+        setInterval(this.getSensorDataLast24, 1000 * this.state.settings.interval);
     }
 }
 

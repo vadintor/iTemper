@@ -18,8 +18,8 @@ import {Vue, Component, Watch, Prop} from 'vue-property-decorator';
 
 // Models
 // import * as locations from '@/models/locations'
-import { Sensor, SensorLog, Data, Category } from '@/models/sensor';
-
+import { SensorLog, Sample, Category } from '@/models/sensor-data';
+import { Sensor } from '@/models/sensor';
 
 import { Settings } from '@/store/settings';
 
@@ -135,12 +135,12 @@ export default class HistoryChart extends Vue {
     public isValueValid(): boolean {
         return this.sensor && this.sensor.samples.length > 0;
     }
-    public lastSample(): Data {
+    public lastSample(): Sample {
         const last = this.sensor.samples.length - 1;
         const data = this.sensor.samples[last];
         return data;
     }
-    public firstSample(id: number): Data {
+    public firstSample(id: number): Sample {
         return this.sensor.samples[0];
     }
 

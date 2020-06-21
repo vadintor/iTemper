@@ -118,7 +118,7 @@ export default class Login extends Vue {
         })
         .catch((error: any) => {
             this.submitted = false;
-            this.displayError('Something went wrong: (' + error.status + '): ' + error.message );
+            this.displayError('(' + error.status + '): ' + error.message );
         });
     }
 
@@ -143,7 +143,7 @@ export default class Login extends Vue {
         this.setTimer();
     }
     private setTimer() {
-        const timeout = 1_250;
+        const timeout = 5_000;
         setTimeout(() => {this.reset(); }, timeout);
     }
 }

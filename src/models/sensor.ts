@@ -15,69 +15,59 @@
 // },
 // },
 import { log } from '@/services/logger';
+import {Category, Sample, Attributes, Descriptor, SensorData} from '@/models/sensor-data';
+import { SensorProxy } from '@/models/sensor-proxy';
+import { Vue  } from 'vue-property-decorator';
 
-export enum Category {
-    Temperature, Humidity,
-}
+export class Sensor extends SensorProxy {
+    private mId: string = '';
+    private mDeviceID: string = '';
+    private mAttr: Attributes = {
+        model: '', category: Category.Temperature, accuracy: 0, resolution: 0, maxSampleRate: 0,
+    };
+    private mSamples: Sample[] = [];
 
-export interface Data {
-    value: number;
-    date: number;
-}
-export interface Attributes {
-    model: string;
-    category: Category;
-    accuracy: number;
-    resolution: number;
-    maxSampleRate: number;
-}
+    constructor(data: SensorData) {
+            super(data.desc);
+            this.update(data);
+    }
+    public update(sensorData: SensorData) {
+        this._id = sensorData._id;
+        this.deviceID = sensorData.deviceID;
+        this.desc = sensorData.desc;
+        this.attr = sensorData.attr;
+        for (const sample of sensorData.samples) {
+            this.samples.push(sample);
+        }
 
-export interface Descriptor {
-    SN: string;
-    port: number;
-}
-export interface SensorLog {
-    desc: string;
-    samples: Data[];
-}
-export class Sensor {
-    public mId: string = '';
-    public mDeviceID: string = '';
-    public mDesc: Descriptor = {SN: '', port: 0};
-    public mAttr: Attributes = {model: '',
-                            category: Category.Temperature, accuracy: 0, resolution: 0, maxSampleRate: 0};
-    public samples: Data[] = [];
-
-    constructor(desc: Descriptor, attr: Attributes, samples: Data[] = []) {
-       this.mDesc = desc;
-       this.mAttr = attr;
+    }
+    public isProxy() {
+        return false;
     }
     public get _id(): string {
         return this.mId;
     }
     public set _id(value: string) {
-        this.mId = value;
+        Vue.set(this, 'mId', value);
     }
     public get deviceID(): string {
         return this.mDeviceID;
     }
-    public get desc(): Descriptor {
-        return this.mDesc;
+    public set deviceID(value: string) {
+        Vue.set(this, 'mDeviceID', value);
     }
-
-    // public set desc(desc: Descriptor) {
-    //     this.mDesc = desc;
-    // }
-
     public get attr(): Attributes {
         return this.mAttr;
     }
-
-    // public set attr(attr: Attributes) {
-    //     this.mAttr = attr;
-    // }
-
-
+    public set attr(value: Attributes) {
+        Vue.set(this, 'mAttr', value);
+    }
+    public get samples(): Sample[]  {
+        return this.mSamples;
+    }
+    public set samples(value: Sample[]) {
+        Vue.set(this, 'mSamples', value);
+    }
     public get lastValue(): string {
         if (this.hasSamples()) {
             return this.samples[this.samples.length - 1].value.toString();
@@ -85,7 +75,6 @@ export class Sensor {
             return '-';
         }
     }
-
     public get lastTime(): string {
         if (this.hasSamples()) {
             return new Date(this.samples[this.samples.length - 1].date).toLocaleTimeString();
@@ -93,34 +82,25 @@ export class Sensor {
             return '-';
         }
     }
-    public get name(): string {
-        log.debug('sensor.name');
-        return this.mDesc.SN + '/' + this.mDesc.port;
-    }
     public get category(): Category {
-        return this.mAttr.category;
+        return this.attr.category;
     }
     public get model(): string {
-        return this.mAttr.model;
+        return this.attr.model;
     }
     public get accuracy(): number {
-        return this.mAttr.accuracy;
+        return this.attr.accuracy;
     }
     public get resolution(): number {
-        return this.mAttr.resolution;
+        return this.attr.resolution;
     }
     public get maxSampleRate(): number {
-        return this.mAttr.maxSampleRate;
+        return this.attr.maxSampleRate;
     }
     public hasSamples(): boolean {
         return this.samples.length > 0;
     }
-
-    public get lastSample(): Data {
+    public get lastSample(): Sample {
         return this.samples[this.samples.length];
     }
-
-    // public set samples(samples: Data[]) {
-    //     this.mSamples = samples;
-    // }
 }
