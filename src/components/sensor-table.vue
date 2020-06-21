@@ -72,7 +72,7 @@ export default class SensorTable extends Vue {
     }
     public sampleValue(sensor: Sensor | SensorProxy): string {
         if (sensor instanceof Sensor) {
-        log.debug('sensorTable.sampleValue:' + JSON.stringify(sensor.samples.length));
+            log.debug('sensor-table.sampleValue:' + JSON.stringify(sensor.samples.length));
             const lastSample = sensor.samples.length;
             if (lastSample > 0) {
                 const multiplier = Math.pow(10, this.settings.resolution || 0);

@@ -117,10 +117,9 @@ export default class Toolbar extends Vue {
         log.debug('Toolbar.created(), user status=' + Status[this.user.status]);
     }
     public toggleLocationDialogue() {
-        this.showNewLocationDialogue =! this.showNewLocationDialogue;
-        log.debug('toolbar.toggleLocationDialogue=' + this.showNewLocationDialogue)
+        this.showNewLocationDialogue = !this.showNewLocationDialogue;
+        log.debug('toolbar.toggleLocationDialogue=' + this.showNewLocationDialogue);
     }
-
 }
 </script>
 

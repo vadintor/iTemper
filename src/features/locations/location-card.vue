@@ -199,12 +199,12 @@ export default class LocationCard extends Vue {
     @Prop() public height!: number;
 
     public items: string[] =  [];
-    public seletedSensors: Array<Sensor | SensorProxy> = []
+    public seletedSensors: Array<Sensor | SensorProxy> = [];
     public sensorDesc: Descriptor[] = [];
 
     public nameRules: ValidationFunction[] = [
           (v) => !!v || 'Enter name',
-          (v) => /^[a-öA-Ö0-9]+$/.test(v) && v.length >= 4 && v.length <=32 || 'Must be 4-32 characters, no white spaces or special characters allowed',
+          (v) => /^[a-öA-Ö0-9]+$/.test(v) && v.length >= 4 && v.length <= 32 || 'Must be 4-32 characters, no white spaces or special characters allowed',
         ];
     public Filerules: FileValidationFunction[] = [
         (v) => !v || v.size < 2_000_000 || 'File size should be less than 2 MB!',
