@@ -4,16 +4,16 @@
         v-model="drawer"
         app
         >
-        <v-list dense nav>
-            <v-list-item v-for="item in menuItems" :key="item.title" @click="menuItemClicked(item)">
-                <v-list-item-action>
-                    <v-icon :color="item.color">{{item.action}}</v-icon>
-                </v-list-item-action>
-                <v-list-item-content>
-                    <v-list-item-title>{{ item.title }} </v-list-item-title>
-                </v-list-item-content>
-            </v-list-item>
-        </v-list>
+            <v-list dense nav>
+                <v-list-item v-for="item in menuItems" :key="item.title" @click="menuItemClicked(item)">
+                    <v-list-item-action>
+                        <v-icon :color="item.color">{{item.action}}</v-icon>
+                    </v-list-item-action>
+                    <v-list-item-content>
+                        <v-list-item-title>{{ item.title }} </v-list-item-title>
+                    </v-list-item-content>
+                </v-list-item>
+            </v-list>
         </v-navigation-drawer>
         <v-app-bar
         app
@@ -24,6 +24,7 @@
             <v-toolbar-title>iTemper</v-toolbar-title>
             <new-device-dialogue v-if="user.isLoggedIn() && showNewDeviceDialogue"></new-device-dialogue>
             <new-location-dialogue v-if="user.isLoggedIn() && showNewLocationDialogue" @closeDialogue="toggleLocationDialogue"></new-location-dialogue>
+            <Development-label></Development-label>
             <v-spacer></v-spacer>
             <v-btn  v-if="user.isLoggedOut()" outlined class="signlog" @click="signup">Sign up</v-btn>
             <v-btn  v-if="user.isLoggedOut()" transition="scale-transition" outlined class="signlog" @click="login">Login</v-btn>
@@ -51,6 +52,7 @@ import { Status } from '@/store/user';
 
 import NewDeviceDialogue from '@/components/new-device-dialogue.vue';
 import NewLocationDialogue from '@/features/locations/new-location-dialogue.vue';
+import DevelopmentLabel from './development-label.vue';
 
 type BooleanOrString = boolean | string;
 type ValidationFunction = (value: string) => BooleanOrString;
@@ -64,6 +66,7 @@ interface MenuItem {
 @Component({components: {
         NewDeviceDialogue,
         NewLocationDialogue,
+        DevelopmentLabel,
     },
   })
 export default class Toolbar extends Vue {

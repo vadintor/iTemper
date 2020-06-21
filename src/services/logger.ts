@@ -1,34 +1,44 @@
-
+import { config } from '@/config';
+import util from 'util';
+enum Level { Debug, Info, Error }
 class Debug {
-  private log: boolean = !process.env.production;
+  private logging: boolean = config.development;
   private m: string;
   constructor(m: string) {
     this.m = m;
   }
-  public debug(str: string) {
-    const debug = 'debug: ';
-    if (this.log) {
-        console.log(debug + new Date().toISOString() + ' ' + this.m + ' ' + str);
+  public debug(str: string, ...args: any[]) {
+    this.log(Level.Debug, str, ...args);
+  }
+  public info(str: string, ...args: any[]) {
+    this.log(Level.Info, str, ...args);
+  }
+  public error(str: string, ...args: any[]) {
+    this.log(Level.Error, str, ...args);
+  }
+  public log(level: Level, str: string, ...args: any[]) {
+    const msg = util.format(str, ...args);
+    if (this.logging) {
+        console.log(Level[level] + ' ' + new Date().toISOString() + ' ' + this.m + ' ' + msg);
     }
-
   }
   public startLogging(): void {
-    this.log = true;
-    this.debug('debug.start');
+    this.logging = true;
+    this.debug('debug.startLogging');
     this.setTimer();
   }
 
   public stopLogging(): void {
-    this.log = false;
-
+    this.debug('debug.stopLogging');
+    this.logging = false;
   }
   private reset(): void {
     this.debug('debug.reset');
-    this.log = !process.env.production;
+    this.logging = config.development;
   }
 
   private setTimer() {
-    const timeout = 60_000;
+    const timeout = 5 * 60_000;
     setTimeout(() => {this.reset(); }, timeout);
   }
 

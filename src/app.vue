@@ -25,7 +25,6 @@ import MySensors from '@/components/my-sensors.vue';
 import Register from '@/components/register.vue';
 import Toolbar from '@/components/toolbar.vue';
 
-
 @Component( {components: {
         Admin,
         Toolbar,
