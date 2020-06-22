@@ -2,7 +2,7 @@
 <template>
     <div>
         <h1>Välkommen till itemper.io</h1>
-        <admin-config-card></admin-config-card>
+        <admin-config-card v-if="develoopment"></admin-config-card>
     </div>
 </template>
 <script lang='ts'>
@@ -20,6 +20,7 @@ import AdminConfigCard from './admin-config-card.vue';
     AdminConfigCard,
 }})
 export default class Home extends Vue {
+    public development = config.development;
 
 }
 </script>

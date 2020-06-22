@@ -143,7 +143,7 @@ export default class Register extends Vue {
         })
         .catch((error) => {
             this.submitted = false;
-            this.displayError('Something went wrong: (' + error.status + '): ' + error.message );
+            this.displayError('Cannot register: (' + error.status + '): ' + error.message );
         });
     }
     public submit() {
@@ -166,7 +166,7 @@ export default class Register extends Vue {
         this.setTimer();
     }
     private setTimer() {
-        const timeout = 1_250;
+        const timeout = 3_500;
         setTimeout(() => {this.reset(); }, timeout);
     }
 }
