@@ -21,7 +21,6 @@ import AdminConfigCard from './admin-config-card.vue';
 }})
 export default class Home extends Vue {
     public development = config.development;
-
 }
 </script>
 <style>
