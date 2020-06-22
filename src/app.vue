@@ -12,18 +12,24 @@
 </template>
 
 <script lang='ts'>
-
+// Vue
 import { Vue, Component } from 'vue-property-decorator';
 
+// Store
 import { init } from '@/store/store';
 init();
+
+// Components
 import Admin from '@/components/admin.vue';
-import Login from '@/components/login.vue';
 import MyDevices from '@/components/my-devices.vue';
-import LocationView from '@/features/locations/location-view.vue';
+
 import MySensors from '@/components/my-sensors.vue';
-import Register from '@/components/register.vue';
 import Toolbar from '@/components/toolbar.vue';
+
+// Features
+import LocationView from '@/features/locations/location-view.vue';
+import Register from '@/features/user/user-register.vue';
+import Login from '@/features/user/user-login.vue';
 
 @Component( {components: {
         Admin,
@@ -34,8 +40,6 @@ import Toolbar from '@/components/toolbar.vue';
         LocationView,
     }})
 export default class App extends Vue {
-
-    // TODO bestäm om det är läge att använda Vuex eller hur göra med 'State'
 
 }
 </script>

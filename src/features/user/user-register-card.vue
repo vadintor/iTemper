@@ -1,13 +1,28 @@
 <template>
     <v-card  class="mx-auto mt-5">
         <v-card-title>
-            <h3>Login to itemper</h3>
+            <h3>Register an account</h3>
         </v-card-title>
         <v-card-text>
             <v-form v-model="valid" ref="login">
+                <v-text-field 
+                    label="First name"
+                    v-model="user.mFirstName"
+                    :rules="nameRules"
+                    required
+                    clearable
+                ></v-text-field>
+
+                <v-text-field
+                    label="Last name"
+                    v-model="user.mLastName"
+                    :rules="nameRules"
+                    required
+                    clearable
+                ></v-text-field>
+
                 <v-text-field
                     label="E-mail"
-                    prepend-icon="fa-envelope"
                     v-model="cred.email"
                     :rules="emailRules"
                     required
@@ -24,18 +39,32 @@
                     required
                     clearable
                 ></v-text-field>
+                <v-text-field
+                    label="Confirm password"
+                    :type="showPassword ? 'text' : 'password'"
+                    prepend-icon="fa-lock"
+                    @click="showPassword = !showPassword"
+                    v-model="cred.confirmPassword"
+                    :rules="confirmPasswordRules"
+                    required
+                    clearable
+                ></v-text-field>
+                <v-checkbox
+                    label="I agree to iTemper's terms and conditions"
+                    v-model="checkbox"
+                    :rules="[(v) => !!v || 'You must agree to continue!']"
+                    required
+                ></v-checkbox>
             </v-form>
         </v-card-text>
-
-
         <v-divider></v-divider>
         <v-card-actions>
-            <v-btn @click="submit" :disabled="!valid" :loading="submitted" color="info">Login</v-btn>
+            <v-btn @click="submit()" :disabled="!valid" :loading="submitted" color="info">Register</v-btn>
             <v-spacer>
                 <p v-if="error()"  class="red--text" align="center">{{errorMsg}}</p>
-                <p v-else align="center">Register if you don't have an account</p>
+                <p v-else align="center">Allready have an account? </p>
             </v-spacer>
-            <v-btn @click="swap" :disabled="submitted">Register</v-btn>
+            <v-btn @click="swap" :disabled="submitted">Login</v-btn>
         </v-card-actions>
     </v-card>
 </template>
@@ -45,22 +74,22 @@
 import { Component, Prop, Vue } from 'vue-property-decorator';
 
 // Store
+import * as itemper from '@/services/itemper';
+import { store } from '@/store/store';
 import { Status } from '@/store/user';
 
 // Services & helpers
 import {log} from '@/services/logger';
 import {json} from '@/helpers';
 
-// Validation types
+// Field validation types
 type BooleanOrString = boolean | string;
 type ValidationFunction = (value: string) => BooleanOrString;
 
-@Component({
-    components: {},
-})
-export default class LoginCard extends Vue {
+@Component({})
+export default class RegisterCard extends Vue {
     public showPassword: boolean = false;
-    public store = Vue.$store;
+
     public cred = Vue.$store.user.credentials;
     public status = Vue.$store.user.status;
     public user = Vue.$store.user;
@@ -68,10 +97,9 @@ export default class LoginCard extends Vue {
     public valid: boolean =  false;
     public checkbox: boolean = false;
     public select: string = '';
-
     public submitted: boolean = false;
+
     public errorMsg = '';
-    public timeout: number = 2_000;
 
     public passwordRules: ValidationFunction[] = [
           (v) => !!v || 'Enter password',
@@ -93,34 +121,32 @@ export default class LoginCard extends Vue {
     public setEmail(email: string) {
         this.cred.email = email;
     }
-    public error(): boolean {
+        public error(): boolean {
         return this.errorMsg !== '';
     }
-    public login(email: string, password: string) {
-        log.debug('login-card: login()');
+    public register() {
         this.submitted = true;
-        this.user.login()
+        this.user.register()
         .then((status: Status) => {
-            log.debug('login-card.login, status=' + Status[status]);
             this.submitted = false;
-            this.$emit('login', status);
+            this.$emit('onRegister', status);
         })
-        .catch((error: any) => {
+        .catch((error) => {
             this.submitted = false;
-            this.displayError('(' + error.status + '): ' + error.message );
+            this.displayError('Cannot register: (' + error.status + '): ' + error.message );
         });
     }
     public submit() {
         if (!this.valid) {
-            this.displayError('Login form not vallid');
+            this.displayError('Register form not vallid, please enter all information');
             return;
         } else {
             this.submitted = true;
-            this.login(this.cred.mEmail, this.cred.mPassword);
+            this.register();
         }
     }
     public swap() {
-        this.$emit('register');
+        this.$emit('onLogin');
     }
     private reset(): void {
         this.errorMsg = '';
@@ -130,7 +156,7 @@ export default class LoginCard extends Vue {
         this.setTimer();
     }
     private setTimer() {
-        const timeout = 4_000;
+        const timeout = 3_500;
         setTimeout(() => {this.reset(); }, timeout);
     }
 }

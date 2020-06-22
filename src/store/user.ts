@@ -40,6 +40,7 @@ export class User  {
         Vue.set(this, 'mStatus', value);
     }
     public register(): Promise<Status> {
+        log.debug('user.register');
         this.status = Status.LOGGING_IN;
         return new Promise<Status> ((resolve, reject) => {
             this.api.register(this.credentials.email, this.credentials.password, this.credentials.password)
@@ -53,7 +54,7 @@ export class User  {
         });
     }
     public login(): Promise<Status>  {
-        log.debug('user.ts Login');
+        log.debug('user.login');
         this.status = Status.LOGGING_IN;
         return new Promise<Status> ((resolve, reject) => {
             this.api.login(this.credentials.email, this.credentials.password)
@@ -67,6 +68,7 @@ export class User  {
         });
     }
     public logout(): Promise<Status>  {
+        log.debug('user.logout');
         return new Promise<Status> ((resolve, reject) => {
             this.status = Status.LOGGED_OUT;
             this.credentials.token = '';
