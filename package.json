@@ -6,11 +6,13 @@
         "serve": "vue-cli-service serve",
         "serve-prod": "vue-cli-service serve --mode production",
         "build": "vue-cli-service build",
+        "wc": "vue-cli-service build --target wc --name itemper-device ./src/web-components/itemper-device-wc.vue",
         "dev": "vue-cli-service build --mode development",
         "lint": "vue-cli-service lint",
         "test:unit": "vue-cli-service test:unit"
     },
     "dependencies": {
+        "@vue/web-component-wrapper": "^1.2.0",
         "axios": "^0.19.2",
         "hex-to-rgba": "^2.0.1",
         "highcharts": "^7.2.1",
