@@ -2,6 +2,7 @@
 <div >
     <v-container fluid grid-list-md>
         <v-layout row wrap>
+             <bluetooth-device></bluetooth-device>
             <v-flex v-for="(item,id) in state.devices.all" :key="id">
                 <device-card  
                     :device="item"
@@ -9,7 +10,7 @@
                 >
                 </device-card>
             </v-flex>
-            <bluetooth-device></bluetooth-device>
+
             <v-chip v-if="deviceCount()===0" transition="scale-transition" >Det finns inga enheter ännu</v-chip>
         </v-layout>
     </v-container>

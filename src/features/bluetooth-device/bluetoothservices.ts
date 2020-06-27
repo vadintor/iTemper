@@ -1,1 +1,1 @@
-export const DeviceInfoServiceUIID = 'fff1';
+export const DeviceInfoServiceUIID = 0xfff1;
