@@ -9,6 +9,7 @@
                 >
                 </device-card>
             </v-flex>
+            <bluetooth-device></bluetooth-device>
             <v-chip v-if="deviceCount()===0" transition="scale-transition" >Det finns inga enheter ännu</v-chip>
         </v-layout>
     </v-container>
@@ -29,10 +30,12 @@ import { log } from '@/services/logger';
 
 // Child components
 import DeviceCard from '@/components/device-card.vue';
+import BluetoothDevice from '@/features/bluetooth-device/bluetooth-device.vue';
 
 @Component({
     components: {
     DeviceCard,
+    BluetoothDevice,
   },
 })
 export default class MyDevices extends Vue {

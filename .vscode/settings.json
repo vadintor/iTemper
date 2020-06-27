@@ -1,6 +1,10 @@
 {
     "cSpell.words": [
+        "advertisementreceived",
+        "availabilitychanged",
+        "gattserverdisconnected",
         "itemper",
+        "onavailabilitychanged",
         "signup",
         "vuetify"
     ]
