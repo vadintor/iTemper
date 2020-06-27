@@ -5,6 +5,9 @@
 		},
 		{
 			"path": "..\\iTemper-Backend"
+		},
+		{
+			"path": "..\\iTemper-Device"
 		}
 	],
 	"settings": {}

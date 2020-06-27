@@ -1,18 +1,25 @@
+// Vue
 import Vue from 'vue';
 import Router from 'vue-router';
+
+// Components
 import Admin from '@/components/admin.vue';
 import Home from '@/components/home.vue';
-import Login from '@/components/login.vue';
 import MyDevices from '@/components/my-devices.vue';
-import LocationView from '@/features/locations/location-view.vue';
 import MySensors from '@/components/my-sensors.vue';
 import MySettings from '@/components/my-settings.vue';
-import Register from '@/components/register.vue';
 
-import {log} from '@/services/logger';
+// Features
+import LocationView from '@/features/locations/location-view.vue';
+import Login from '@/features/user/user-login.vue';
+import Register from '@/features/user/user-register.vue';
 
-import {json} from '@/helpers';
+// Store
 import { Status } from '@/store/user';
+
+// Services & helpers
+import {log} from '@/services/logger';
+import {json} from '@/helpers';
 
 Vue.use(Router);
 
