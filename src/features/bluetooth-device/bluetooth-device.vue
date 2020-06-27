@@ -7,12 +7,15 @@
                     <v-text-field class="display-1"
                                 dense
                                 required
-                    ></v-text-field>                
+                    >
+                    </v-text-field>     
+                    <p v-if="connected"> CPU vendor: {{ cpuVendor }}</p> 
+                    <p v-if="connected"> CPU speed: {{ cpuSpeed }}</p> 
+                    <p v-if="error !== ''">Error: {{ error }}</p> 
                 </v-flex>
             </v-layout>
         </v-container>
-        <v-text-field v-if="connected"> CPU vendor: {{ cpuVendor }}</v-text-field> 
-        <v-text-field v-if="connected"> CPU speed: {{ cpuSpeed }}</v-text-field> 
+
         <v-card-actions>
                 <v-btn v-if="!connected" text color="orange" @click.native="connect">Connect</v-btn>
                 <v-btn v-else text color="orange" @click.native="disconnect">Disconnect</v-btn>
@@ -37,22 +40,35 @@ export default class BluetoothDevice extends Vue {
     public connected: boolean = false;
     public cpuVendor: string = '';
     public cpuSpeed: string = '';
+    public error: string = '';
 
     private itemperBLE: WebBluetooth = new WebBluetooth();
     public async connect() {
+        let step = 1;
+        this.error = '';
         try {
             await this.itemperBLE.request();
+            step += 1;
             await this.itemperBLE.connect();
+            this.connected = true;
+            log.debug('bluetooth-device.connect: connected');
+            step += 1;
             await this.itemperBLE.setDeviceCharacteristic();
+            step += 1;
             this.cpuVendor = await this.itemperBLE.readCPUVendor();
+            step += 1;
             this.cpuSpeed = await this.itemperBLE.readCPUSpeed();
+            step += 1;
         } catch (error) {
-            log.debug(error.message);
+            this.error = 'bluetooth-device.connect: step ' + step + ' : ' + error.message;
+            log.debug( this.error);
         }
     }
     public disconnect() {
+        log.debug('bluetooth-device.disconnect: ');
         this.itemperBLE.disconnect();
         this.connected = false;
+        this.error = '';
     }
     public color(): string {
         return 'overlay-3';
