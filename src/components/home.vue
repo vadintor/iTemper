@@ -2,7 +2,7 @@
 <template>
     <div>
         <h1>Välkommen till itemper.io</h1>
-        <admin-config-card v-if="develoopment"></admin-config-card>
+        <admin-config-card v-if="development"></admin-config-card>
     </div>
 </template>
 <script lang='ts'>

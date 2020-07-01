@@ -3,7 +3,7 @@
     "version": "0.1.2",
     "private": true,
     "scripts": {
-        "serve": "vue-cli-service serve",
+        "serve": "vue-cli-service serve --https",
         "serve-prod": "vue-cli-service serve --mode production",
         "build": "vue-cli-service build",
         "wc": "vue-cli-service build --target wc --name itemper-device ./src/web-components/itemper-device-wc.vue",

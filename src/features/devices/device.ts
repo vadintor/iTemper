@@ -1,5 +1,7 @@
 import {Storage } from '../../services/storage-service';
-import { Vue  } from 'vue-property-decorator';
+import { Vue } from 'vue-property-decorator';
+
+import { DeviceData } from './device-data';
 
 export class Device {
     private mName: string = '';
@@ -42,5 +44,8 @@ export class Device {
     }
     public set colorID(value: number) {
         Vue.set(this, 'mColorID', value);
+    }
+    public toDeviceData(): DeviceData {
+        return {name: this.name, deviceID: this.deviceID, key: this.key };
     }
 }

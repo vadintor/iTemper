@@ -27,16 +27,12 @@ import { Device } from '@/features/devices';
 // Services
 
 import { log } from '@/services/logger';
-
-
 // Child components
 import DeviceCard from '@/components/device-card.vue';
-import BluetoothDevice from '@/features/bluetooth-device/bluetooth-device.vue';
 
 @Component({
     components: {
     DeviceCard,
-    BluetoothDevice,
   },
 })
 export default class MyDevices extends Vue {

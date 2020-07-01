@@ -8,6 +8,9 @@
 		},
 		{
 			"path": "..\\iTemper-Device"
+		},
+		{
+			"path": "..\\balena-web-ble"
 		}
 	],
 	"settings": {}

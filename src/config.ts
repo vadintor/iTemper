@@ -9,8 +9,8 @@ function configure(): Config {
     if (development) {
         return {
             development,
-            iTemperAPI: 'http://localhost:3000/',
-            iTemperWS: 'ws://localhost:3000/ws',
+            iTemperAPI: 'https://localhost:3000/',
+            iTemperWS: 'wss://localhost:3000/ws',
         };
     } else {
         return {
