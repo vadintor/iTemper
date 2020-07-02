@@ -3,16 +3,17 @@ import Vue from 'vue';
 import Router from 'vue-router';
 
 // Components
-import Admin from '@/components/admin.vue';
-import Home from '@/components/home.vue';
-import MyDevices from '@/components/my-devices.vue';
-import MySensors from '@/components/my-sensors.vue';
-import MySettings from '@/components/my-settings.vue';
+import Home from '@/components/home-page.vue';
+import MySensors from '@/components/sensors-page.vue';
+import MySettings from '@/components/settings-page.vue';
 
+// Pages
+import DevicesPage from '@/features/devices/devices-page.vue';
 // Features
-import LocationView from '@/features/locations/location-view.vue';
-import Login from '@/features/user/user-login.vue';
-import Register from '@/features/user/user-register.vue';
+import Admin from '@/features/admin/admin-page.vue';
+import LocationView from '@/features/locations/location-page.vue';
+import Login from '@/features/user/user-login-page.vue';
+import Register from '@/features/user/user-register-page.vue';
 
 // Store
 import { Status } from '@/store/user';
@@ -29,7 +30,7 @@ const routes = [
   { path: '/login', name: 'login', component: Login},
   { path: '/register', name: 'register', component: Register},
   { path: '/locations', name: 'locations', component: LocationView},
-  { path: '/devices', name: 'devices', component: MyDevices},
+  { path: '/devices', name: 'devices', component: DevicesPage},
   { path: '/settings', name: 'settings', component: MySettings },
   { path: '/sensors', name: 'sensors', component: MySensors },
   { path: '*', redirect: '/' },

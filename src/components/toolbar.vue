@@ -22,8 +22,8 @@
         >
             <v-app-bar-nav-icon v-if="user.isLoggedIn()" @click.stop="drawer = !drawer"></v-app-bar-nav-icon>
             <v-toolbar-title>iTemper</v-toolbar-title>
-            <new-device-dialogue v-if="user.isLoggedIn() && showNewDeviceDialogue"></new-device-dialogue>
-            <new-location-dialogue v-if="user.isLoggedIn() && showNewLocationDialogue" @closeDialogue="toggleLocationDialogue"></new-location-dialogue>
+            <new-device-dialogue v-if="user.isLoggedIn() && showNewDeviceDialogue" @close="toggleDeviceDialogue"></new-device-dialogue>
+            <new-location-dialogue v-if="user.isLoggedIn() && showNewLocationDialogue" @close="toggleLocationDialogue"></new-location-dialogue>
             <admin-node-env-label v-if="development"></admin-node-env-label>
             <v-spacer></v-spacer>
             <v-btn  v-if="user.isLoggedOut()" outlined class="signlog" @click="signup">Sign up</v-btn>
@@ -51,9 +51,9 @@ import { json } from '@/helpers';
 
 import { Status } from '@/store/user';
 
-import NewDeviceDialogue from '@/components/new-device-dialogue.vue';
+import NewDeviceDialogue from '@/features/devices/new-device-dialogue.vue';
 import NewLocationDialogue from '@/features/locations/new-location-dialogue.vue';
-import AdminNodeEnvLabel from '@/components/admin-node-env-label.vue';
+import AdminNodeEnvLabel from '@/features/admin/admin-node-env-label.vue';
 
 type BooleanOrString = boolean | string;
 type ValidationFunction = (value: string) => BooleanOrString;
@@ -118,7 +118,11 @@ export default class Toolbar extends Vue {
     public created() {
         log.debug('Toolbar.created(), user status=' + Status[this.user.status]);
     }
-    public toggleLocationDialogue() {
+    public toggleDeviceDialogue() {
+        this.showNewDeviceDialogue = !this.showNewDeviceDialogue;
+        log.debug('toolbar.toggleLocationDialogue=' + this.showNewLocationDialogue);
+    }
+        public toggleLocationDialogue() {
         this.showNewLocationDialogue = !this.showNewLocationDialogue;
         log.debug('toolbar.toggleLocationDialogue=' + this.showNewLocationDialogue);
     }

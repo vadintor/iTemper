@@ -22,7 +22,7 @@ type ValidationFunction = (value: string) => BooleanOrString;
 @Component({components: {
     RegisterCard,
 }})
-export default class Register extends Vue {
+export default class RegisterPage extends Vue {
     public store = Vue.$store;
     public returnUrl: any;
 

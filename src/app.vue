@@ -20,24 +20,24 @@ import { init } from '@/store/store';
 init();
 
 // Components
-import Admin from '@/components/admin.vue';
-import MyDevices from '@/components/my-devices.vue';
 
-import MySensors from '@/components/my-sensors.vue';
+import SensorsPage from '@/components/sensors-page.vue';
 import Toolbar from '@/components/toolbar.vue';
 
 // Features
-import LocationView from '@/features/locations/location-view.vue';
-import Register from '@/features/user/user-register.vue';
-import Login from '@/features/user/user-login.vue';
+import AdminPage from '@/features/admin/admin-page.vue';
+import DevicesPage from '@/features/devices/devices-page.vue';
+import LocationPage from '@/features/locations/location-page.vue';
+import LoginPage from '@/features/user/user-login-page.vue';
+import RegisterPage from '@/features/user/user-register-page.vue';
 
 @Component( {components: {
-        Admin,
+        AdminPage,
+        DevicesPage,
+        LocationPage,
+        LoginPage,
+        RegisterPage,
         Toolbar,
-        Login,
-        Register,
-        MyDevices,
-        LocationView,
     }})
 export default class App extends Vue {
 

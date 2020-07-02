@@ -2,7 +2,6 @@
 <div >
     <v-container fluid grid-list-md>
         <v-layout row wrap>
-             <bluetooth-device></bluetooth-device>
             <v-flex v-for="(item,id) in state.devices.all" :key="id">
                 <device-card  
                     :device="item"
@@ -28,14 +27,14 @@ import { Device } from '@/features/devices';
 
 import { log } from '@/services/logger';
 // Child components
-import DeviceCard from '@/components/device-card.vue';
+import DeviceCard from '@/features/devices/device-card.vue';
 
 @Component({
     components: {
     DeviceCard,
   },
 })
-export default class MyDevices extends Vue {
+export default class DevicesPage extends Vue {
 
     public state = Vue.$store;
 

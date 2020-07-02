@@ -2,7 +2,7 @@ import { log } from '@/services/logger';
 import * as ble from './itemper-bluetooth-device';
 import { DeviceData } from '@/features/devices/device-data';
 
-export const DeviceCharacteristicUUID = 'a77fb9d7-c7f1-4cd9-8b44-b6f3131744de';
+export const DeviceCharacteristicUUID = 'd7e84cb2-ff37-4afc-9ed8-5577aeb84542';
 
 export class DeviceCharacteristic {
   private characteristic: BluetoothRemoteGATTCharacteristic;

@@ -23,7 +23,7 @@ import { router } from '@/helpers';
         LoginCard,
     },
 })
-export default class Login extends Vue {
+export default class LoginPage extends Vue {
     public store = Vue.$store;
     public returnUrl: any;
 

@@ -10,7 +10,7 @@ import { log } from '@/services/logger';
 
 
 @Component({})
-export default class MySensors extends Vue {
+export default class SensorsPage extends Vue {
   public sensors =  Vue.$store.sensors;
   public getSensorData() {
       this.sensors.getSensorsSamples(1);

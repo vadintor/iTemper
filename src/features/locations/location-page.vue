@@ -30,7 +30,7 @@ import LocationCard from './location-card.vue';
     LocationCard,
   },
 })
-export default class LocationView extends Vue {
+export default class LocationPage extends Vue {
 
     public state = Vue.$store;
 

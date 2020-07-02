@@ -77,7 +77,7 @@ import { Category} from '@/models/sensor-data';
 // }
 
 @Component({})
-export default class MySettings extends Vue {
+export default class SettingsPage extends Vue {
     public state = Vue.$store;
 
     public unitSymbol(): string {

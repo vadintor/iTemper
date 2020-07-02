@@ -180,7 +180,7 @@ import { Sensors } from '@/store/sensors';
 import { log } from '@/services/logger';
 import {json } from '@/helpers';
 
-import SensorTable from '@/components/sensor-table.vue';
+import SensorTable from './location-sensor-table.vue';
 type BooleanOrString = boolean | string;
 type ValidationFunction = (value: string) => BooleanOrString;
 interface FileProperties {

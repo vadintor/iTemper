@@ -9,15 +9,16 @@
         </v-card-text>
         <v-card-actions>
             <v-btn text color="orange"  @click="scan">Scan</v-btn>
+            <v-btn text @click="close">Cancel</v-btn>
         </v-card-actions>
         </div>
         <div v-else>
         <v-card-text v-if="connected">
-            <p>Create a NEW device.</p>
+            <p><v-icon >fa-bluetooth</v-icon>Create a NEW device. </p>
             <v-form v-model="valid" ref="device">
                 <v-text-field
                     label="Enter device name"
-                    prepend-icon="fa-broadcast-tower"
+                    :prepend-icon="prependIcon"
                     v-model="deviceName"
                     :rules="nameRules"
                     required
@@ -25,19 +26,16 @@
                     :loading="submitted"
                 ></v-text-field>
                 <div v-if="deviceKey !== ''">
-                <p>
-
-                    <span   class="d-inline-block text-truncate" 
-                            style="max-width: 400px;">
-                    <v-btn text icon @click="copy">
-                        <v-icon >fa-clone</v-icon>
-                    </v-btn>
-                    <span id="deviceKey">{{ deviceKey }}</span>
-                    </span>
-
-                </p>
-                <p class="font-weight-medium"><span>Copy the shared access key by clicking on the icon</span>
-                <v-icon >fa-clone</v-icon><span>above and store it securily. iTemper does not store the key for security reasons.</span></p>
+                        <p>
+                            <span   class="d-inline-block text-truncate" style="max-width: 400px;">
+                                <v-btn text icon @click="copy"><v-icon >fa-clone</v-icon></v-btn>
+                                <span id="deviceKey">{{ deviceKey }}</span>
+                            </span>
+                        </p>
+                        <p class="font-weight-medium">
+                            <span>Copy the shared access key by clicking on the icon</span>
+                            <v-icon >fa-clone</v-icon><span>above and store it securily. iTemper does not store the key for security reasons.</span>
+                        </p>
                 </div>
             </v-form>
         </v-card-text>
@@ -77,7 +75,7 @@ export default class NewDeviceCard extends Vue {
     public connected: boolean = false;
     public itemperBLE = new ItemperBluetoothDevice();
     public deviceCharacteristic: DeviceCharacteristic | undefined = undefined;
-
+    public prependIcon: string = '';
     public deviceName: string = '';
     public deviceKey: string = '';
     public valid: boolean =  false;
@@ -107,6 +105,11 @@ export default class NewDeviceCard extends Vue {
             });
         }
     }
+    public closeConnection() {
+        this.connected = false;
+        this.itemperBLE.disconnect();
+        this.itemperBLE = new ItemperBluetoothDevice();
+    }
     public submit() {
         if (!this.valid) {
             this.displayError('Device form not valid');
@@ -116,13 +119,14 @@ export default class NewDeviceCard extends Vue {
             this.createDevice(this.deviceName);
         }
     }
+    public markSuccess() {
+        this.prependIcon = 'fa-check';
+    }
     public close() {
         this.deviceKey = '';
         this.deviceName = '';
         this.scanning = false;
-        this.connected = false;
-        this.itemperBLE.disconnect();
-        this.itemperBLE = new ItemperBluetoothDevice();
+        this.$emit('close');
     }
     public error(): boolean {
         return this.errorMsg !== '';
@@ -138,7 +142,7 @@ export default class NewDeviceCard extends Vue {
                 const deviceData = {name: device.name, deviceID: device.deviceID, key: device.key};
                 this.deviceCharacteristic.writeValue(deviceData)
                 .then(() => {
-                    this.close();
+                    this.markSuccess();
                 })
                 .catch((error: Error) => {
                     this.submitted = false;

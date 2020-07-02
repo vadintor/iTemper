@@ -15,7 +15,7 @@ const DeviceOptions = {
 };
 
 export interface Characteristics {
-  device: DeviceCharacteristic;
+  device?: DeviceCharacteristic;
 }
 export class ItemperBluetoothDevice {
   private device: BluetoothDevice | undefined;
@@ -26,22 +26,26 @@ export class ItemperBluetoothDevice {
   }
   // request connection to a device remote GATT service
   public async connect(): Promise<Characteristics>  {
-     return navigator.bluetooth.requestDevice(DeviceOptions)
-    .then((device: BluetoothDevice) => {
+    return navigator.bluetooth.requestDevice(DeviceOptions)
+    .then((device) => {
       log.debug('itemper-ble-service.request-device');
       this.device = device;
       device.addEventListener('gattserverdisconnected', this.onDisconnected);
-      if (device.gatt) {
-        log.debug('itemper-ble-service.request-device.gatt');
-        return device.gatt.getPrimaryService(DeviceServiceUUID);
-      } else {
-        throw Error('No GATT service available on bluetooth device');
-      }
+      return device.gatt?.connect();
     })
-    .then((gatt) => gatt.getCharacteristic(WiFiCharacteristicUUID)
+    .then((server) => {
+        log.debug('itemper-ble-service.request-device.gatt');
+        return server?.getPrimaryService(DeviceServiceUUID);
+    })
+    .then((service) => {
+      return service?.getCharacteristic(DeviceCharacteristicUUID);
+    })
     .then((characteristic) => {
-          return {device: new DeviceCharacteristic(characteristic)};
-    }));
+      if (!characteristic) {
+        throw Error('Could not find itemperBLE characteristic');
+      }
+      return { device: characteristic ? new DeviceCharacteristic(characteristic) : undefined};
+    });
   }
   public getCharacteristic( service: BluetoothRemoteGATTService,
                             characteristicUUID: string): Promise<BluetoothRemoteGATTCharacteristic> {

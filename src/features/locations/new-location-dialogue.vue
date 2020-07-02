@@ -141,6 +141,7 @@ export default class NewLocationDialogue extends Vue {
         this.dialog = false;
         this.submitted = false;
         this.locationName = '';
+        this.$emit('close');
     }
     public error(): boolean {
         return this.errorMsg !== '';

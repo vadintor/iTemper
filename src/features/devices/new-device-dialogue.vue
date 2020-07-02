@@ -14,7 +14,7 @@
                 </v-btn>
             </v-fab-transition>
         </template>
-        <new-device-card></new-device-card>
+        <new-device-card @close="close"></new-device-card>
     </v-dialog>
 </template>
 <script lang="ts">
@@ -39,6 +39,10 @@ type ValidationFunction = (value: string) => BooleanOrString;
 })
 export default class NewDeviceDialogue extends Vue {
     public dialog: boolean = false;
+
+public close() {
+    this.$emit('close');
+}
 }
 
 </script>
