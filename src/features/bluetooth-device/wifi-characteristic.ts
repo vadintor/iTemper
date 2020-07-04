@@ -3,7 +3,7 @@ import * as ble from './itemper-bluetooth-device';
 
 
 // SSID (read/write), Encryption (read/write), Password (write)
-export const WiFiCharacteristicUUID = 'a77fb9d7-c7f1-4cd9-8b44-b6f3131744de';
+export const WiFiCharacteristicUUID = 'd7e84cb2-ff37-4afc-9ed8-5577aeb84541';
 
 export interface WiFiReadData {
     ssid: string;
