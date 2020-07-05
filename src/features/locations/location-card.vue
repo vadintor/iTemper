@@ -286,7 +286,7 @@ export default class LocationCard extends Vue {
             this.editSensors = false;
     }
     public submitSensors() {
-        log.debug('locationCard.submitSensors: update sensors='  + JSON.stringify(this.seletedSensors));
+        log.debug('location-card.submitSensors: update sensors='  + JSON.stringify(this.seletedSensors));
         this.submitted = true;
         this.locations.updateSensors(this.seletedSensors, this.location)
         .then((location) => {
@@ -310,7 +310,7 @@ export default class LocationCard extends Vue {
             this.displayError('File form not valid');
             return;
         } else {
-            log.debug('locationCard.submitFile: Save file ' + json(this.newImage));
+            log.debug('location-card.submitFile: Save file ' + json(this.newImage));
             const form = new FormData();
             form.append('locationImage', this.newImage);
             this.submitted = true;
@@ -333,10 +333,10 @@ export default class LocationCard extends Vue {
     }
     public submitName() {
         if (this.location.name === this.locationName) {
-            log.debug('locationCard.submitName: no changes');
+            log.debug('location-card.submitName: no changes');
             return;
         } else {
-            log.debug('locationCard.submitName: update location name');
+            log.debug('location-card.submitName: update location name');
             this.submitted = true;
             this.locations.updateName(this.locationName, this.location)
             .then((received) => {
@@ -352,10 +352,10 @@ export default class LocationCard extends Vue {
     }
     public submitColor() {
         if (this.location.color === this.locationColor) {
-            log.debug('locationCard.submitColor: no changes');
+            log.debug('location-card.submitColor: no changes');
             return;
         } else {
-            log.debug('locationCard.submitColor: update overlay color');
+            log.debug('location-card.submitColor: update overlay color');
             this.submitted = true;
             this.locations.updateColor(this.location.color, this.location)
             .then((location) => {
@@ -400,7 +400,7 @@ export default class LocationCard extends Vue {
         return 'background-color: ' + hexToRgba(this.location.color, 0.3);
     }
     public mounted() {
-        log.debug('locationCard.mounted');
+        log.debug('location-card.mounted');
     }
 
     public toggleMonitor() {

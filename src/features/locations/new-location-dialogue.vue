@@ -156,9 +156,7 @@ export default class NewLocationDialogue extends Vue {
         this.locations.createLocation(form)
         .then((location) => {
             this.location = location;
-            this.submitted = false;
-            this.locationName = '';
-            this.$emit('closeDialogue');
+            this.close();
         })
         .catch((err) => {
             this.submitted = false;

@@ -7,7 +7,7 @@
                     :height=400
                 >
                 </location-card>
-                <v-chip v-if="locationCount()===0" transition="scale-transition" >Det finns inga platser ännu</v-chip>
+                <v-chip v-if="locationCount()===0" transition="scale-transition" >Det finns inga platser.</v-chip>
             </v-col>
         </v-row>
 </template>
@@ -38,23 +38,23 @@ export default class LocationPage extends Vue {
         return this.state.locations.all.length;
     }
     public getLocations() {
-        log.debug('LocationView.getLocations');
+        log.debug('location-page.getLocations');
         this.state.locations.getLocations();
     }
     public getSensorDataLast24() {
-        log.debug('LocationView.getSensorData, status=' + Status[this.state.user.status]);
+        log.debug('location-page.getSensorData, status=' + Status[this.state.user.status]);
         if (this.state.user.status === Status.LOGGED_IN) {
             this.state.sensors.getSensorsLast24h();
         }
     }
     public getAllSensors() {
         const count = 2;
-        log.debug('LocationView.getAllSensors, status=' + Status[this.state.user.status]);
+        log.debug('location-page.getAllSensors, status=' + Status[this.state.user.status]);
         this.state.sensors.getSensorsSamples(count);
 
     }
     public created(): void {
-        log.debug('LocationView.created()');
+        log.debug('location-page.created()');
         this.getAllSensors();
         this.getLocations();
         setInterval(this.getSensorDataLast24, 1000 * this.state.settings.interval);
