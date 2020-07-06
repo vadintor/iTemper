@@ -1,5 +1,5 @@
 export * from './location';
-export * from './locations';
+export * from '../../store/locations';
 export * from './location-card.vue';
 export * from './location-data';
 export * from './location-service';

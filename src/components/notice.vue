@@ -11,7 +11,7 @@
         <span>{{notice.message}}</span>
       </v-banner>
     </v-container>
- </template>
+</template>
 <script lang="ts">
 import {Vue, Component, Prop} from 'vue-property-decorator';
 import {router} from '@/helpers';
