@@ -15,7 +15,7 @@
 // },
 // },
 import { ISensorService } from '@/services/sensor-service';
-import { Descriptor, SensorData } from '@/models/sensor-data';
+import { Descriptor, SensorData, SensorLog } from '@/models/sensor-data';
 import { Sensor } from '@/models/sensor';
 import { SensorProxy } from '@/models/sensor-proxy';
 
@@ -31,12 +31,10 @@ export class Sensors  {
     private mErrorMessage: string = '';
 
     // Not reactive
-    private sensorService: ISensorService;
     private firstTime: boolean = true;
 
-    constructor(sensorService: ISensorService) {
-        log.debug('Sensor sensorService' + (sensorService !== undefined));
-        this.sensorService = sensorService;
+    constructor(private sensorService: ISensorService) {
+        this.sensorService.addListener(this.parseSensorLog.bind(this));
     }
     public reset(): void {
         this.error = false;
@@ -152,7 +150,11 @@ export class Sensors  {
         this.all.push(newSensor);
         log.debug('Sensors.createSensor:: sensors.all=' + JSON.stringify(this.all));
     }
-
+    private createProxy(sensorLog: SensorLog) {
+        const newSensor = new SensorProxy (sensorLog.desc, sensorLog.samples);
+        this.all.push(newSensor);
+        log.debug('Sensors.createProxy:: sensors.all=' + JSON.stringify(this.all));
+    }
     private upgradeProxy(proxy: SensorProxy, sensorData: SensorData) {
         // Delete proxy and insert real sensor
         const index = this.all.indexOf(proxy);
@@ -181,6 +183,19 @@ export class Sensors  {
                 log.debug('Sensors.parseSensorData: foobar');
             }
         });
+    }
+    private parseSensorLog(sensorLog: SensorLog) {
+        const found = this.find(sensorLog.desc);
+        if (!found) {
+            this.createProxy(sensorLog);
+        } else  {
+            log.debug('Sensors.parseSensorData: push samples + ' + sensorLog.samples.length);
+            for (const sample of sensorLog.samples) {
+                found.samples.push(sample);
+            }
+            return;
+
+        }
     }
 }
 

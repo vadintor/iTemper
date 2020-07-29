@@ -178,7 +178,7 @@ export default class DeviceCard extends Vue {
             })
             .catch((err) => {
                 this.submitted = false;
-                this.displayError('error (' + err.status + '): ' + err.message);
+                this.displayError('error (' + err.status + '): ' + err.message + ', ' + JSON.stringify(err));
             });
         }
     }

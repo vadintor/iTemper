@@ -11,6 +11,9 @@
 		},
 		{
 			"path": "..\\balena-web-ble"
+		},
+		{
+			"path": "..\\composition-api"
 		}
 	],
 	"settings": {}

@@ -4,12 +4,15 @@ import { iTemperAPI } from '@/config';
 import { json } from '@/helpers/';
 import { log } from '@/services/logger';
 
+export type ApiListener = (loggedIn: boolean) => void;
 export interface IApiService {
     isLoggedIn: boolean;
+    addListener(listener: ApiListener): void;
     register(email: string, password: string, confirmPassword: string): Promise<boolean>;
     login(email: string, password: string): Promise<boolean>;
     logout(): void;
     request(method: Method, url: string, body?: any, config?: AxiosRequestConfig): Promise<any>;
+    Authorization(): { value: string };
 }
 
 export interface IError {
@@ -20,8 +23,8 @@ export interface IError {
 export { Method } from 'axios';
 
 export class ApiService implements IApiService {
-
-    public isLoggedIn: boolean = false;
+    private static listeners: Set<ApiListener> = new Set();
+    public mIsLoggedIn: boolean = false;
 
     private io: AxiosInstance;
     private token: string | undefined = undefined;
@@ -33,7 +36,19 @@ export class ApiService implements IApiService {
             headers: this.ContentTypeHeader,
         });
     }
-
+    public get isLoggedIn(): boolean {
+        return this.mIsLoggedIn;
+    }
+    public set isLoggedIn(value: boolean) {
+        this.mIsLoggedIn = value;
+        ApiService.listeners.forEach((callback) =>
+            callback(this.mIsLoggedIn));
+    }
+    public addListener(listener: ApiListener): void {
+        if (!ApiService.listeners.has(listener)) {
+            ApiService.listeners.add(listener);
+        }
+}
     public register(email: string, password: string, confirmPassword: string): Promise<boolean> {
         log.debug('ApiService.register');
         const url = '/signup';
@@ -86,8 +101,15 @@ export class ApiService implements IApiService {
             });
         });
     }
+    public Authorization() {
+        log.debug('ApiService.Authorization');
+        if (this.token) {
+            return {value: 'Bearer ' + this.token};
+        } else {
+            return { value: 'Bearer '};
+        }
+    }
     private createError(error: any): IError {
-
         let message = 'Unknown error';
         let status = 99;
         if (error.message) {
@@ -109,14 +131,6 @@ export class ApiService implements IApiService {
             log.debug('request Error=' + error.message);
         }
         return {message, status};
-    }
-    private Authorization() {
-        log.debug('ApiService.Authorization');
-        if (this.token) {
-            return {value: 'Bearer ' + this.token};
-        } else {
-            return { value: 'Bearer '};
-        }
     }
     private post(url: string, body: string): Promise<boolean> {
         return new Promise<boolean> ((resolve, reject) => {

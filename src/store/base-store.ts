@@ -1,21 +1,22 @@
-import {reactive, readonly} from 'vue';
+import { reactive, UnwrapRef } from '@vue/composition-api';
 
-
-export abstract class Store<T extends object> {
-    protected state: T;
+export abstract class BaseStore<T extends object> {
+    protected mState: UnwrapRef<T>;
 
     constructor() {
         const data = this.data();
         this.setup(data);
-        this.state = reactive(data) as T;
+        this.mState = reactive (data);
     }
 
-    public getState(): T {
-        return readonly(this.state) as T
+    protected get state() {
+        return this.mState;
+    }
+
+    protected set state(value: UnwrapRef<T>)  {
+        this.mState = value;
     }
     protected abstract data(): T;
 
-    protected setup(data: T): T {
-        return readonly(this.state) as T;
-    }
+    protected abstract setup(data: T): void;
 }

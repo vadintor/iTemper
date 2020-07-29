@@ -2,7 +2,7 @@ import { Location } from '@/features/locations';
 import { Sensor } from '@/models/sensor';
 import { SensorProxy } from '@/models/sensor-proxy';
 import { store } from '@/store/store';
-import { ILocationData, ILocationService, LocationService } from '@/features/locations/';
+import { LocationData, ILocationService } from '@/features/locations/';
 
 import { Vue  } from 'vue-property-decorator';
 
@@ -12,10 +12,7 @@ export class Locations {
     private mLocations: Location[] = [];
     private mError: string = '';
 
-    private locationService: ILocationService;
-
-    constructor(loginService: ILocationService) {
-        this.locationService = loginService;
+    constructor(private locationService: ILocationService) {
     }
     public reset(): void {
         this.mError = '';
@@ -37,14 +34,14 @@ export class Locations {
         log.debug('Locations.getLocations');
         this.resetError();
         this.locationService.getLocations()
-        .then((received: ILocationData[]) => {
+        .then((received: LocationData[]) => {
             log.debug('getLocations.received=' + JSON.stringify(received));
             received.forEach((locationData) => {
                 const found = this.all.find((l) => l._id === locationData._id);
                 if (found) {
                     this.mapSensorDesc(found, locationData);
                 } else {
-                    const newLocation = LocationService.newLocation(locationData);
+                    const newLocation = this.newLocation(locationData);
                     this.mapSensorDesc(newLocation, locationData);
                     this.all.push(newLocation);
                 }
@@ -59,8 +56,8 @@ export class Locations {
         this.resetError();
         return new Promise ((resolve, reject) => {
             this.locationService.createLocation(form)
-            .then((received: ILocationData) => {
-                const newLocation = LocationService.newLocation(received);
+            .then((received: LocationData) => {
+                const newLocation = this.newLocation(received);
                 this.mLocations.push(newLocation);
                 log.debug('locations.createLocation=' + JSON.stringify(newLocation));
                 resolve(newLocation);
@@ -73,7 +70,7 @@ export class Locations {
         this.resetError();
         return new Promise ((resolve, reject) => {
             this.locationService.deleteLocation(location)
-            .then((received: ILocationData) => {
+            .then((received: LocationData) => {
                 const index = this.mLocations.findIndex((l) => l.mId === received._id);
                 if (index >= 0 ) {
                     const deleted = this.mLocations[index];
@@ -91,7 +88,7 @@ export class Locations {
         this.resetError();
         return new Promise ((resolve, reject) => {
             this.locationService.updateFile(form, location)
-            .then((received: ILocationData) => {
+            .then((received: LocationData) => {
                 const thisLocation = this.mLocations.find((l) => l._id === received._id);
                 if (!thisLocation) {
                     reject({status: 96, message: 'location id not available'});
@@ -108,7 +105,7 @@ export class Locations {
         this.resetError();
         return new Promise ((resolve, reject) => {
             this.locationService.updateName(newName, location)
-            .then((received: ILocationData) => {
+            .then((received: LocationData) => {
                 const thisLocation = this.mLocations.find((l) => l._id === received._id);
                 if (!thisLocation) {
                     reject({status: 96, message: 'location id not available'});
@@ -124,7 +121,7 @@ export class Locations {
         this.resetError();
         return new Promise ((resolve, reject) => {
             this.locationService.updateColor(newColor, location)
-            .then((received: ILocationData) => {
+            .then((received: LocationData) => {
                 const thisLocation = this.mLocations.find((l) => l._id === received._id);
                 if (!thisLocation) {
                     reject({status: 96, message: 'location id not available'});
@@ -141,7 +138,7 @@ export class Locations {
         log.debug('locations.updateSensors ' + JSON.stringify(newSensors));
         return new Promise ((resolve, reject) => {
             this.locationService.updateSensors(newSensors, location)
-            .then((received: ILocationData) => {
+            .then((received: LocationData) => {
                 const thisLocation = this.all.find((l) => l._id === received._id);
                 if (!thisLocation) {
                     reject({status: 96, message: 'location id not available'});
@@ -156,19 +153,20 @@ export class Locations {
             .catch((e: any) => reject(e));
         });
     }
-    // public triggerMapSensorDesc() {
-    //     log.debug('triggerMapSensorDesc');
-    //     for (const location of this.mLocations) {
-    //         this.mapSensorDesc(location);
-    //     }
-    // }
-    private mapSensorDesc(location: Location, locationData: ILocationData) {
+    private newLocation(response: LocationData): Location {
+        const location = new Location (response.name, response.color);
+        location._id = response._id;
+        response.path ? location.path = response.path : response.path = '';
+        response.sensorDesc ? location.sensorDesc = response.sensorDesc : response.sensorDesc = [];
+        return location;
+    }
+    private mapSensorDesc(location: Location, locationData: LocationData) {
         log.debug('Locations.mapSensorDesc, location.sensors (length=' + location.sensors.length + ')'
             + JSON.stringify(location.sensors));
-        location.sensors = []; // the for loop is not run if no sensors in location data!!!
+        location.sensors = [];
         for (const desc of locationData.sensorDesc) {
-            const mapped = location.sensors.find((s) => s.desc.SN === desc.SN && s.desc.port === desc.port);
-            if (!mapped) {
+            const found = location.sensors.find((s) => s.desc.SN === desc.SN && s.desc.port === desc.port);
+            if (!found) {
                 const inStoreSensor = store.sensors.find(desc);
                 if (!inStoreSensor) {
                     //  Need to create a proxy for the actual sensor

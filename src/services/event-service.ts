@@ -11,14 +11,16 @@ export class EventService implements IEventService {
 
     public on(event: string  | string[], callback: (...args: any[]) => void): this {
         this.eventBus.$on(event, callback);
+        return this;
     }
-
     public once(event: string | string[], callback: (...args: any[]) => void): this {
         this.eventBus.$once(event, callback);
-    };
+        return this;
+    }
     public off(event: string | string[], callback: (...args: any[]) => void): this {
         this.eventBus.$off(event, callback);
-    };
+        return this;
+    }
     public emit(event: string, ...args: any): this {
         this.eventBus.$emit(event, ...args);
         return this;

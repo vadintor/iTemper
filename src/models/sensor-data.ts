@@ -19,7 +19,7 @@ export interface Descriptor {
     port: number;
 }
 export interface SensorLog {
-    desc: string;
+    desc: Descriptor;
     samples: Sample[];
 }
 export interface SensorData {
@@ -33,7 +33,6 @@ export interface SensorData {
 export interface ISensorDesc {
     desc: Descriptor;
 }
-
 
 // deviceID: String,
 // desc: {

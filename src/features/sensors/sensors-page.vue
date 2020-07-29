@@ -1,13 +1,53 @@
 <template>
-  
+  <div class="sensors">
+    <h1>Sensors</h1>
+    <ul>
+      <li v-for="sensor in sensors" :key="sensor.deviceID">
+        <h1>{{ name (sensor) }} </h1>
+        <p>{{ sample (sensor) }} </p>
+      </li>
+    </ul>
+  </div>
 </template>
 <script lang="ts">
-import { defineComponent } from '@vue/composition-api';
-import { ref, reactive } from '@vue/composition-api';
+import { Vue } from 'vue-property-decorator';
+import { defineComponent, onMounted } from '@vue/composition-api';
+
+import { SensorData, Category } from '@/models/sensor-data';
+import { useSensors } from '@/features/sensors/sensors-store';
+
 import { log } from '@/services/logger';
+
 export default defineComponent({
+  name: 'SensorPage',
+  components: {},
+
   setup() {
-    return {};
+    const state  = useSensors();
+    const sensors = state.sensors;
+    const name = (sensor: SensorData) => {
+      return sensor.attr.model + ':' + sensor.desc.SN + '/' + sensor.desc.port;
+    };
+    const sample = (sensor: SensorData) => {
+      const unitSymbol = Vue.$store.settings.unit(Category.Temperature);
+      if (sensor.samples.length > 0) {
+        const lastSample = sensor.samples[sensor.samples.length - 1];
+        const lastDate = new Date(lastSample.date);
+
+        const date =  Date.now() - lastSample.date < - 24 * 60 * 60 * 1000
+          ? lastDate.toLocaleTimeString()
+          : lastDate.toLocaleTimeString() + ' (' + lastDate.toLocaleDateString() + ')';
+        return lastSample.value.toPrecision(2) + unitSymbol + ', ' + date;
+      } else {
+        return '- ' + unitSymbol;
+      }
+    };
+
+    onMounted(() => {
+      state.getSensorsSamples(10);
+    });
+    log.debug('SensorPage.setup: sensors: ' + JSON.stringify(sensors));
+    return { sensors, name, sample };
   },
 });
 </script>

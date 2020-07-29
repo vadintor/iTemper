@@ -25,7 +25,6 @@ export class Sensor extends SensorProxy {
     private mAttr: Attributes = {
         model: '', category: Category.Temperature, accuracy: 0, resolution: 0, maxSampleRate: 0,
     };
-    private mSamples: Sample[] = [];
 
     constructor(data: SensorData) {
             super(data.desc);

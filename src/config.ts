@@ -16,7 +16,7 @@ function configure(): Config {
         return {
             development,
             iTemperAPI: 'https://api.itemper.io/',
-            iTemperWS: 'wss://api.itemper.io/ws',
+            iTemperWS: 'wss://device.itemper.io/ws',
         };
     }
 

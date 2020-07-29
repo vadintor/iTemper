@@ -84,7 +84,7 @@ export default class NewDeviceCard extends Vue {
     public timeout: number = 2_000;
     public nameRules: ValidationFunction[] = [
           (v) => !!v || 'Enter name',
-          (v) => /^[a-zA-Z0-9]+$/.test(v) && v.length >= 4 || 'Must be at least 4 characters, no white spaces or special characters allowed',
+          (v) => /^[a-zA-Z0-9\-]+$/.test(v) && v.length >= 4 || 'Must be at least 4 characters, alphanumeric and hyphen allowed',
         ];
     public store = Vue.$store;
     public devices = Vue.$store.devices;

@@ -4,7 +4,6 @@ import Router from 'vue-router';
 
 // Components
 import Home from '@/components/home-page.vue';
-import MySensors from '@/components/sensors-page.vue';
 import MySettings from '@/components/settings-page.vue';
 
 // Pages
@@ -14,6 +13,7 @@ import Admin from '@/features/admin/admin-page.vue';
 import LocationView from '@/features/locations/location-page.vue';
 import Login from '@/features/user/user-login-page.vue';
 import Register from '@/features/user/user-register-page.vue';
+import SensorPage from '@/features/sensors/sensors-page.vue';
 
 // Store
 import { Status } from '@/store/user';
@@ -32,7 +32,7 @@ const routes = [
   { path: '/locations', name: 'locations', component: LocationView},
   { path: '/devices', name: 'devices', component: DevicesPage},
   { path: '/settings', name: 'settings', component: MySettings },
-  { path: '/sensors', name: 'sensors', component: MySensors },
+  { path: '/sensors', name: 'sensors', component: SensorPage },
   { path: '*', redirect: '/' },
 ];
 
