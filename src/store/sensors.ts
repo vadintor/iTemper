@@ -86,21 +86,18 @@ export class Sensors  {
         const found = this.all.find((s) =>
         s.desc.SN === desc.SN && s.desc.port === desc.port);
         log.debug('sensors.find');
-        const isSensor = found && found instanceof Sensor;
-        const isSensorProxy = found && found instanceof SensorProxy;
+        const isSensor = found && 'attr' in found;
 
         if (!found) {
             log.debug('sensors.find: nothing found');
+            return;
+        } else if (isSensor) {
+            log.debug('sensors.find: found sensor=' + JSON.stringify(found.desc));
+            return found as Sensor;
         } else {
-            log.debug('sensors.find: found=' + JSON.stringify(found.desc));
-            if (isSensor) {
-                log.debug('sensors.find: found is Sensor');
-            }
-            if (isSensorProxy) {
-                log.debug('sensors.find: found is SensorProxy');
-            }
+            log.debug('sensors.find: found proxy sensor=' + JSON.stringify(found.desc));
+            return found as SensorProxy;
         }
-        return found;
     }
 
     public filterByDeviceID(deviceID: string): Sensor[] {
@@ -187,9 +184,10 @@ export class Sensors  {
     private parseSensorLog(sensorLog: SensorLog) {
         const found = this.find(sensorLog.desc);
         if (!found) {
+            log.debug('Sensors.parseSensorLog: sensor not found creating proxy');
             this.createProxy(sensorLog);
         } else  {
-            log.debug('Sensors.parseSensorData: push samples + ' + sensorLog.samples.length);
+            log.debug('Sensors.parseSensorLog: received samples=' + sensorLog.samples.length);
             for (const sample of sensorLog.samples) {
                 found.samples.push(sample);
             }

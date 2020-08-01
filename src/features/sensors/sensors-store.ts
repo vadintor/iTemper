@@ -14,13 +14,11 @@ export class SensorStore extends BaseStore<SensorData[]> {
     private mErrorMessage = ref('');
 
     // Not reactive
-    private sensorService: ISensorService;
     private firstTime = true;
 
-    constructor(sensorService: ISensorService) {
+    constructor(private sensorService: ISensorService) {
         super();
         log.debug('sensor-store.constructor');
-        this.sensorService = sensorService;
         this.sensorService.addListener(this.parseSensorLog.bind(this));
     }
     public get sensors(): UnwrapRef<SensorData[]> {
@@ -171,7 +169,7 @@ export class SensorStore extends BaseStore<SensorData[]> {
         if (!found) {
             this.createProxy(sensorLog);
         } else  {
-            log.debug('Sensors.parseSensorData: push samples + ' + sensorLog.samples.length);
+            log.debug('sensors-store..parseSensorData: push samples + ' + sensorLog.samples.length);
             for (const sample of sensorLog.samples) {
                 found.samples.push(sample);
             }
@@ -180,7 +178,10 @@ export class SensorStore extends BaseStore<SensorData[]> {
         }
     }
 }
+let state: SensorStore;
 export function useSensors() {
-    const state: SensorStore = new SensorStore(store.itemper.sensorService);
+    if (!state) {
+        state = new SensorStore(store.itemper.sensorService);
+    }
     return state;
 }

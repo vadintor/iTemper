@@ -2,7 +2,7 @@
   <div class="sensors">
     <h1>Sensors</h1>
     <ul>
-      <li v-for="sensor in sensors" :key="sensor.deviceID">
+      <li v-for="sensor in sensors" :key="sensor._id">
         <h1>{{ name (sensor) }} </h1>
         <p>{{ sample (sensor) }} </p>
       </li>
@@ -14,7 +14,7 @@ import { Vue } from 'vue-property-decorator';
 import { defineComponent, onMounted } from '@vue/composition-api';
 
 import { SensorData, Category } from '@/models/sensor-data';
-import { useSensors } from '@/features/sensors/sensors-store';
+import { useSensors } from './sensors-store';
 
 import { log } from '@/services/logger';
 
@@ -33,11 +33,17 @@ export default defineComponent({
       if (sensor.samples.length > 0) {
         const lastSample = sensor.samples[sensor.samples.length - 1];
         const lastDate = new Date(lastSample.date);
-
-        const date =  Date.now() - lastSample.date < - 24 * 60 * 60 * 1000
-          ? lastDate.toLocaleTimeString()
+        const age =  Date.now() - lastSample.date;
+        const OneDay = 24 * 60 * 60 * 1000;
+        const ageText = age > OneDay
+          ? ' (' + lastDate.toLocaleDateString() + ')'
+          : age > 1_000
+            ? ', age: ' + age / 1000 + ' s'
+            : ', age: ' + age + ' ms';
+        const date =  age < OneDay
+          ? lastDate.toLocaleTimeString() + ageText
           : lastDate.toLocaleTimeString() + ' (' + lastDate.toLocaleDateString() + ')';
-        return lastSample.value.toPrecision(2) + unitSymbol + ', ' + date;
+        return lastSample.value.toPrecision(3) + unitSymbol + ', ' + date;
       } else {
         return '- ' + unitSymbol;
       }
