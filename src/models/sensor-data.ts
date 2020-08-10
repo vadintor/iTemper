@@ -24,7 +24,7 @@ export interface SensorLog {
 }
 export interface SensorData {
     _id: string;
-   deviceID: string ;
+   deviceID: string;
    desc: Descriptor;
    attr: Attributes;
    samples: Sample[];

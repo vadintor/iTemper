@@ -17,7 +17,7 @@
                                             <v-list style="max-height: 150px" class="overflow-y-auto">
                                             <v-list-item-group 
                                                 v-model="seletedSensors"
-                                                max="5"
+                                                max="10"
                                                 multiple
                                             >
                                                 <template v-for="(sensor, i) in sensors.all">

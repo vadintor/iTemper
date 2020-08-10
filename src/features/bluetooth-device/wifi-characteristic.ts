@@ -1,15 +1,13 @@
 import { log } from '@/services/logger';
-import * as ble from './itemper-bluetooth-device';
-
+import * as ble from './bluetooth-service';
+import { DeviceWiFiData } from '@/features/devices/device-data';
+import { isDeviceWiFiDataValid } from '@/features/devices/device-data-validators';
 
 // SSID (read/write), Encryption (read/write), Password (write)
 export const WiFiCharacteristicUUID = 'd7e84cb2-ff37-4afc-9ed8-5577aeb84541';
 
-export interface WiFiReadData {
+export interface WiFiWriteData  {
     ssid: string;
-    security?: string;
-  }
-export interface WiFiWriteData extends WiFiReadData {
     password: string;
 }
 
@@ -18,15 +16,21 @@ export class WiFiCharacteristic {
   constructor(characteristic: BluetoothRemoteGATTCharacteristic) {
     this.characteristic = characteristic;
   }
-  public async readValue(): Promise<WiFiReadData> {
-    log.debug('wifi-characteristic.readString');
+  public async readValue(): Promise<DeviceWiFiData> {
+    log.debug('wifi-characteristic.readValue');
     return  this.characteristic.readValue().then ((value) => {
-              const wifi =  JSON.parse(ble.decode(value)) as WiFiReadData;
-              return wifi;
-            });
+      const str = ble.decode(value);
+      log.info('wifi-characteristic.readValue=' + str);
+      const data = JSON.parse(str);
+      if (isDeviceWiFiDataValid(data)) {
+        return data as DeviceWiFiData;
+      } else {
+        throw Error ('Invalid device wifi data');
+      }
+  });
   }
   public async writeValue(value: WiFiWriteData): Promise<void> {
-    log.debug('wifi-characteristic.writeString');
+    log.debug('wifi-characteristic.writeValue');
     return  this.characteristic.writeValue(ble.encode(JSON.stringify(value)));
   }
 }

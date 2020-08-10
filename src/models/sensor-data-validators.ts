@@ -47,7 +47,7 @@ export function isSensorDataValid(raw: unknown): boolean {
     }
     return valid;
 }
-function isObject(raw: unknown): boolean {
+export function isObject(raw: unknown): boolean {
     return typeof raw === 'object' && raw !== null;
 }
 function isCategoryValid(raw: unknown): boolean {

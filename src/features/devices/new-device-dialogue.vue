@@ -1,5 +1,5 @@
 <template>
-    <v-dialog v-model="dialog" persistent max-width="500">
+    <v-dialog v-model="dialog" persistent max-width="800">
         <template v-slot:activator="{ on }">
             <v-fab-transition>
                 <v-btn class="mx-2" 
@@ -14,7 +14,7 @@
                 </v-btn>
             </v-fab-transition>
         </template>
-        <new-device-card @close="close"></new-device-card>
+        <device-stepper></device-stepper>
     </v-dialog>
 </template>
 <script lang="ts">
@@ -22,7 +22,7 @@
 import * as moment from 'moment-timezone';
 
 import {Vue, Component, Watch, Prop} from 'vue-property-decorator';
-import NewDeviceCard from './new-device-card.vue';
+import DeviceStepper from './device-stepper.vue';
 
 // Models
 // import * as locations from '@/models/locations'
@@ -35,13 +35,13 @@ type BooleanOrString = boolean | string;
 type ValidationFunction = (value: string) => BooleanOrString;
 
 @Component({
-    components: { NewDeviceCard },
+    components: { DeviceStepper },
 })
 export default class NewDeviceDialogue extends Vue {
     public dialog: boolean = false;
 
 public close() {
-    this.$emit('close');
+   //  this.$emit('close');
 }
 }
 
