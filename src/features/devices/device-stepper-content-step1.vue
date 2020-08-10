@@ -114,7 +114,7 @@ import { defineComponent, onMounted, watchEffect, computed } from '@vue/composit
 
 import { SensorData, Category } from '@/models/sensor-data';
 import { DeviceData, DeviceState, DeviceWiFiData } from './device-data';
-import { isDeviceDataValid, isDeviceWiFiDataValid, isDeviceStateValid} from './device-data-validators';
+import { isDeviceDataValid, isWiFiDataValid, isWiFiDataArrayValid, isDeviceStateValid} from './device-data-validators';
 import useDeviceState from './use-device-state';
 import { useBluetooth, BtStatus } from './use-bluetooth';
 
@@ -132,7 +132,7 @@ export default defineComponent({
   setup(props, context) {
     const deviceState = useDeviceState();
     const  { btStatus, connecting, connected, connect, disconnected,
-              disconnect, disconnecting, device, wifi } = useBluetooth();
+              disconnect, disconnecting, current, device, available } = useBluetooth();
     const savedStatus = ref(SavedStatus.NotSaved);
     const deviceName = ref('');
     const prependIcon = ref('');
@@ -203,21 +203,27 @@ export default defineComponent({
             log.debug('device-stepper-content-step1, status=' + BtStatus[status]);
             if (status === BtStatus.Connected) {
               actionDone();
-              Promise.all([device().readValue(), wifi().readValue()])
+              Promise.all([device().readValue(), current().readValue(), available().readValue()])
               .then((data) => {
               log.info('device-stepper-content-step1.scan: data=' + JSON.stringify(data));
-              if (!isDeviceDataValid(data[0]) || !isDeviceWiFiDataValid(data[1])) {
+              if (!isDeviceDataValid(data[0]) || !isWiFiDataValid(data[1]) || isWiFiDataArrayValid(data[2])) {
                 log.info('Received invalid device state data, disconnects');
                 actionError();
                 disconnect();
               } else {
                 log.info('device-stepper-content-step1: data is valid');
                 actionDone();
+                // Device data
                 deviceState.deviceData.name = data[0].name;
                 deviceState.deviceData.deviceID = data[0].deviceID;
                 deviceState.deviceData.key = data[0].key;
-
-                data[1].available.forEach((network) => deviceState.networks.available.push(reactive(
+                // current WiFi
+                deviceState.networks.current.ssid = data[1].ssid;
+                deviceState.networks.current.security = data[1].security;
+                deviceState.networks.current.channel = data[1].channel;
+                deviceState.networks.current.quality = data[1].quality;
+                // Available WiFi
+                data[2].forEach((network) => deviceState.networks.available.push(reactive(
                   {   ssid: ref(network.ssid),
                       security: ref(network.security),
                       channel: ref(network.channel),

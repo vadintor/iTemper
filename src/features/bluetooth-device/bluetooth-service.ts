@@ -1,5 +1,6 @@
 import { log } from '@/services/logger';
-import { WiFiCharacteristicUUID, WiFiCharacteristic} from './wifi-characteristic';
+import { AvailableWiFiCharacteristicUUID, AvailableWiFiCharacteristic} from './available-wifi-characteristics';
+import { CurrentWiFiCharacteristicUUID, CurrentWiFiCharacteristic} from './current-wifi-characteristic';
 import { DeviceCharacteristicUUID, DeviceCharacteristic} from './device-characteristic';
 
 const DeviceServiceUUID = 0xfff1;
@@ -14,7 +15,8 @@ const DeviceOptions = {
 };
 export interface BtCharacteristics {
   device: DeviceCharacteristic;
-  wifi: WiFiCharacteristic;
+  current: CurrentWiFiCharacteristic;
+  available: AvailableWiFiCharacteristic;
 }
 export class BtService {
   private device: BluetoothDevice | undefined;
@@ -27,11 +29,15 @@ export class BtService {
       this.connect()
       .then((service) => {
         if (!!service) {
-          return Promise.all([this.getDeviceCharacteristic(service), this.getWiFiCharacteristic(service)])
+          return Promise.all([  this.getDeviceCharacteristic(service),
+                                this.getCurrentWiFiCharacteristic(service),
+                                this.getAvailableWiFiCharacteristic(service)])
           .then((characteristics) => {
-            if (characteristics[0]  && characteristics[1]) {
+            if (characteristics[0]  && characteristics[1] && characteristics[2]) {
               log.debug('bluetooth-service.scan resolved characteristics');
-              resolve({device: characteristics[0], wifi: characteristics[1]});
+              resolve({ device: characteristics[0],
+                        current: characteristics[1],
+                        available: characteristics[2]});
             } else {
               reject('Some characteristics missing');
             }
@@ -62,10 +68,18 @@ export class BtService {
       return !!characteristic ? new DeviceCharacteristic(characteristic) : undefined;
     });
   }
-  public getWiFiCharacteristic(service: BluetoothRemoteGATTService): Promise<WiFiCharacteristic | undefined> {
-    return service.getCharacteristic(WiFiCharacteristicUUID)
+  public getCurrentWiFiCharacteristic(service: BluetoothRemoteGATTService):
+              Promise<CurrentWiFiCharacteristic | undefined> {
+    return service.getCharacteristic(CurrentWiFiCharacteristicUUID)
     .then((characteristic) => {
-      return !!characteristic ?  new WiFiCharacteristic(characteristic) : undefined;
+      return !!characteristic ?  new CurrentWiFiCharacteristic(characteristic) : undefined;
+    });
+  }
+  public getAvailableWiFiCharacteristic(service: BluetoothRemoteGATTService):
+              Promise<AvailableWiFiCharacteristic | undefined> {
+    return service.getCharacteristic(AvailableWiFiCharacteristicUUID)
+    .then((characteristic) => {
+      return !!characteristic ?  new AvailableWiFiCharacteristic(characteristic) : undefined;
     });
   }
   public getCharacteristic( service: BluetoothRemoteGATTService,

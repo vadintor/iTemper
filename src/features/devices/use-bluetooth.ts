@@ -1,7 +1,8 @@
 import { DeviceState } from './device-data';
 import { log } from '@/services/logger';
 
-import { WiFiCharacteristic} from '../bluetooth-device/wifi-characteristic';
+import { AvailableWiFiCharacteristic} from '../bluetooth-device/available-wifi-characteristics';
+import { CurrentWiFiCharacteristic} from '../bluetooth-device/current-wifi-characteristic';
 import { DeviceCharacteristic} from '../bluetooth-device/device-characteristic';
 
 import { BtCharacteristics, BtService } from '@/features/bluetooth-device/bluetooth-service';
@@ -50,13 +51,17 @@ export function useBluetooth() {
     const device = (): DeviceCharacteristic => {
         return characteristics.device;
     };
-    const wifi = (): WiFiCharacteristic => {
-        return characteristics.wifi;
+    const current = (): CurrentWiFiCharacteristic => {
+        return characteristics.current;
+    };
+    const available = (): AvailableWiFiCharacteristic => {
+        return characteristics.available;
     };
     const onDisconnected = () => {
         btStatus.value = BtStatus.Disconnected;
         service = new BtService(onDisconnected);
     };
-    return { btStatus, connecting, connected, connect, disconnected, disconnect, disconnecting, device, wifi };
+    return { btStatus, connecting, connected, connect, disconnected, disconnect, disconnecting,
+        current, device, available};
 
 }

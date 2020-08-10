@@ -80,7 +80,7 @@ export default defineComponent({
 
   setup(props, context) {
     const deviceState = useDeviceState();
-    const { device, wifi, disconnect, connect, btStatus } = useBluetooth();
+    const { device, current, disconnect, connect, btStatus } = useBluetooth();
     const select = ref({});
     const password = ref('');
     const showPassword = ref(false);
@@ -104,7 +104,7 @@ export default defineComponent({
     };
     const configure = () => {
         setTimeout(() => {
-        const current = deviceState?.networks?.available.find((network: WiFiData) => network.ssid === select.value);
+        // const current = deviceState?.networks?.available.find((network: WiFiData) => network.ssid === select.value);
         }, 3_000);
     };
     const hint = (network: WiFiData) => {
@@ -116,7 +116,7 @@ export default defineComponent({
     };
     const sync = () => {
       const Wificonfig = { ssid: 'ssid', password: password.value };
-      wifi().writeValue(Wificonfig)
+      current().writeValue(Wificonfig)
       .then(() => {
         updated.value = true;
       });

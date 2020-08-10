@@ -1,6 +1,7 @@
 import {DeviceData, DeviceWiFiData, WiFiData, DeviceState} from './device-data';
 import { isObject, isSensorDataArrayValid } from '@/models/sensor-data-validators';
 import { log } from '@/services/logger';
+import { isArray } from 'util';
 
 
 export function isDeviceDataValid(raw: unknown): boolean {
@@ -32,6 +33,21 @@ export function isWiFiDataValid(raw: unknown): boolean {
         && 'quality' in data && typeof data.quality === 'number';
         if (!valid) {
             log.error('device-data-validators.isWiFiDataValid - not valid');
+        }
+    }
+    return valid;
+}
+export function isWiFiDataArrayValid(raw: unknown): boolean {
+    let valid = isArray(raw);
+    if (!valid) {
+        log.error('device-data-validators.isWiFiDataArrayValid - not an array');
+    } else {
+        const data = raw as Partial<WiFiData[]>;
+        data.forEach((network) => {
+            valid = valid && isWiFiDataValid(network);
+        });
+        if (!valid) {
+            log.error('device-data-validators.isWiFiDataArrayValid - not valid');
         }
     }
     return valid;
