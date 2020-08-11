@@ -151,8 +151,8 @@ export default defineComponent({
     const currentAction = ref(0);
     const action = ref(1);
     const actions = reactive([
-        { text: 'Establishing Bluetooth connection', loading: false, done: false, error: false, errorText: 'Cannot estblish connection' },
-        { text: 'Retrieving device configuration', loading: false, done: false, error: false, errorText: 'Cannot read configuration' },
+        { text: ref('Establishing Bluetooth connection'), loading: ref(false), done: ref(false), error: ref(false), errorText: ref('Cannot estblish connection' )},
+        { text: ref('Retrieving device configuration'), loading: ref(false), done: ref(false), error: ref(false), errorText: ref('Cannot read configuration') },
       ]);
     const currentActionValid = () => {
       return 0 <= currentAction.value && currentAction.value  < actions.length;
@@ -220,14 +220,10 @@ export default defineComponent({
                 // current WiFi
                 deviceState.networks.current.ssid = data[1].ssid;
                 deviceState.networks.current.security = data[1].security;
-                deviceState.networks.current.channel = data[1].channel;
-                deviceState.networks.current.quality = data[1].quality;
                 // Available WiFi
                 data[2].forEach((network) => deviceState.networks.available.push(reactive(
                   {   ssid: ref(network.ssid),
                       security: ref(network.security),
-                      channel: ref(network.channel),
-                      quality: ref(network.quality),
                   })));
                 log.info('device-stepper-content-step1 deviceState= %s', JSON.stringify(deviceState));
 

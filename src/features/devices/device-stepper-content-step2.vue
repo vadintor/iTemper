@@ -87,14 +87,6 @@ export default defineComponent({
     const updated = ref(false);
     const ssids = computed(() => deviceState.networks.available);
     const networks = computed(() => deviceState.networks.current);
-    // watch(() => deviceState.networks,
-    //   (networks, prevNetworks) => {
-    //     log.info('device-stepper-content-step2.watch');
-    //     ssids = [];
-    //     for (const network of networks.available) {
-    //         ssids.push(network.ssid);
-    //     }
-    // });
     const isSecure = (ssid: string): boolean => {
       const selected = deviceState?.networks?.available.find((network: WiFiData) => network.ssid === ssid);
       return !!selected && selected.security !== 'Open';
@@ -108,7 +100,7 @@ export default defineComponent({
         }, 3_000);
     };
     const hint = (network: WiFiData) => {
-      return 'Channel: ' + network.channel + ', quality: ' + network.quality;
+      return 'Security: ' + network.security;
     };
     const stepBack = () => {
       log.info('device-stepper-content-step2.stepBack', JSON.stringify(deviceState));

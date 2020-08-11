@@ -28,9 +28,7 @@ export function isWiFiDataValid(raw: unknown): boolean {
         const data = raw as Partial<WiFiData>;
         valid = valid
         && 'ssid' in data && typeof data.ssid === 'string'
-        && 'security' in data && typeof data.security === 'string'
-        && 'channel' in data && typeof data.channel === 'number'
-        && 'quality' in data && typeof data.quality === 'number';
+        && 'security' in data && typeof data.security === 'string';
         if (!valid) {
             log.error('device-data-validators.isWiFiDataValid - not valid');
         }
