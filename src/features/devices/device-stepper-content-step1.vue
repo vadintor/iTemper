@@ -114,7 +114,7 @@ import { defineComponent, onMounted, watchEffect, computed } from '@vue/composit
 
 import { SensorData, Category } from '@/models/sensor-data';
 import { DeviceData, DeviceState, DeviceWiFiData } from './device-data';
-import { isDeviceDataValid, isWiFiDataValid, isWiFiDataArrayValid, isDeviceStateValid} from './device-data-validators';
+
 import useDeviceState from './use-device-state';
 import { useBluetooth, BtStatus } from './use-bluetooth';
 
@@ -151,16 +151,11 @@ export default defineComponent({
     const currentAction = ref(0);
     const action = ref(1);
     const actions = reactive([
-        { text: ref('Establishing Bluetooth connection'),
-          loading: ref(false),
-          done: ref(false),
-          error: ref(false),
-          errorText: ref('Cannot estblish connection' )},
-        { text: ref('Retrieving device configuration'),
-          loading: ref(false),
-          done: ref(false),
-          error: ref(false),
-          errorText: ref('Cannot read configuration') },
+        { text: 'Establishing Bluetooth connection',
+          loading: false,
+          done: false,
+          error: false,
+          errorText: 'Cannot establish Bluetooth connection'},
       ]);
     const currentActionValid = () => {
       return 0 <= currentAction.value && currentAction.value  < actions.length;
@@ -208,43 +203,52 @@ export default defineComponent({
           resetActions();
           connect()
           .then((status: BtStatus) => {
-            log.debug('device-stepper-content-step1, status=' + BtStatus[status]);
-            if (status === BtStatus.Connected) {
+              log.debug('device-stepper-content-step1, status=' + BtStatus[status]);
               actionDone();
-              Promise.all([device().readValue(), current().readValue(), available().readValue()])
-              .then((data) => {
-              log.info('device-stepper-content-step1.scan: data=' + JSON.stringify(data));
-              if (!isDeviceDataValid(data[0]) || !isWiFiDataValid(data[1]) || isWiFiDataArrayValid(data[2])) {
-                log.info('Received invalid device state data, disconnects');
+              device().readValue()
+              .then((deviceConfig) => {
+                  log.info('device-stepper-content-step1: device data read');
+                  // Device data
+                  deviceState.deviceData.name = deviceConfig.name;
+                  deviceState.deviceData.deviceID = deviceConfig.deviceID;
+                  deviceState.deviceData.key = deviceConfig.key;
+                  deviceState.deviceData.color = deviceConfig.color;
+
+                  current().readValue()
+                  .then((wifi) => {
+                        // current WiFi
+                        deviceState.networks.current.ssid = wifi.ssid;
+                        deviceState.networks.current.security = wifi.security;
+
+                        available().readValue()
+                        .then((availableWiFi) => {
+                            // Available WiFi
+                            log.error('device-stepper-content-step1 availableWiFi='+JSON.stringify(availableWiFi));
+                            availableWiFi.forEach((network) => deviceState.networks.available.push(reactive(
+                              {   ssid: ref(network.ssid),
+                                  security: ref(network.security),
+                              })));
+                            log.info('device-stepper-content-step1 deviceState= %s', JSON.stringify(deviceState));
+                            deviceName.value = deviceState.deviceData.name;
+                            btStatus.value = BtStatus.Connected;
+                        }).catch((e: Error) => {
+                            log.error('device-stepper-content-step1.Received invalid available wifi');
+                            actionError();
+                        });
+                  })
+                  .catch((e: Error) => {
+                      log.error('device-stepper-content-step1.Received invalid wifi configuration');
+                      actionError();
+                  });
+              })
+              .catch((e: Error) => {
+                log.error('device-stepper-content-step1.Received invalid device configuration');
                 actionError();
-                disconnect();
-              } else {
-                log.info('device-stepper-content-step1: data is valid');
-                actionDone();
-                // Device data
-                deviceState.deviceData.name = data[0].name;
-                deviceState.deviceData.deviceID = data[0].deviceID;
-                deviceState.deviceData.key = data[0].key;
-                // current WiFi
-                deviceState.networks.current.ssid = data[1].ssid;
-                deviceState.networks.current.security = data[1].security;
-                // Available WiFi
-                data[2].forEach((network) => deviceState.networks.available.push(reactive(
-                  {   ssid: ref(network.ssid),
-                      security: ref(network.security),
-                  })));
-                log.info('device-stepper-content-step1 deviceState= %s', JSON.stringify(deviceState));
-
-                deviceName.value = deviceState.deviceData.name;
-                btStatus.value = BtStatus.Connected;
-              }
               });
-            } else {
-              actionError();
-              disconnect();
-            }
+          }).catch((e) => {
+                log.info('device-stepper-content-step1 Cannot connect to BLE device');
+                actionError();
           });
-
         });
       } catch {
               actionError();

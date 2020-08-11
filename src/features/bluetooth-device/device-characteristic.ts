@@ -12,16 +12,19 @@ export class DeviceCharacteristic {
   }
   public async readValue(): Promise<DeviceData> {
     log.debug('device-characteristic.readValue');
-    return  this.characteristic.readValue().then ((value) => {
-          const str = ble.decode(value);
-          log.info('device-characteristic.readValue str=' + str);
-          const data = JSON.parse(str);
-          if (isDeviceDataValid(data)) {
-            return data as DeviceData;
-          } else {
-            throw Error ('Invalid device data');
-          }
+    return  new Promise ((resolve, reject) => {
+      this.characteristic.readValue().then ((value) => {
+        const str = ble.decode(value);
+        log.info('device-characteristic.readValue received str=' + str);
+        const data = JSON.parse(str);
+        if (isDeviceDataValid(data)) {
+          resolve( data as DeviceData);
+        } else {
+          reject('Invalid device data');
+        }
+      });
     });
+
   }
   public async writeValue(value: DeviceData): Promise<void> {
     log.debug('device-characteristic.writeValue');

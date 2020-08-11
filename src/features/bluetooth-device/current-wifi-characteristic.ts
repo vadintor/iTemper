@@ -1,6 +1,6 @@
 import { log } from '@/services/logger';
 import * as ble from './bluetooth-service';
-import { WiFiData } from '@/features/devices/device-data';
+import { WiFiData, WiFiNetwork } from '@/features/devices/device-data';
 import { isWiFiDataValid } from '@/features/devices/device-data-validators';
 
 // SSID (read/write), Encryption (read/write), Password (write)
@@ -16,16 +16,18 @@ export class CurrentWiFiCharacteristic {
   constructor(characteristic: BluetoothRemoteGATTCharacteristic) {
     this.characteristic = characteristic;
   }
-  public async readValue(): Promise<WiFiData> {
+  public async readValue(): Promise<WiFiNetwork> {
     log.debug('current-wifi-characteristic.readValue');
     return  new Promise((resolve, reject) => {
       this.characteristic.readValue().then ((value) => {
         const str = ble.decode(value);
-        log.info('current-wifi-characteristic.readValue=' + str);
+        log.info('current-wifi-characteristic.readValue received' + str);
         try {
           const data = JSON.parse(str);
           if (isWiFiDataValid(data)) {
-            resolve(data);
+            resolve({ssid: data[0], security: data[1]});
+          } else if ('ssid' in data && 'security' in data) {
+            resolve({ssid: data.ssid, security: data.security});
           } else {
             reject('Invalid wifi data');
           }

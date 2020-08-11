@@ -36,8 +36,7 @@ export class BtService {
             if (characteristics[0]  && characteristics[1] && characteristics[2]) {
               log.debug('bluetooth-service.scan resolved characteristics');
               resolve({ device: characteristics[0],
-                        current: characteristics[1],
-                        available: characteristics[2]});
+                      current: characteristics[1], available: characteristics[2]});
             } else {
               reject('Some characteristics missing');
             }

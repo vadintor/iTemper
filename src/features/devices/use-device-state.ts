@@ -1,16 +1,16 @@
-import { ref, reactive, computed, UnwrapRef } from '@vue/composition-api';
-import { SensorData, Category } from '@/models/sensor-data';
-import { DeviceData, DeviceState, DeviceWiFiData, WiFiData } from './device-data';
+import { ref, reactive, UnwrapRef } from '@vue/composition-api';
+import { SensorData } from '@/models/sensor-data';
+import { DeviceData, WiFiNetwork } from './device-data';
 import { log } from '@/services/logger';
 class UseDeviceState {
-    public networks: UnwrapRef<{current: UnwrapRef<WiFiData>, available: Array<UnwrapRef<WiFiData>>}>;
+    public networks: UnwrapRef<{current: UnwrapRef<WiFiNetwork>, available: Array<UnwrapRef<WiFiNetwork>>}>;
     constructor(    public deviceData: UnwrapRef<DeviceData>,
-                    current: UnwrapRef<WiFiData>,
-                    available: Array<UnwrapRef<WiFiData>>,
+                    current: UnwrapRef<WiFiNetwork>,
+                    available: Array<UnwrapRef<WiFiNetwork>>,
                     public sensors: Array<UnwrapRef<SensorData>>) {
             this.networks = {current, available};
     }
-    public addNetwork = (network: WiFiData) => {
+    public addNetwork = (network: WiFiNetwork) => {
         deviceState.networks.available.push(reactive(network));
 
     }
@@ -26,7 +26,7 @@ export default function useDeviceState() {
     if (!deviceState) {
         deviceState = new UseDeviceState(
             reactive({name: ref(''), key: ref(''), deviceID: ref('')}),
-            reactive({ssid: ref(''), security: ref(''), channel: ref(0), quality: ref(0)}),
+            reactive({ssid: ref(''), security: ref('')}),
             [], []);
     }
     return reactive(deviceState);

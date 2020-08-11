@@ -12,6 +12,9 @@
                   </v-row>
                   </v-card-title>
                 <v-card-text>
+                    <v-subheader>
+                      Current: <v-chip color="primary">{{ deviceState.networks.current.ssid }}</v-chip>
+                    </v-subheader>
                     <v-select
                           v-model="select"
                           :items="ssids"
@@ -66,7 +69,7 @@ import { Vue } from 'vue-property-decorator';
 import { ref, reactive, defineComponent, computed, watch, toRefs, toRef } from '@vue/composition-api';
 
 import { SensorData, Category } from '@/models/sensor-data';
-import { DeviceState, WiFiData } from './device-data';
+import { DeviceState, WiFiNetwork } from './device-data';
 import { isDeviceStateValid} from './device-data-validators';
 import useDeviceState from './use-device-state';
 import { useBluetooth } from './use-bluetooth';
@@ -88,7 +91,7 @@ export default defineComponent({
     const ssids = computed(() => deviceState.networks.available);
     const networks = computed(() => deviceState.networks.current);
     const isSecure = (ssid: string): boolean => {
-      const selected = deviceState?.networks?.available.find((network: WiFiData) => network.ssid === ssid);
+      const selected = deviceState?.networks?.available.find((network: WiFiNetwork) => network.ssid === ssid);
       return !!selected && selected.security !== 'Open';
     };
     const prependIcon = (ssid: string): string =>  {
@@ -99,7 +102,7 @@ export default defineComponent({
         // const current = deviceState?.networks?.available.find((network: WiFiData) => network.ssid === select.value);
         }, 3_000);
     };
-    const hint = (network: WiFiData) => {
+    const hint = (network: WiFiNetwork) => {
       return 'Security: ' + network.security;
     };
     const stepBack = () => {
