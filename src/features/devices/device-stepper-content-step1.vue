@@ -151,8 +151,16 @@ export default defineComponent({
     const currentAction = ref(0);
     const action = ref(1);
     const actions = reactive([
-        { text: ref('Establishing Bluetooth connection'), loading: ref(false), done: ref(false), error: ref(false), errorText: ref('Cannot estblish connection' )},
-        { text: ref('Retrieving device configuration'), loading: ref(false), done: ref(false), error: ref(false), errorText: ref('Cannot read configuration') },
+        { text: ref('Establishing Bluetooth connection'),
+          loading: ref(false),
+          done: ref(false),
+          error: ref(false),
+          errorText: ref('Cannot estblish connection' )},
+        { text: ref('Retrieving device configuration'),
+          loading: ref(false),
+          done: ref(false),
+          error: ref(false),
+          errorText: ref('Cannot read configuration') },
       ]);
     const currentActionValid = () => {
       return 0 <= currentAction.value && currentAction.value  < actions.length;
