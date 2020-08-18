@@ -21,14 +21,16 @@ export function isDeviceDataValid(raw: unknown): boolean {
     return valid;
 }
 export function isWiFiDataValid(raw: unknown): boolean {
-    let valid = isArray(raw) && raw.length === 2;
+    let valid = isObject(raw);
     if (!valid) {
-        log.error('device-data-validators.isWiFiDataValid - not an array or length greater than 2');
+        log.error('device-data-validators.isWiFiDataValid - not an object');
     } else {
         const data = raw as Partial<WiFiData>;
-        data.forEach((element: unknown) => {
-            valid = valid && typeof element === 'string';
-        });
+        valid = valid
+        && 'ssid' in data && typeof data.ssid === 'string'
+        && 'security' in data && typeof data.security === 'string'
+        && 'quality' in data && typeof data.quality === 'number'
+        && 'channel' in data && typeof data.channel === 'number';
         if (!valid) {
             log.error('device-data-validators.isWiFiDataValid - not valid');
         }

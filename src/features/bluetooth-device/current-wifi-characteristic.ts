@@ -25,9 +25,7 @@ export class CurrentWiFiCharacteristic {
         try {
           const data = JSON.parse(str);
           if (isWiFiDataValid(data)) {
-            resolve({ssid: data[0], security: data[1]});
-          } else if ('ssid' in data && 'security' in data) {
-            resolve({ssid: data.ssid, security: data.security});
+            resolve(data as WiFiNetwork);
           } else {
             reject('Invalid wifi data');
           }

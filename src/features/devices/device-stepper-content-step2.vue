@@ -1,5 +1,6 @@
 <template>
         <v-stepper-content step="2">
+            <WiFiSetting></WiFiSetting>
             <v-card
             class="mb-12"
             color="grey lighten-1"
@@ -8,7 +9,7 @@
                 <v-card-title  class="headline">
                   <v-row>
                     <v-col cols="1"><v-icon color="green">fa-wifi</v-icon></v-col>
-                    <v-col>Configure Wireless network</v-col>
+                    <v-col>Configure wireless network</v-col>
                   </v-row>
                   </v-card-title>
                 <v-card-text>
@@ -74,16 +75,17 @@ import { isDeviceStateValid} from './device-data-validators';
 import useDeviceState from './use-device-state';
 import { useBluetooth } from './use-bluetooth';
 
+import WiFiSetting from '@/features/wifi/wifi-setting.vue';
 import { log } from '@/services/logger';
 import { error } from 'console';
 
 export default defineComponent({
   name: 'DeviceStepperContentStep2',
-  components: { },
+  components: { WiFiSetting },
 
   setup(props, context) {
     const deviceState = useDeviceState();
-    const { device, current, disconnect, connect, btStatus } = useBluetooth();
+    const { device, current } = useBluetooth();
     const select = ref({});
     const password = ref('');
     const showPassword = ref(false);

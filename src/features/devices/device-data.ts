@@ -8,11 +8,13 @@ export interface DeviceData {
      statusTime?: number;
      uptime?: number;
 }
-export type WiFiData = string[];
+export type WiFiData = WiFiNetwork;
 
 export interface WiFiNetwork {
      ssid: string;
      security: string;
+     quality: number;
+     channel: number;
 }
 export interface DeviceWiFiData {
      current: WiFiData;

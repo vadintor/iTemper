@@ -26,7 +26,7 @@ export default function useDeviceState() {
     if (!deviceState) {
         deviceState = new UseDeviceState(
             reactive({name: ref(''), key: ref(''), deviceID: ref('')}),
-            reactive({ssid: ref(''), security: ref('')}),
+            reactive({ssid: ref(''), security: ref(''), quality: ref(0), channel: ref(0)}),
             [], []);
     }
     return reactive(deviceState);

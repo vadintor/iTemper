@@ -5,7 +5,7 @@
           color="grey lighten-1"
           height="400px"
         >
-            <div v-if="connected()">
+            <div v-if="connected && isActionsDone">
                 <v-card-title  class="headline">
                     <v-row>
                       <v-col cols="1"><v-icon color="blue">fab fa-bluetooth</v-icon></v-col>
@@ -45,7 +45,7 @@
                     </v-list>
                 </v-card-text>
                 <v-card-actions>
-                  <v-btn text color="primary" :loading="disconnecting()"  @click="disconnect()">Disconnect</v-btn>
+                  <v-btn text color="primary" :loading="disconnecting"  @click="disconnect">Disconnect</v-btn>
                 </v-card-actions>
             </div>
             <div v-else>
@@ -60,16 +60,16 @@
                     Click Scan!
                     Please wait until the connection is complete.
                     
-                    <v-list flat v-if="connecting()">
+                    <v-list flat v-if="!disconnected && isFirstActionStarted && !isActionsDone">
                       <v-subheader>Progress</v-subheader>
                       <v-list-item-group v-model="action" color="primary">
                         <v-list-item
                           v-for="(action, i) in actions"
                           :key="i"
                         >
-                          <v-list-item-icon v-if="action.loading">
+                          <v-list-item-icon v-if="!isActionStarted(i) || action.loading">
                             <v-progress-circular
-                              indeterminate
+                              :indeterminate="action.loading"
                               color="grey"
                             ></v-progress-circular>
                           </v-list-item-icon>
@@ -91,7 +91,7 @@
 
                 </v-card-text>
                 <v-card-actions>
-                    <v-btn :disabled="connecting()" text color="primary" @click="scan()">
+                    <v-btn :disabled="connecting" text color="primary" @click="scan()">
                       Scan
                       <template v-slot:loader>
                         <span class="custom-loader">
@@ -103,7 +103,7 @@
             </div>
         </v-card>
         <v-btn @click="stepBack" text>Cancel</v-btn>
-        <v-btn  :disabled="!ready()" color="primary" @click="nextStep">Continue</v-btn>
+        <v-btn  :disabled="!ready" color="primary" @click="nextStep">Continue</v-btn>
         </v-stepper-content>
 </template>
 
@@ -113,10 +113,11 @@ import { Vue } from 'vue-property-decorator';
 import { defineComponent, onMounted, watchEffect, computed } from '@vue/composition-api';
 
 import { SensorData, Category } from '@/models/sensor-data';
-import { DeviceData, DeviceState, DeviceWiFiData } from './device-data';
+import { DeviceData, DeviceState, DeviceWiFiData, WiFiNetwork } from './device-data';
 
 import useDeviceState from './use-device-state';
-import { useBluetooth, BtStatus } from './use-bluetooth';
+import { useBluetooth } from './use-bluetooth';
+import { BtStatus } from '@/features/bluetooth-device/bluetooth-service';
 
 import { log } from '@/services/logger';
 import { error } from 'console';
@@ -148,7 +149,7 @@ export default defineComponent({
         { text: 'Device color', icon: 'fa-fill-drip', label: 'Pick device color',  value: '' },
         { text: 'Device key', icon: 'fa-address-card', label: '<auto generated>',  value: '' },
       ];
-    const currentAction = ref(0);
+    const currentAction = ref(-1);
     const action = ref(1);
     const actions = reactive([
         { text: 'Establishing Bluetooth connection',
@@ -156,6 +157,11 @@ export default defineComponent({
           done: false,
           error: false,
           errorText: 'Cannot establish Bluetooth connection'},
+        { text: 'Retrieving device configuration',
+          loading: false,
+          done: false,
+          error: false,
+          errorText: 'Cannot retreive device configuration'},
       ]);
     const currentActionValid = () => {
       return 0 <= currentAction.value && currentAction.value  < actions.length;
@@ -181,30 +187,39 @@ export default defineComponent({
       actions[currentAction.value].error = false;
       nextAction();
     };
-    const actionError = () => {
-      log.error('device-stepper-content-step1, actionError= %s', currentAction.value);
+    const actionError = (errorMessage: string) => {
+      log.error('device-stepper-content-step1, actionError= action %s, message: %s', currentAction.value, errorMessage);
+      actions[currentAction.value].errorText = errorMessage;
       actions[currentAction.value].loading = false;
       actions[currentAction.value].done = false;
       actions[currentAction.value].error = true;
     };
     const nextAction = () => {
-      currentAction.value++;
-      log.error('device-stepper-content-step1, nextAction= %s', currentAction.value);
+      currentAction.value = currentAction.value + 1;
+      actionStarted();
+      log.error('device-stepper-content-step1, nextAction=' + currentAction.value);
     };
-    const isAllDone = computed(() => {
+    const isFirstActionStarted = computed(() => {
+      const firstAction = actions[0];
+      return firstAction.loading || firstAction.done || firstAction.error;
+    });
+    const isActionsDone = computed(() => {
       let done = true;
       actions.forEach((i) => done = done && i.done);
       return done;
     });
+    const isActionStarted = (index: number) => {
+      const thisAction = actions[index];
+      return thisAction.loading || thisAction.done || thisAction.error;
+    };
     const scan = () => {
       try {
-        btStatus.value = BtStatus.Connecting;
+        resetActions();
         watchEffect(() => {
-          resetActions();
           connect()
           .then((status: BtStatus) => {
-              log.debug('device-stepper-content-step1, status=' + BtStatus[status]);
               actionDone();
+              log.debug('device-stepper-content-step1, status=' + BtStatus[status]);
               device().readValue()
               .then((deviceConfig) => {
                   log.info('device-stepper-content-step1: device data read');
@@ -219,41 +234,44 @@ export default defineComponent({
                         // current WiFi
                         deviceState.networks.current.ssid = wifi.ssid;
                         deviceState.networks.current.security = wifi.security;
-
-                        available().readValue()
-                        .then((availableWiFi) => {
-                            // Available WiFi
-                            log.error('device-stepper-content-step1 availableWiFi='+JSON.stringify(availableWiFi));
-                            availableWiFi.forEach((network) => deviceState.networks.available.push(reactive(
-                              {   ssid: ref(network.ssid),
-                                  security: ref(network.security),
-                              })));
-                            log.info('device-stepper-content-step1 deviceState= %s', JSON.stringify(deviceState));
-                            deviceName.value = deviceState.deviceData.name;
-                            btStatus.value = BtStatus.Connected;
-                        }).catch((e: Error) => {
-                            log.error('device-stepper-content-step1.Received invalid available wifi');
-                            actionError();
+                        deviceState.networks.current.quality = wifi.quality;
+                        deviceState.networks.current.channel = wifi.channel;
+                        available().subscribe((network: WiFiNetwork) => {
+                                const found = deviceState.networks.available.find((n) =>
+                                            n.ssid === network.ssid && n.channel === network.channel);
+                                if (found) {
+                                  found.quality = network.quality;
+                                  found.security = network.security;
+                                } else {
+                                  deviceState.networks.available.push(reactive(
+                                  {   ssid: ref(network.ssid),
+                                      security: ref(network.security),
+                                      quality: ref(network.quality),
+                                      channel: ref(network.channel),
+                                  }));
+                                }
                         });
+                        log.info('device-stepper-content-step1 deviceState= %s', JSON.stringify(deviceState));
+                        deviceName.value = deviceState.deviceData.name;
+                        actionDone();
                   })
                   .catch((e: Error) => {
                       log.error('device-stepper-content-step1.Received invalid wifi configuration');
-                      actionError();
+                      actionError(e.message);
                   });
               })
-              .catch((e: Error) => {
+              .catch((e) => {
                 log.error('device-stepper-content-step1.Received invalid device configuration');
-                actionError();
+                actionError(e);
               });
           }).catch((e) => {
                 log.info('device-stepper-content-step1 Cannot connect to BLE device');
-                actionError();
+                actionError(e);
           });
         });
       } catch {
-              actionError();
+              actionError('No devices found');
               log.info('No devices found, do something');
-              btStatus.value = BtStatus.Disconnected;
       }
 
       deviceName.value = '';
@@ -276,9 +294,8 @@ export default defineComponent({
       }
     };
 
-    const ready = () => {
-      return valid.value && connected();
-    };
+    const ready = computed(() => valid.value && connected);
+
     const stepBack = () => {
       context.emit('backward', deviceState);
     };
@@ -298,8 +315,9 @@ export default defineComponent({
       log.info('device-stepper-content-step1.onActivated!');
     });
 
-    return { connecting, connected, deviceState, disconnect, disconnecting, disconnected, ready, item, items, scan,
-    prependIcon, deviceName, deviceKey, valid, nameRules, stepBack, nextStep, actions, action };
+    return {  connecting, connected, deviceState, disconnect, disconnecting, disconnected, ready, item, items, scan,
+              prependIcon, deviceName, deviceKey, valid, nameRules, stepBack, nextStep,
+              action, actions, isActionsDone, isFirstActionStarted, isActionStarted };
   },
 });
 </script>

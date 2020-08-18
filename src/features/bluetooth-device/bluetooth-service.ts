@@ -2,6 +2,7 @@ import { log } from '@/services/logger';
 import { AvailableWiFiCharacteristicUUID, AvailableWiFiCharacteristic} from './available-wifi-characteristics';
 import { CurrentWiFiCharacteristicUUID, CurrentWiFiCharacteristic} from './current-wifi-characteristic';
 import { DeviceCharacteristicUUID, DeviceCharacteristic} from './device-characteristic';
+import { EventEmitter } from 'events';
 
 const DeviceServiceUUID = 0xfff1;
 
@@ -18,12 +19,15 @@ export interface BtCharacteristics {
   current: CurrentWiFiCharacteristic;
   available: AvailableWiFiCharacteristic;
 }
+export enum BtStatus {Disconnected, Connecting, Connected, Disconnecting}
+
 export class BtService {
   private device: BluetoothDevice | undefined;
 
-  constructor(private onDisconnected: () => void) {
+  constructor(private onChanged: (newStatus: BtStatus) => void) {
     log.debug('bluetooth-service.constructor');
   }
+
   public scan(): Promise<BtCharacteristics> {
     return new Promise ((resolve, reject) => {
       this.connect()
@@ -34,6 +38,7 @@ export class BtService {
                                 this.getAvailableWiFiCharacteristic(service)])
           .then((characteristics) => {
             if (characteristics[0]  && characteristics[1] && characteristics[2]) {
+              this.onChanged(BtStatus.Connected);
               log.debug('bluetooth-service.scan resolved characteristics');
               resolve({ device: characteristics[0],
                       current: characteristics[1], available: characteristics[2]});
@@ -47,10 +52,22 @@ export class BtService {
       });
     });
   }
+    // disconnect from peripheral
+    public disconnect() {
+      this.onChanged(BtStatus.Disconnecting);
+      log.debug('bluetooth-service.disconnect');
+      if (this.device && this.device.gatt) {
+        return this.device.gatt.disconnect();
+      }
+    }
+  private onDisconnected() {
+    this.onChanged(BtStatus.Disconnected);
+  }
   // request connection to a device remote GATT service
-  public async connect(): Promise<BluetoothRemoteGATTService | undefined>  {
+  private async connect(): Promise<BluetoothRemoteGATTService | undefined>  {
     return navigator.bluetooth.requestDevice(DeviceOptions)
     .then((device) => {
+      this.onChanged(BtStatus.Connecting);
       log.debug('bluetooth-service.connect');
       this.device = device;
       device.addEventListener('gattserverdisconnected', this.onDisconnected);
@@ -61,32 +78,32 @@ export class BtService {
         return server?.getPrimaryService(DeviceServiceUUID);
     });
   }
-  public getDeviceCharacteristic(service: BluetoothRemoteGATTService): Promise<DeviceCharacteristic | undefined> {
+  private getDeviceCharacteristic(service: BluetoothRemoteGATTService): Promise<DeviceCharacteristic | undefined> {
     return service.getCharacteristic(DeviceCharacteristicUUID)
     .then((characteristic) => {
       return !!characteristic ? new DeviceCharacteristic(characteristic) : undefined;
     });
   }
-  public getCurrentWiFiCharacteristic(service: BluetoothRemoteGATTService):
+  private getCurrentWiFiCharacteristic(service: BluetoothRemoteGATTService):
               Promise<CurrentWiFiCharacteristic | undefined> {
     return service.getCharacteristic(CurrentWiFiCharacteristicUUID)
     .then((characteristic) => {
       return !!characteristic ?  new CurrentWiFiCharacteristic(characteristic) : undefined;
     });
   }
-  public getAvailableWiFiCharacteristic(service: BluetoothRemoteGATTService):
+  private getAvailableWiFiCharacteristic(service: BluetoothRemoteGATTService):
               Promise<AvailableWiFiCharacteristic | undefined> {
     return service.getCharacteristic(AvailableWiFiCharacteristicUUID)
     .then((characteristic) => {
       return !!characteristic ?  new AvailableWiFiCharacteristic(characteristic) : undefined;
     });
   }
-  public getCharacteristic( service: BluetoothRemoteGATTService,
+  private getCharacteristic(service: BluetoothRemoteGATTService,
                             characteristicUUID: string): Promise<BluetoothRemoteGATTCharacteristic> {
         log.debug('bluetooth-service.getCharacteristic: ' + characteristicUUID);
         return service.getCharacteristic(characteristicUUID);
   }
-  public watchAvailability(availability: (isAvailable: boolean) => void): void {
+  private watchAvailability(availability: (isAvailable: boolean) => void): void {
     log.debug('bluetooth-service.watchAvailability');
     navigator.permissions.query({name: 'bluetooth'}).then((status: PermissionStatus) => {
       availability(status.state !== 'denied');
@@ -95,13 +112,6 @@ export class BtService {
           availability(status.state !== 'denied');
       };
     });
-  }
-  // disconnect from peripheral
-  public disconnect() {
-    log.debug('bluetooth-service.disconnect');
-    if (this.device && this.device.gatt) {
-      return this.device.gatt.disconnect();
-    }
   }
   // handler to run when device successfully disconnects
 }

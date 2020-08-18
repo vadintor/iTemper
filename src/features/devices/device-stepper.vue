@@ -8,8 +8,8 @@
       <v-stepper-step :complete="saved()" step="3">Configure sensors</v-stepper-step>
     </v-stepper-header>
     <v-stepper-items>
-      <DeviceStepperContentStep1 @backward="stepBack" @forward="nextStep"></DeviceStepperContentStep1>
-      <DeviceStepperContentStep2 @backward="stepBack" @forward="nextStep"></DeviceStepperContentStep2>
+      <DeviceStepperContentStep1 @cancel="cancel" @backward="stepBack" @forward="nextStep"></DeviceStepperContentStep1>
+      <DeviceStepperContentStep2 @cancel="cancel" @backward="stepBack" @forward="nextStep"></DeviceStepperContentStep2>
       <v-stepper-content step="3">
         <v-card
           class="mb-12"
@@ -57,6 +57,9 @@ export default defineComponent({
             savedStatus.value = SavedStatus.Saved;
         }, 1_000);
     };
+    const cancel = () => {
+      context.emit('close');
+    };
     const stepBack = () => {
         savedStatus.value = SavedStatus.NotSaved;
         step.value--;
@@ -70,7 +73,7 @@ export default defineComponent({
     const saved = () => {
         return savedStatus.value === SavedStatus.Saved;
     };
-    return { stepBack, nextStep, saved, saving, step, submit, deviceState, ssid };
+    return { stepBack, nextStep, saved, saving, step, submit, deviceState, ssid, cancel };
   },
 });
 </script>

@@ -14,67 +14,29 @@
                 </v-btn>
             </v-fab-transition>
         </template>
-        <device-stepper></device-stepper>
+        <device-stepper @close="dialog = false"></device-stepper>
     </v-dialog>
 </template>
 <script lang="ts">
 
-import * as moment from 'moment-timezone';
-
-import {Vue, Component, Watch, Prop} from 'vue-property-decorator';
+import { ref, defineComponent } from '@vue/composition-api';
+import { Vue } from 'vue-property-decorator';
 import DeviceStepper from './device-stepper.vue';
 
-// Models
-// import * as locations from '@/models/locations'
-import { Device } from '@/features/devices';
+export default defineComponent({
+  name: 'NewDeviceDialogue',
+  components: {
+     DeviceStepper,
+     },
 
-import { log } from '@/services/logger';
-import {json, copyToClipboard } from '@/helpers';
-
-type BooleanOrString = boolean | string;
-type ValidationFunction = (value: string) => BooleanOrString;
-
-@Component({
-    components: { DeviceStepper },
-})
-export default class NewDeviceDialogue extends Vue {
-    public dialog: boolean = false;
-
-public close() {
-   //  this.$emit('close');
-}
-}
+  setup(props, context) {
+      const dialog =  ref(false);
+      return { dialog };
+  },
+});
 
 </script>
 
 <style scoped>
-
-.overlay-0 {
-    background-color: rgba(227, 153, 0, 0.7);
-}
-
-.overlay-1 {
-    background-color: rgba(153, 10, 227, 0.7);
-}
-
-.overlay-2 {
-    background-color: rgba(153, 0, 0, 0.7);
-}
-
-.overlay-3 {
-    background-color: rgba(10, 153, 227, 0.7);
-}
-
-.overlay-4 {
-    background-color: rgba(0, 10, 153, 0.7);
-}
-
-.overlay-5 {
-    background-color: rgba(0, 227, 30, 0.7);
-}
-
-.highcharts-background {
-    background-color: rgba(255, 255, 255, 0.1);
-}
 
 </style>
