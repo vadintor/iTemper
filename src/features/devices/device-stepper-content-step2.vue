@@ -34,7 +34,7 @@ export default defineComponent({
 
   setup(props, context) {
     const deviceState = useDeviceState();
-    const { device, current } = useBluetooth();
+    const { device, current, available } = useBluetooth();
     const select = ref({});
     const password = ref('');
     const showPassword = ref(false);
@@ -68,6 +68,7 @@ export default defineComponent({
       });
     };
     const nextStep = () => {
+          available().unsubscribe();
           const Wificonfig = { ssid: select.value, password: password.value };
           context.emit('forward', Wificonfig);
     };

@@ -42,6 +42,9 @@ export class AvailableWiFiCharacteristic {
         characteristic.addEventListener('characteristicvaluechanged', this.handleNotifications.bind(this));
     });
   }
+  public unsubscribe(): void {
+    this.characteristic.stopNotifications().then(() => this.listener = undefined);
+  }
   private handleNotifications(ev: any): void {
     const str = ble.decode(ev.target.value);
     log.info('available-wifi-characteristics.handleNotifications ' + str);

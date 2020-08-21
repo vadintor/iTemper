@@ -70,7 +70,7 @@ export class BtService {
       this.onChanged(BtStatus.Connecting);
       log.debug('bluetooth-service.connect');
       this.device = device;
-      device.addEventListener('gattserverdisconnected', this.onDisconnected);
+      device.addEventListener('gattserverdisconnected', this.onDisconnected.bind(this));
       return device.gatt?.connect();
     })
     .then((server) => {

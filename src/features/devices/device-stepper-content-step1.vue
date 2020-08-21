@@ -167,12 +167,21 @@ export default defineComponent({
       return 0 <= currentAction.value && currentAction.value  < actions.length;
     };
     const resetActions = ()  => {
-      currentAction.value = 0;
+      currentAction.value = -1;
       actions.forEach((i) =>  {
         i.loading = false;
         i.done = false;
         i.error = false;
       });
+    };
+    const startActions = () => {
+      resetActions();
+      nextAction();
+    };
+    const nextAction = () => {
+      currentAction.value = currentAction.value + 1;
+      actionStarted();
+      log.error('device-stepper-content-step1, nextAction=' + currentAction.value);
     };
     const actionStarted = () => {
       log.error('device-stepper-content-step1, actionStarted= %s', currentAction.value);
@@ -193,11 +202,6 @@ export default defineComponent({
       actions[currentAction.value].done = false;
       actions[currentAction.value].error = true;
     };
-    const nextAction = () => {
-      currentAction.value = currentAction.value + 1;
-      actionStarted();
-      log.error('device-stepper-content-step1, nextAction=' + currentAction.value);
-    };
     const isFirstActionStarted = computed(() => {
       const firstAction = actions[0];
       return firstAction.loading || firstAction.done || firstAction.error;
@@ -213,15 +217,14 @@ export default defineComponent({
     };
     const scan = () => {
       try {
-        resetActions();
+        startActions();
         watchEffect(() => {
           connect()
           .then((status: BtStatus) => {
-              actionStarted();
+              actionDone();
               log.debug('device-stepper-content-step1, status=' + BtStatus[status]);
               device().readValue()
               .then((deviceConfig) => {
-                  actionDone();
                   log.info('device-stepper-content-step1: device data read');
                   // Device data
                   deviceState.deviceData.name = deviceConfig.name;
