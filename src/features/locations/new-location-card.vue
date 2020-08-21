@@ -1,62 +1,46 @@
 <template>
-    <v-dialog v-model="dialog" persistent max-width="500">
-        <template v-slot:activator="{ on }">
-            <v-fab-transition>
-                <v-btn class="mx-2" 
-                    v-on="on"
-                    fab 
-                    absolute
-                    small
-                    color="#2591E9"
-                    bottom
-                    left>
-                    <v-icon>fa-plus</v-icon>
-                </v-btn>
-            </v-fab-transition>
-        </template>
-        <v-card>
-            <v-img v-if="location.path.length > 0" :src="location.path"></v-img>
-            <v-card-title class="headline">New location</v-card-title>
-            <v-card-text>
-                <p>Create a NEW location.</p>
-                <v-form v-model="valid" ref="location">
-                    <v-text-field
-                        label="Enter location name"
-                        prepend-icon="fa-broadcast-tower"
-                        v-model="locationName"
-                        :rules="nameRules"
-                        required
-                        clearable
-                        :loading="submitted"
-                    ></v-text-field>
-                    <v-file-input
-                        label="Bakgrundbild"
-                        :rules="Filerules"
-                        accept="image/png, image/jpeg"
-                        show-size counter chips
-                        v-model="locationImage"
-                        prepend-icon="fa-image"
-                    ></v-file-input>
-                    <v-color-picker
-                        v-model="color"
-                        hide-canvas
-                        hide-inputs
-                        hide-mode-switch
-                        show-swatches
-                        :swatches="swatches" 
-                        class="mx-auto"
-                    ></v-color-picker>
-                </v-form>
-            </v-card-text>
-            <v-card-actions>
-                <p v-if="error()"  class="red--text" align="center">{{errorMsg}}</p>
-                <p v-else></p>
-                <v-spacer></v-spacer>
-                <v-btn text color="orange" :disabled="!valid" :loading="submitted"  @click="submit">Save</v-btn>
-                <v-btn text  @click="close">Close</v-btn>
-            </v-card-actions>
-        </v-card>
-    </v-dialog>
+    <v-card>
+        <v-img v-if="location.path.length > 0" :src="location.path"></v-img>
+        <v-card-title class="headline">New location</v-card-title>
+        <v-card-text>
+            <p>Create a NEW location.</p>
+            <v-form v-model="valid" ref="location">
+                <v-text-field
+                    label="Enter location name"
+                    prepend-icon="fa-broadcast-tower"
+                    v-model="locationName"
+                    :rules="nameRules"
+                    required
+                    clearable
+                    :loading="submitted"
+                ></v-text-field>
+                <v-file-input
+                    label="Bakgrundbild"
+                    :rules="Filerules"
+                    accept="image/png, image/jpeg"
+                    show-size counter chips
+                    v-model="locationImage"
+                    prepend-icon="fa-image"
+                ></v-file-input>
+                <v-color-picker
+                    v-model="color"
+                    hide-canvas
+                    hide-inputs
+                    hide-mode-switch
+                    show-swatches
+                    :swatches="swatches" 
+                    class="mx-auto"
+                ></v-color-picker>
+            </v-form>
+        </v-card-text>
+        <v-card-actions>
+            <p v-if="error()"  class="red--text" align="center">{{errorMsg}}</p>
+            <p v-else></p>
+            <v-spacer></v-spacer>
+            <v-btn text color="orange" :disabled="!valid" :loading="submitted"  @click="submit">Save</v-btn>
+            <v-btn text  @click="close">Close</v-btn>
+        </v-card-actions>
+    </v-card>
 </template>
 <script lang="ts">
 
@@ -81,7 +65,7 @@ type BooleanOrString = boolean | string;
 type ValidationFunction = (value: string) => BooleanOrString;
 type FileValidationFunction = (value: any) => BooleanOrString;
 @Component({})
-export default class NewLocationDialogue extends Vue {
+export default class NewLocationCard extends Vue {
 
     public settings = Vue.$store.settings;
     public locationName: string = '';
@@ -96,7 +80,6 @@ export default class NewLocationDialogue extends Vue {
         ['#00FFFF', '#00AAAA', '#005555'],
         ['#0000FF', '#0000AA', '#000055'],
       ];
-    public dialog: boolean = false;
     public valid: boolean =  false;
     public submitted: boolean = false;
     public errorMsg = '';
@@ -132,13 +115,12 @@ export default class NewLocationDialogue extends Vue {
             this.displayError('Locations form not valid');
             return;
         } else {
-            log.debug('new-location-dialogue.Image file' + json(this.locationImage));
+            log.debug('new-location-card.Image file' + json(this.locationImage));
             this.createLocation();
         }
     }
     public close() {
-        log.debug('new-location-dialogue.close');
-        this.dialog = false;
+        log.debug('new-location-card.close');
         this.submitted = false;
         this.locationName = '';
         this.$emit('close');
@@ -147,7 +129,7 @@ export default class NewLocationDialogue extends Vue {
         return this.errorMsg !== '';
     }
     private createLocation() {
-        log.debug('new-location-dialogue.createLocation');
+        log.debug('new-location-card.createLocation');
         const form = new FormData();
         form.append('name', this.locationName);
         form.append('color', this.color);

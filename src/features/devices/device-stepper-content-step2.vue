@@ -1,69 +1,18 @@
 <template>
         <v-stepper-content step="2">
-            <WiFiSetting></WiFiSetting>
+
             <v-card
             class="mb-12"
             color="grey lighten-1"
             height="400px"
             >
-                <v-card-title  class="headline">
-                  <v-row>
-                    <v-col cols="1"><v-icon color="green">fa-wifi</v-icon></v-col>
-                    <v-col>Configure wireless network</v-col>
-                  </v-row>
-                  </v-card-title>
-                <v-card-text>
-                    <v-subheader>
-                      Current: <v-chip color="primary">{{ deviceState.networks.current.ssid }}</v-chip>
-                    </v-subheader>
-                    <v-select
-                          v-model="select"
-                          :items="ssids"
-                          item-text="ssid"
-                          item-value="ssid"
-                          label="Network"
-                          noDataText="No network found"
-                          :rules="[v => !!v || 'Network is required']"
-                          return-object
-                    >
-                        <template v-slot:selection="{ item }">
-                          <v-row>
-                            <v-col>
-                              {{ item.ssid }} - {{ item.security }}
-                            </v-col>
+                  <WiFiSetting></WiFiSetting>
 
-                          </v-row>
-                        </template>
-                        <template v-slot:item="{ item }">
-                         <v-row>
-                            <v-col>
-                              {{ item.ssid }}
-                            </v-col>
-                            <v-col cols="1">
-                                <!-- HTML that describe how select should render selected items -->
-                              <v-icon v-if="item.security === 'Open'">fa-unlock</v-icon>
-                              <v-icon v-else>fa-lock</v-icon>
-                            </v-col>
-                          </v-row>
-                        </template>
-                    </v-select>
-                    <v-text-field v-if="isSecure(select.ssid)"
-                          label="password"
-                          v-model="password"
-                          prepend-icon="fa-key"
-                          :type="showPassword ? 'text' : 'password'"
-                          :append-icon="showPassword ? 'mdi-eye' : 'mdi-eye-off'"
-                          @click:append="showPassword = !showPassword"
-                          :rules="[v => !!v || 'Password is required']"
-                          required
-                    ></v-text-field>
-                </v-card-text>
             </v-card>
             <v-btn text @click="stepBack">Back</v-btn>
             <v-btn  v-if="updated" color="primary" @click="nextStep">Continue</v-btn>
         </v-stepper-content>
 </template>
-
 <script lang="ts">
 import { onMounted, onBeforeUpdate, onUnmounted, onActivated, watchEffect } from '@vue/composition-api';
 import { Vue } from 'vue-property-decorator';
@@ -75,7 +24,7 @@ import { isDeviceStateValid} from './device-data-validators';
 import useDeviceState from './use-device-state';
 import { useBluetooth } from './use-bluetooth';
 
-import WiFiSetting from '@/features/wifi/wifi-setting.vue';
+import WiFiSetting from '@/features/device-settings/wifi-setting.vue';
 import { log } from '@/services/logger';
 import { error } from 'console';
 

@@ -6,14 +6,14 @@
                     :id="id"
                     :height=400
                 >
-                </location-card>
-                <v-chip v-if="locationCount()===0" transition="scale-transition" >Det finns inga platser.</v-chip>
+                </location-card> 
+               <v-chip v-if="locationCount === 0" transition="scale-transition" >Det finns inga platser.</v-chip>
             </v-col>
         </v-row>
 </template>
 
 <script lang="ts">
-import {Vue, Component, Watch} from 'vue-property-decorator';
+import { ref, reactive, defineComponent, computed, watch, toRefs, toRef, onMounted, watchEffect } from '@vue/composition-api';
 
 // Store
 import { Status } from '@/store/user';
@@ -24,49 +24,58 @@ import { log } from '@/services/logger';
 // Child components
 import LocationCard from './location-card.vue';
 
+import { store } from '@/store/store';
 
-@Component({
-    components: {
-    LocationCard,
-  },
-})
-export default class LocationPage extends Vue {
+export default defineComponent({
+  name: 'LocationPage',
+  components: { LocationCard },
 
-    public state = Vue.$store;
+  setup(props, context) {
 
-    public locationCount(): number {
-        return this.state.locations.all.length;
-    }
-    public getLocations() {
+    const state = reactive(store);
+
+    let timeout: NodeJS.Timeout;
+
+    const locationCount = computed(() => state.locations.all.length);
+
+    const getLocations = () => {
         log.debug('location-page.getLocations');
-        this.state.locations.getLocations();
-    }
-    public getSensorDataLast24() {
-        log.debug('location-page.getSensorData, status=' + Status[this.state.user.status]);
-        if (this.state.user.status === Status.LOGGED_IN) {
-            this.state.sensors.getSensorsLast24h();
+    };
+    watchEffect(() => {
+        log.debug('location-page, status=' + Status[state.user.status]);
+        if (state.user.status === Status.LOGGED_IN) {
+            const sampleCount = 2;
+            // make sure we have some values from all sensors before loading locations
+            state.sensors.loadSensors(sampleCount)
+            .then(() => {
+                state.locations.getLocations();
+                state.sensors.getSensorsLast24h();
+                timeout = setInterval(() => state.sensors.getSensorsSamples(sampleCount),
+                            1000 * state.settings.interval);
+            });
         }
-    }
-    public getAllSensors() {
+    });
+    watchEffect(() => {
+        log.debug('location-page, status=' + Status[state.user.status]);
+        if (state.user.status === Status.LOGGED_OUT) {
+            if (timeout) {
+                clearInterval(timeout);
+            }
+        }
+    });
+    const getAllSensors = () => {
         const count = 2;
-        log.debug('location-page.getAllSensors, status=' + Status[this.state.user.status]);
-        this.state.sensors.getSensorsSamples(count);
+        log.debug('location-page.getAllSensors, status=' + Status[state.user.status]);
+        state.sensors.getSensorsSamples(count);
 
-    }
-    public created(): void {
-        log.debug('location-page.created()');
-        this.getAllSensors();
-        this.getLocations();
-        setInterval(this.getSensorDataLast24, 1000 * this.state.settings.interval);
-    }
-}
+    };
+    onMounted(() => {
+        log.debug('location-page.onMounted()');
+
+    });
+    log.debug('device-settings.setup');
+    return { state, locationCount };
+  },
+});
 
 </script>
-
-<style scoped>
-
-.highcharts-background {
-    background-color: rgba(255, 255, 255, 0.1);
-}
-
-</style>

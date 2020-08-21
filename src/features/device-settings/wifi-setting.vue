@@ -50,14 +50,12 @@
                             <v-list-item-subtitle v-else>Connected</v-list-item-subtitle>
                             </v-list-item-content>
                                 <v-list-item-action>
-
-
-                                    <v-tooltip left color="white black--text" position-x="100" position-y="50">
-                                            <template v-slot:activator="{ on, attrs }">
+                                    <v-tooltip left color="white black--text">
+                                            <template v-slot:activator="{ on, value }">
                                             <v-btn icon 
                                                 v-on="on"
-                                                >
-                                            <v-icon :class="{ 'on-hover': attrs.value }">mdi-information</v-icon>
+                                                :class="{ 'on-hover': value }">
+                                            <v-icon >mdi-information-outline</v-icon>
                                             </v-btn>
                                             </template>
                                             {{securityText(wifi.security)}}, channel {{wifi.channel}}, strength {{wifi.quality}} %
@@ -69,7 +67,7 @@
                         <v-subheader v-else-if="wifi.ssid ===''">Available networks</v-subheader>
                         <v-subheader v-else>Other networks</v-subheader>
                         <v-list-item-group v-if="wifiOn" v-model="network" color="primary">
-                            <v-list-item @click="selectNetwork(i)" v-for="(item, i) in otherNetworks" :key="item.ssid">
+                            <v-list-item @click="selectNetwork(i)" v-for="(item, i) in otherNetworks" :key="i">
                                 <v-list-item-icon>
                                 <v-icon v-if="isSecured(item.security)">mdi-lock-outline</v-icon>
                                 <v-icon v-else>mdi-lock-open-outline</v-icon>
@@ -79,9 +77,16 @@
                                 <v-list-item-title v-text="item.ssid"></v-list-item-title>
                                 </v-list-item-content>
                                 <v-list-item-action>
-                                <v-btn icon>
-                                    <v-icon color="grey lighten-1">mdi-information-outline</v-icon>
-                                </v-btn>
+                                    <v-tooltip left color="white black--text">
+                                            <template v-slot:activator="{ on, value }">
+                                            <v-btn icon 
+                                                v-on="on"
+                                                :class="{ 'on-hover': value }">
+                                            <v-icon >mdi-information-outline</v-icon>
+                                            </v-btn>
+                                            </template>
+                                            {{securityText(item.security)}}, channel {{item.channel}}, strength {{item.quality}} %
+                                    </v-tooltip>
                                 </v-list-item-action>
                             </v-list-item>
                         </v-list-item-group>
@@ -89,31 +94,31 @@
                     </v-col>
                 </v-row>
                 </v-expansion-panel-content>
+                <v-dialog v-model="dialog" persistent max-width="290">
+                    <v-card>
+                        <v-card-title class="headline">{{selectedNetwork.ssid}}</v-card-title>
+                        <v-card-text>
+                            <v-text-field v-if="secured"
+                                label="password"
+                                v-model="password"
+                                prepend-icon="fa-key"
+                                :type="showPassword ? 'text' : 'password'"
+                                :append-icon="showPassword ? 'mdi-eye' : 'mdi-eye-off'"
+                                @click:append="showPassword = !showPassword"
+                                :rules="[v => !!v || 'Password is required']"
+                                required
+                                :loading="connecting"
+                            ></v-text-field>
+                        </v-card-text>
+                        <v-card-actions>
+                        <v-spacer></v-spacer>
+                        <v-btn color="orange" :disabled="connecting" text @click="resetPassword">Cancel</v-btn>
+                        <v-btn color="orange" :disabled="connecting" text @click="connectWiFi">Connect</v-btn>
+                        </v-card-actions>
+                    </v-card>
+                </v-dialog>
             </v-expansion-panel>
         </v-expansion-panels>
-        <v-dialog v-model="dialog" persistent max-width="290">
-            <v-card>
-                <v-card-title class="headline">{{selectedNetwork.ssid}}</v-card-title>
-                <v-card-text>
-                    <v-text-field v-if="secured"
-                          label="password"
-                          v-model="password"
-                          prepend-icon="fa-key"
-                          :type="showPassword ? 'text' : 'password'"
-                          :append-icon="showPassword ? 'mdi-eye' : 'mdi-eye-off'"
-                          @click:append="showPassword = !showPassword"
-                          :rules="[v => !!v || 'Password is required']"
-                          required
-                          :loading="connecting"
-                    ></v-text-field>
-                </v-card-text>
-                <v-card-actions>
-                <v-spacer></v-spacer>
-                <v-btn color="orange" :disabled="connecting" text @click="resetPassword">Cancel</v-btn>
-                <v-btn color="orange" :disabled="connecting" text @click="connectWiFi">Connect</v-btn>
-                </v-card-actions>
-            </v-card>
-        </v-dialog>
     </div>
 </template>
 <script lang="ts">
@@ -124,13 +129,12 @@ import useDeviceState from '../devices/use-device-state';
 import { WiFiNetwork } from '../devices//device-data';
 
 export default defineComponent({
-  name: 'wifiSetting',
+  name: 'WiFiSetting',
   components: {},
 
   setup(props, context) {
     const deviceState = useDeviceState();
     const dialog =  ref(false);
-    const dialog2 =  ref(false);
     const network = ref(-1);
     const selectedNetworkIndex = ref(-1);
     const wifi = deviceState.networks.current;
@@ -143,8 +147,9 @@ export default defineComponent({
             wifiOn.value = true;
         }
     });
-    const otherNetworks = computed(() =>  deviceState.networks.available.filter((n: WiFiNetwork) =>
-                                    wifiOn && n.ssid !== deviceState.networks.current.ssid));
+    const otherNetworks = computed(() =>  deviceState.networks.available
+                .filter((n: WiFiNetwork) => wifiOn && n.ssid !== deviceState.networks.current.ssid)
+                .sort((a, b) => b.quality - a.quality));
     const wifiIconColor = computed(() => wifiOn.value ? 'green' : 'gray');
     const selectedNetwork = computed(() =>  0 <= selectedNetworkIndex.value &&
                                             selectedNetworkIndex.value < otherNetworks.value.length
@@ -193,21 +198,20 @@ export default defineComponent({
         return isSecured(security) ? security : 'Open network';
     };
     log.debug('wifi-setting.setup');
-    return {connecting, deviceState, connectWiFi, dialog, dialog2, isSecured, otherNetworks, resetPassword,
+    return {connecting, deviceState, connectWiFi, dialog, isSecured, otherNetworks, resetPassword,
             password, secured, securityText, showPassword, selectedNetworkIndex, selectNetwork,
             switchChanged, network, wifi, wifiIconColor, wifiOn, selectedNetwork} ;
   },
 });
 </script>
 <style scoped>
-.v-icon {
+.v-btn {
 transition: opacity 0.3s ease-in-out;
 
 }
 
-.v-icon:not(.on-hover) {
+.v-btn:not(.on-hover) {
 opacity: 0.6;
-color: blue; 
- }
+}
 
 </style>>

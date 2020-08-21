@@ -60,6 +60,21 @@ export class Sensors  {
     public set errorMessage(value: string) {
         Vue.set(this, 'mErrorMessage', value);
     }
+    public loadSensors(samples: number): Promise<boolean> {
+        return new Promise((resolve, reject) => {
+            this.sensorService.getSensorsSamples(samples)
+            .then((response: SensorData[]) => {
+                this.parseSensorData(response);
+                resolve(true);
+            })
+            .catch((error) => {
+                this.error = true;
+                this.errorMessage = error;
+                reject(error);
+            });
+
+        });
+    }
     public getSensorsFrom(from: number) {
         this.sensorService.getSensorsFrom(from)
         .then((response: SensorData[]) => {
@@ -132,7 +147,6 @@ export class Sensors  {
         const self = this;
         this.sensorService.getSensorsFrom(Date.now() - period)
         .then ((response: SensorData[]) => {
-            log.debug('getSensorsLast response.length=' + response.length);
             if (this.firstTime ) {
                 this.firstTime = false;
             }
@@ -168,13 +182,17 @@ export class Sensors  {
             if (!found) {
                 this.createSensor(sensorData);
             } else if (found instanceof Sensor) {
-                log.debug('Sensors.parseSensorData: push samples + ' + sensorData.samples.length);
+                const sensor = found as Sensor;
+                let pushedSamples = 0;
                 for (const sample of sensorData.samples) {
-                    (found as Sensor).samples.push(sample);
+                    if (sensor.samples.length === 0 || sample.date > sensor.samples[sensor.samples.length - 1].date) {
+                        pushedSamples ++;
+                        sensor.samples.push(sample);
+                    }
                 }
+                log.debug('Sensors.parseSensorData: pushed samples ' + pushedSamples);
                 return;
             } else if (found instanceof SensorProxy) {
-                log.debug('Sensors.parseSensorData: upgrade');
                 this.upgradeProxy(found, sensorData);
             } else {
                 log.debug('Sensors.parseSensorData: foobar');

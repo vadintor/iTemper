@@ -8,7 +8,7 @@
       <v-stepper-step :complete="saved()" step="3">Configure sensors</v-stepper-step>
     </v-stepper-header>
     <v-stepper-items>
-      <DeviceStepperContentStep1 @cancel="cancel" @backward="stepBack" @forward="nextStep"></DeviceStepperContentStep1>
+      <DeviceStepperContentStep1 @cancel="cancel"  @forward="nextStep"></DeviceStepperContentStep1>
       <DeviceStepperContentStep2 @cancel="cancel" @backward="stepBack" @forward="nextStep"></DeviceStepperContentStep2>
       <v-stepper-content step="3">
         <v-card
@@ -39,7 +39,7 @@ import DeviceStepperContentStep2 from './device-stepper-content-step2.vue';
 enum SavedStatus { NotSaved, Saving, Saved}
 
 export default defineComponent({
-  name: 'DeviceStepper',
+  name: 'NewDeviceStepper',
   components: {
      DeviceStepperContentStep1,
      DeviceStepperContentStep2,

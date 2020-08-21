@@ -102,7 +102,7 @@
                 </v-card-actions>
             </div>
         </v-card>
-        <v-btn @click="stepBack" text>Cancel</v-btn>
+        <v-btn @click="cancel" text>Cancel</v-btn>
         <v-btn  :disabled="!ready" color="primary" @click="nextStep">Continue</v-btn>
         </v-stepper-content>
 </template>
@@ -173,7 +173,6 @@ export default defineComponent({
         i.done = false;
         i.error = false;
       });
-      actionStarted();
     };
     const actionStarted = () => {
       log.error('device-stepper-content-step1, actionStarted= %s', currentAction.value);
@@ -218,10 +217,11 @@ export default defineComponent({
         watchEffect(() => {
           connect()
           .then((status: BtStatus) => {
-              actionDone();
+              actionStarted();
               log.debug('device-stepper-content-step1, status=' + BtStatus[status]);
               device().readValue()
               .then((deviceConfig) => {
+                  actionDone();
                   log.info('device-stepper-content-step1: device data read');
                   // Device data
                   deviceState.deviceData.name = deviceConfig.name;
@@ -296,8 +296,10 @@ export default defineComponent({
 
     const ready = computed(() => valid.value && connected);
 
-    const stepBack = () => {
-      context.emit('backward', deviceState);
+    const cancel = () => {
+      disconnect();
+      resetActions();
+      context.emit('cancel', deviceState);
     };
     const nextStep = () => {
       context.emit('forward', deviceState);
@@ -316,7 +318,7 @@ export default defineComponent({
     });
 
     return {  connecting, connected, deviceState, disconnect, disconnecting, disconnected, ready, item, items, scan,
-              prependIcon, deviceName, deviceKey, valid, nameRules, stepBack, nextStep,
+              prependIcon, deviceName, deviceKey, valid, nameRules, cancel, nextStep,
               action, actions, isActionsDone, isFirstActionStarted, isActionStarted };
   },
 });

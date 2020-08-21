@@ -1,5 +1,4 @@
 <template>
-<div >
     <v-container fluid grid-list-md>
         <v-layout row wrap>
             <v-flex v-for="(item,id) in state.devices.all" :key="id">
@@ -9,11 +8,9 @@
                 >
                 </device-card>
             </v-flex>
-
             <v-chip v-if="deviceCount()===0" transition="scale-transition" >Det finns inga enheter ännu</v-chip>
         </v-layout>
     </v-container>
-</div>
 </template>
 
 <script lang="ts">

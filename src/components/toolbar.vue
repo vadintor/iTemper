@@ -22,9 +22,8 @@
         >
             <v-app-bar-nav-icon v-if="user.isLoggedIn()" @click.stop="drawer = !drawer"></v-app-bar-nav-icon>
             <v-toolbar-title>iTemper</v-toolbar-title>
-            <new-device-dialogue v-if="user.isLoggedIn() && showNewDeviceDialogue" @close="toggleDeviceDialogue"></new-device-dialogue>
-            <new-location-dialogue v-if="user.isLoggedIn() && showNewLocationDialogue" @close="toggleLocationDialogue"></new-location-dialogue>
-            <admin-node-env-label v-if="development"></admin-node-env-label>
+            <new-dialogue v-if="user.isLoggedIn()"/>
+            <admin-node-env-label v-if="development"/>
             <v-spacer></v-spacer>
             <v-btn  v-if="user.isLoggedOut()" outlined class="signlog" @click="signup">Sign up</v-btn>
             <v-btn  v-if="user.isLoggedOut()" transition="scale-transition" outlined class="signlog" @click="login">Login</v-btn>
@@ -51,8 +50,7 @@ import { json } from '@/helpers';
 
 import { Status } from '@/store/user';
 
-import NewDeviceDialogue from '@/features/devices/new-device-dialogue.vue';
-import NewLocationDialogue from '@/features/locations/new-location-dialogue.vue';
+import NewDialogue from '@/components/new-dialogue.vue';
 import AdminNodeEnvLabel from '@/features/admin/admin-node-env-label.vue';
 
 type BooleanOrString = boolean | string;
@@ -65,8 +63,7 @@ interface MenuItem {
     route: string;
 }
 @Component({components: {
-        NewDeviceDialogue,
-        NewLocationDialogue,
+        NewDialogue,
         AdminNodeEnvLabel,
     },
   })
@@ -87,11 +84,9 @@ export default class Toolbar extends Vue {
             { action: 'fa-sign-out-alt', title: 'Logout', color: 'blue darken-2', route: 'login'},
       ];
     public name() {
-        log.debug('Toolbar.name()' );
         return this.user.credentials.mEmail;
     }
     public menuItemClicked(item: MenuItem) {
-        log.debug('Toolbar.menuItemClicked(): ' +  json(item));
         this.showNewDeviceDialogue = (item.route === 'devices') ? true : false;
         this.showNewLocationDialogue = (item.route === 'locations') ? true : false;
         if (item.action === 'logout') {
@@ -101,12 +96,10 @@ export default class Toolbar extends Vue {
         }
     }
     public signup() {
-        log.debug('Toolbar.signup()' );
         this.user.status =  Status.LOGGING_IN;
         router.push({name: 'register'});
     }
     public login() {
-        log.debug('Toolbar.login()' );
         this.user.status =  Status.LOGGING_IN;
         router.push({name: 'login'});
     }
@@ -115,17 +108,6 @@ export default class Toolbar extends Vue {
         this.showNewDeviceDialogue = false;
         this.user.logout().then(() => reset());
         router.push({name: 'home'});
-    }
-    public created() {
-        log.debug('Toolbar.created(), user status=' + Status[this.user.status]);
-    }
-    public toggleDeviceDialogue() {
-        this.showNewDeviceDialogue = !this.showNewDeviceDialogue;
-        log.debug('toolbar.toggleLocationDialogue=' + this.showNewLocationDialogue);
-    }
-        public toggleLocationDialogue() {
-        this.showNewLocationDialogue = !this.showNewLocationDialogue;
-        log.debug('toolbar.toggleLocationDialogue=' + this.showNewLocationDialogue);
     }
 }
 </script>
