@@ -3,9 +3,9 @@
     <v-stepper-header>
       <v-stepper-step :complete="step > 1" step="1">Connect device</v-stepper-step>
       <v-divider></v-divider>
-      <v-stepper-step :complete="step > 2" step="2">Configure WiFi</v-stepper-step>
+      <v-stepper-step :complete="step > 2" step="2">Configure device</v-stepper-step>
       <v-divider></v-divider>
-      <v-stepper-step :complete="saved()" step="3">Configure sensors</v-stepper-step>
+      <v-stepper-step :complete="saved()" step="3">Enable sensors</v-stepper-step>
     </v-stepper-header>
     <v-stepper-items>
       <DeviceStepperContentStep1 @cancel="cancel"  @forward="nextStep"></DeviceStepperContentStep1>
@@ -48,7 +48,7 @@ export default defineComponent({
   setup(props, context) {
     const step = ref(1);
     const savedStatus = ref(SavedStatus.NotSaved);
-    const deviceState = useDeviceState();
+    const { deviceState } = useDeviceState();
     const ssid = computed(() => deviceState.networks.current.ssid);
 
     const submit = () => {

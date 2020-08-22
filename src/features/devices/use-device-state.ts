@@ -23,13 +23,17 @@ let deviceState: UseDeviceState;
 const sensorsState = Array<UnwrapRef<SensorData>>();
 
 export default function useDeviceState() {
-    if (!deviceState) {
+    const resetDeviceState = () => {
         deviceState = new UseDeviceState(
             reactive({name: ref(''), key: ref(''), deviceID: ref('')}),
             reactive({ssid: ref(''), security: ref(''), quality: ref(0), channel: ref(0)}),
             [], []);
+    };
+    if (!deviceState) {
+        resetDeviceState();
     }
-    return reactive(deviceState);
+
+    return { deviceState: reactive(deviceState), resetDeviceState };
 }
 
 

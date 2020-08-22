@@ -38,7 +38,7 @@ export function useBluetooth() {
 
     const connect = (): Promise<BtStatus> => {
         return new Promise ((resolve) => {
-            service.scan()
+            service.getCharacteristics()
             .then((found) => {
                 characteristics = found;
                 resolve(BtStatus.Connected);

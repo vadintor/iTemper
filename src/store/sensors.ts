@@ -100,17 +100,16 @@ export class Sensors  {
     public find(desc: Descriptor): Sensor | SensorProxy | undefined {
         const found = this.all.find((s) =>
         s.desc.SN === desc.SN && s.desc.port === desc.port);
-        log.debug('sensors.find');
         const isSensor = found && 'attr' in found;
 
         if (!found) {
             log.debug('sensors.find: nothing found');
             return;
         } else if (isSensor) {
-            log.debug('sensors.find: found sensor=' + JSON.stringify(found.desc));
+            log.debug('sensors.find: ' + JSON.stringify(found.desc));
             return found as Sensor;
         } else {
-            log.debug('sensors.find: found proxy sensor=' + JSON.stringify(found.desc));
+            log.debug('sensors.find proxy: ' + JSON.stringify(found.desc));
             return found as SensorProxy;
         }
     }

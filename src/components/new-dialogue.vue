@@ -2,7 +2,7 @@
     <v-dialog v-model="dialog" persistent max-width="800">
         <template v-slot:activator="{ on }">
             <v-fab-transition>
-                <v-btn class="mx-2 elevation-2" 
+                <v-btn v-if="showFabButton" class="mx-2 elevation-2" 
                     v-on="on"
                     fab 
                     absolute
@@ -39,6 +39,7 @@ export default defineComponent({
         const dialog =  ref(false);
         const showNewLocation = computed(() => comp.value === Dialogue.Locations );
         const showNewDevice = computed(() => comp.value === Dialogue.Devices );
+        const showFabButton = computed(() => comp.value !== Dialogue.Unknown );
         const closeDialog = () => {
             dialog.value = false;
         };
@@ -56,7 +57,7 @@ export default defineComponent({
                     break;
             }
         });
-        return { dialog, closeDialog, showNewLocation, showNewDevice };
+        return { closeDialog, dialog, showFabButton, showNewDevice, showNewLocation };
     },
 });
 </script>

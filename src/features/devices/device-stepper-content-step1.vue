@@ -13,36 +13,7 @@
                     </v-row>    
                 </v-card-title>
                 <v-card-text>
-                    <v-icon color="green">fa-check</v-icon> You paired with the device: <code>{{deviceName}}</code>. You can change the configuration below.
-                      <v-list dense>
-                      <v-list-item-group v-model="item" color="primary">
-                        <v-list-item>
-                          <v-list-item-icon>
-                            <v-icon v-text="items[0].icon"></v-icon>
-                          </v-list-item-icon>
-                          <v-list-item-content>
-                              <v-form v-model="valid" ref="form">
-                                <v-text-field
-                                  :label="items[0].label"
-                                  :prepend-icon="prependIcon"
-                                  v-model="deviceName"
-                                  :rules="nameRules"
-                                  required
-                                  clearable
-                                ></v-text-field>
-                              </v-form>
-                          </v-list-item-content>
-                        </v-list-item>
-                        <v-list-item>
-                          <v-list-item-icon>
-                            <v-icon v-text="items[1].icon"></v-icon>
-                          </v-list-item-icon>
-                          <v-list-item-content>
-                            <v-list-item-title v-text="items[1].text"></v-list-item-title>
-                          </v-list-item-content>
-                        </v-list-item>
-                      </v-list-item-group>
-                    </v-list>
+                    <v-icon color="green">fa-check</v-icon> You paired with a device. You can change the configuration below.
                 </v-card-text>
                 <v-card-actions>
                   <v-btn text color="primary" :loading="disconnecting"  @click="disconnect">Disconnect</v-btn>
@@ -131,24 +102,9 @@ export default defineComponent({
   components: { },
 
   setup(props, context) {
-    const deviceState = useDeviceState();
+    const {deviceState, resetDeviceState } = useDeviceState();
     const  { btStatus, connecting, connected, connect, disconnected,
               disconnect, disconnecting, current, device, available } = useBluetooth();
-    const savedStatus = ref(SavedStatus.NotSaved);
-    const deviceName = ref('');
-    const prependIcon = ref('');
-    const deviceKey = ref('');
-    const valid = ref(false);
-    const nameRules: ValidationFunction[] = [
-          (v) => !!v || 'Enter name',
-          (v) => /^[a-zA-Z0-9\-]+$/.test(v) && !!v && v.length >= 4  || 'Must be at least 4-32 characters, alphanumeric and hyphen characters allowed',
-        ];
-    const item = ref(1);
-    const items = [
-        { text: 'Device name', icon: 'fa-edit', label: 'Enter the name of your device',  value: ''},
-        { text: 'Device color', icon: 'fa-fill-drip', label: 'Pick device color',  value: '' },
-        { text: 'Device key', icon: 'fa-address-card', label: '<auto generated>',  value: '' },
-      ];
     const currentAction = ref(-1);
     const action = ref(1);
     const actions = reactive([
@@ -181,22 +137,26 @@ export default defineComponent({
     const nextAction = () => {
       currentAction.value = currentAction.value + 1;
       actionStarted();
-      log.error('device-stepper-content-step1, nextAction=' + currentAction.value);
+      log.info('device-stepper-content-step1, nextAction= ' + currentAction.value);
     };
     const actionStarted = () => {
-      log.error('device-stepper-content-step1, actionStarted= %s', currentAction.value);
+      log.info('device-stepper-content-step1, actionStarted= %s', currentAction.value);
       actions[currentAction.value].loading = true;
       actions[currentAction.value].done = false;
       actions[currentAction.value].error = false;
     };
     const actionDone = () => {
+      log.info('device-stepper-content-step1, actionDone= %s', currentAction.value);
       actions[currentAction.value].loading = false;
       actions[currentAction.value].done = true;
       actions[currentAction.value].error = false;
-      nextAction();
+      if (currentAction.value < actions.length - 1) {
+        nextAction();
+      }
     };
     const actionError = (errorMessage: string) => {
-      log.error('device-stepper-content-step1, actionError= action %s, message: %s', currentAction.value, errorMessage);
+      log.info('device-stepper-content-step1, actionError= %s', currentAction.value);
+      log.error('device-stepper-content-step1, actionError, message= %s', errorMessage);
       actions[currentAction.value].errorText = errorMessage;
       actions[currentAction.value].loading = false;
       actions[currentAction.value].done = false;
@@ -226,12 +186,12 @@ export default defineComponent({
               device().readValue()
               .then((deviceConfig) => {
                   log.info('device-stepper-content-step1: device data read');
+                  resetDeviceState();
                   // Device data
                   deviceState.deviceData.name = deviceConfig.name;
                   deviceState.deviceData.deviceID = deviceConfig.deviceID;
                   deviceState.deviceData.key = deviceConfig.key;
                   deviceState.deviceData.color = deviceConfig.color;
-
                   current().readValue()
                   .then((wifi) => {
                         // current WiFi
@@ -255,8 +215,8 @@ export default defineComponent({
                                 }
                         });
                         log.info('device-stepper-content-step1 deviceState= %s', JSON.stringify(deviceState));
-                        deviceName.value = deviceState.deviceData.name;
                         actionDone();
+                        nextStep();
                   })
                   .catch((e: Error) => {
                       log.error('device-stepper-content-step1.Received invalid wifi configuration');
@@ -276,28 +236,9 @@ export default defineComponent({
               actionError('No devices found');
               log.info('No devices found, do something');
       }
-
-      deviceName.value = '';
-    };
-    const sync = () => {
-      if (deviceState.deviceData) {
-        const deviceData = deviceState.deviceData;
-        const config: DeviceData = {
-            name: deviceData.name,
-            deviceID: deviceData.deviceID,
-            key: deviceData.key,
-        };
-        device().writeValue(config)
-        .then(() => {
-            // update icon
-         })
-        .catch(() => {
-            // update icon
-        });
-      }
     };
 
-    const ready = computed(() => valid.value && connected);
+    const ready = computed(() => isActionsDone && connected);
 
     const cancel = () => {
       disconnect();
@@ -320,9 +261,8 @@ export default defineComponent({
       log.info('device-stepper-content-step1.onActivated!');
     });
 
-    return {  connecting, connected, deviceState, disconnect, disconnecting, disconnected, ready, item, items, scan,
-              prependIcon, deviceName, deviceKey, valid, nameRules, cancel, nextStep,
-              action, actions, isActionsDone, isFirstActionStarted, isActionStarted };
+    return {  connecting, connected, deviceState, disconnect, disconnecting, disconnected, ready, scan,
+               cancel, nextStep, action, actions, isActionsDone, isFirstActionStarted, isActionStarted };
   },
 });
 </script>

@@ -3,6 +3,7 @@ import { AvailableWiFiCharacteristicUUID, AvailableWiFiCharacteristic} from './a
 import { CurrentWiFiCharacteristicUUID, CurrentWiFiCharacteristic} from './current-wifi-characteristic';
 import { DeviceCharacteristicUUID, DeviceCharacteristic} from './device-characteristic';
 import { EventEmitter } from 'events';
+import { rejects } from 'assert';
 
 const DeviceServiceUUID = 0xfff1;
 
@@ -28,29 +29,21 @@ export class BtService {
     log.debug('bluetooth-service.constructor');
   }
 
-  public scan(): Promise<BtCharacteristics> {
-    return new Promise ((resolve, reject) => {
-      this.connect()
-      .then((service) => {
-        if (!!service) {
-          return Promise.all([  this.getDeviceCharacteristic(service),
-                                this.getCurrentWiFiCharacteristic(service),
-                                this.getAvailableWiFiCharacteristic(service)])
-          .then((characteristics) => {
-            if (characteristics[0]  && characteristics[1] && characteristics[2]) {
-              this.onChanged(BtStatus.Connected);
-              log.debug('bluetooth-service.scan resolved characteristics');
-              resolve({ device: characteristics[0],
-                      current: characteristics[1], available: characteristics[2]});
-            } else {
-              reject('Some characteristics missing');
-            }
-          });
-        } else {
-            reject('No service available');
-        }
-      });
-    });
+  public async getCharacteristics(): Promise<BtCharacteristics> {
+      const service: BluetoothRemoteGATTService = await this.connect();
+      const characteristics = await Promise.all([
+        this.getDeviceCharacteristic(service),
+        this.getCurrentWiFiCharacteristic(service),
+        this.getAvailableWiFiCharacteristic(service),
+      ]);
+      if (characteristics[0]  && characteristics[1] && characteristics[2]) {
+        this.onChanged(BtStatus.Connected);
+        log.debug('bluetooth-service.getCharacteristics resolved');
+        return { device: characteristics[0],
+                current: characteristics[1], available: characteristics[2]};
+      } else {
+        throw new Error('Some characteristics missing');
+      }
   }
     // disconnect from peripheral
     public disconnect() {
@@ -64,20 +57,21 @@ export class BtService {
     this.onChanged(BtStatus.Disconnected);
   }
   // request connection to a device remote GATT service
-  private async connect(): Promise<BluetoothRemoteGATTService | undefined>  {
-    return navigator.bluetooth.requestDevice(DeviceOptions)
-    .then((device) => {
-      this.onChanged(BtStatus.Connecting);
-      log.debug('bluetooth-service.connect');
-      this.device = device;
-      device.addEventListener('gattserverdisconnected', this.onDisconnected.bind(this));
-      return device.gatt?.connect();
-    })
-    .then((server) => {
-        log.debug('bluetooth-service.request-device.gatt');
-        return server?.getPrimaryService(DeviceServiceUUID);
-    });
-  }
+  private async connect(): Promise<BluetoothRemoteGATTService> {
+      try {
+        this.device = await navigator.bluetooth.requestDevice(DeviceOptions);
+        this.onChanged(BtStatus.Connecting);
+        this.device.addEventListener('gattserverdisconnected', this.onDisconnected.bind(this));
+        if (this.device.gatt) {
+          const server = await this.device.gatt.connect();
+          return server.getPrimaryService(DeviceServiceUUID);
+        } else {
+          throw new Error ('No bluetooth GATT service available');
+        }
+      } catch {
+        throw new Error ('Cannot pair bluetooth device');
+      }
+}
   private getDeviceCharacteristic(service: BluetoothRemoteGATTService): Promise<DeviceCharacteristic | undefined> {
     return service.getCharacteristic(DeviceCharacteristicUUID)
     .then((characteristic) => {

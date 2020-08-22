@@ -6,8 +6,7 @@
             color="grey lighten-1"
             height="400px"
             >
-                  <WiFiSetting></WiFiSetting>
-
+                  <device-settings-list/>
             </v-card>
             <v-btn text @click="stepBack">Back</v-btn>
             <v-btn  v-if="updated" color="primary" @click="nextStep">Continue</v-btn>
@@ -24,16 +23,15 @@ import { isDeviceStateValid} from './device-data-validators';
 import useDeviceState from './use-device-state';
 import { useBluetooth } from './use-bluetooth';
 
-import WiFiSetting from '@/features/device-settings/wifi-setting.vue';
+import DeviceSettingsList from '@/features/device-settings/device-settings-list.vue';
 import { log } from '@/services/logger';
-import { error } from 'console';
 
 export default defineComponent({
   name: 'DeviceStepperContentStep2',
-  components: { WiFiSetting },
+  components: { DeviceSettingsList },
 
   setup(props, context) {
-    const deviceState = useDeviceState();
+    const { deviceState } = useDeviceState();
     const { device, current, available } = useBluetooth();
     const select = ref({});
     const password = ref('');
