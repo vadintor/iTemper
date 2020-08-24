@@ -25,7 +25,7 @@ const sensorsState = Array<UnwrapRef<SensorData>>();
 export default function useDeviceState() {
     const resetDeviceState = () => {
         deviceState = new UseDeviceState(
-            reactive({name: ref(''), key: ref(''), deviceID: ref('')}),
+            reactive({name: ref(''), color: ref(''), key: ref(''), deviceID: ref('')}),
             reactive({ssid: ref(''), security: ref(''), quality: ref(0), channel: ref(0)}),
             [], []);
     };

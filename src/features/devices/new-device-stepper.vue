@@ -14,7 +14,6 @@
         <v-card
           class="mb-12"
           color="grey lighten-1"
-          height="400px"
         >
             <v-card-title>Network configuration:</v-card-title>
             <v-card-text v-if="ssid !== ''">

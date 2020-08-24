@@ -4,9 +4,10 @@
             <v-card
             class="mb-12"
             color="grey lighten-1"
-            height="400px"
             >
+            <v-card-text>
                   <device-settings-list/>
+            </v-card-text>
             </v-card>
             <v-btn text @click="stepBack">Back</v-btn>
             <v-btn  v-if="updated" color="primary" @click="nextStep">Continue</v-btn>

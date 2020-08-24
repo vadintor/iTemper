@@ -65,7 +65,9 @@
                 <v-subheader v-else-if="wifi.ssid ===''">Available networks</v-subheader>
                 <v-subheader v-else>Other networks</v-subheader>
                 <v-list-item-group v-if="wifiOn" v-model="network" color="primary">
-                    <v-list-item @click="selectNetwork(i)" v-for="(item, i) in otherNetworks" :key="i">
+                    <v-virtual-scroll :items="otherNetworks" :item-height="50" height="300">
+                    <template v-slot="{ index, item }">
+                        <v-list-item @click="selectNetwork(index)">
                         <v-list-item-icon>
                         <v-icon v-if="isSecured(item.security)">mdi-lock-outline</v-icon>
                         <v-icon v-else>mdi-lock-open-outline</v-icon>
@@ -87,6 +89,8 @@
                             </v-tooltip>
                         </v-list-item-action>
                     </v-list-item>
+                    </template>
+                    </v-virtual-scroll>
                 </v-list-item-group>
             </v-list>
             </v-col>

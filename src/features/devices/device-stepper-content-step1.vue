@@ -3,7 +3,6 @@
         <v-card
           class="mb-12"
           color="grey lighten-1"
-          height="400px"
         >
             <div v-if="connected && isActionsDone">
                 <v-card-title  class="headline">
