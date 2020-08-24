@@ -46,7 +46,6 @@ import { Component, Prop, Vue } from 'vue-property-decorator';
 
 // Store
 import { Status } from '@/store/user';
-
 // Services & helpers
 import {log} from '@/services/logger';
 import {json} from '@/helpers';
@@ -72,7 +71,6 @@ export default class LoginCard extends Vue {
     public submitted: boolean = false;
     public errorMsg = '';
     public timeout: number = 2_000;
-
     public passwordRules: ValidationFunction[] = [
           (v) => !!v || 'Enter password',
           (v) => v && v.length >= 7 || 'Password must be at least 7 characters',
@@ -115,7 +113,6 @@ export default class LoginCard extends Vue {
             this.displayError('Login form not vallid');
             return;
         } else {
-            this.submitted = true;
             this.login(this.cred.mEmail, this.cred.mPassword);
         }
     }

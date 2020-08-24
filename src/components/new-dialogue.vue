@@ -44,7 +44,7 @@ export default defineComponent({
             dialog.value = false;
         };
         watchEffect(() => {
-            log.debug('new-dialogue.watchEffect');
+            log.debug('new-dialogue.watchEffect, route.name=' + context.root.$route.name);
             switch (context.root.$route.name) {
                 case 'locations':
                     comp.value = Dialogue.Locations;

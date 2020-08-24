@@ -1,6 +1,6 @@
 <template>
     <div>
-        <v-navigation-drawer v-if="user.isLoggedIn()" transition="scale-transition" nudge-left=16 nudge-top=5 
+        <v-navigation-drawer v-if="state.user.isLoggedIn()" transition="scale-transition" nudge-left=16 nudge-top=5 
         v-model="drawer"
         app
         >
@@ -20,22 +20,23 @@
         color="indigo"
         dark
         >
-            <v-app-bar-nav-icon v-if="user.isLoggedIn()" @click.stop="drawer = !drawer"></v-app-bar-nav-icon>
+            <v-app-bar-nav-icon v-if="state.user.isLoggedIn()" @click.stop="drawer = !drawer"></v-app-bar-nav-icon>
             <v-toolbar-title>iTemper</v-toolbar-title>
-            <new-dialogue v-if="user.isLoggedIn()"/>
+            <new-dialogue v-if="state.user.isLoggedIn()"/>
             <admin-node-env-label v-if="development"/>
+            <toolbar-label color="green">{{activeState}}</toolbar-label>
             <v-spacer></v-spacer>
-            <v-btn  v-if="user.isLoggedOut()" outlined class="signlog" @click="signup">Sign up</v-btn>
-            <v-btn  v-if="user.isLoggedOut()" transition="scale-transition" outlined class="signlog" @click="login">Login</v-btn>
+            <v-btn  v-if="state.user.isLoggedOut()" outlined class="signlog" @click="signup">Sign up</v-btn>
+            <v-btn  v-if="state.user.isLoggedOut()" transition="scale-transition" outlined class="signlog" @click="login">Login</v-btn>
             <v-chip ripple
-                v-if="user.isLoggedIn()" 
+                v-if="state.user.isLoggedIn()" 
                 transition="scale-transition"  
                 color="#2591E9"
                 class="signlog" 
                 close
                  @click:close="logout">
                     <v-icon>fa-user</v-icon>
-                    {{user.credentials.mEmail}}
+                    {{state.user.credentials.mEmail}}
             </v-chip>
         </v-app-bar>
     </div>
@@ -43,14 +44,16 @@
 <script lang="ts">
 import {config} from '@/config';
 import { Vue, Component, Prop } from 'vue-property-decorator';
-import { router } from '@/helpers';
-import { reset } from '@/store/store';
+import { computed, defineComponent, ref } from '@vue/composition-api';
+import { router, isPublicPath } from '@/helpers';
 import { log } from '@/services/logger';
 import { json } from '@/helpers';
 
 import { Status } from '@/store/user';
+import { useState } from '@/store/store';
 
 import NewDialogue from '@/components/new-dialogue.vue';
+import ToolbarLabel from '@/components/toolbar-label.vue';
 import AdminNodeEnvLabel from '@/features/admin/admin-node-env-label.vue';
 
 type BooleanOrString = boolean | string;
@@ -62,56 +65,81 @@ interface MenuItem {
     color: string;
     route: string;
 }
-@Component({components: {
-        NewDialogue,
-        AdminNodeEnvLabel,
-    },
-  })
-export default class Toolbar extends Vue {
-    public development = config.development;
-    public user = Vue.$store.user;
-    public drawer: boolean = false;
+export default defineComponent({
+    name: 'Toolbar',
+    components: {
+            NewDialogue,
+            AdminNodeEnvLabel,
+            ToolbarLabel,
+        },
 
-    public showNewDeviceDialogue: boolean = false;
-    public showNewLocationDialogue: boolean = true;
-
-    public menuItems = [
+    setup(props, context) {
+        const { state, startRetrieveState, stopRetrieveState, retrievingState, resetState } = useState('toolbar');
+        const development = config.development;
+        const drawer = ref(false);
+        const showNewDeviceDialogue = ref(false);
+        const showNewLocationDialogue = ref(true);
+        const  menuItems = [
             { action: 'fa-home', title: 'Platser',  color: 'blue-grey darken-2', route: 'locations' },
             { action: 'fa-broadcast-tower', title: 'Enheter',  color: 'blue-grey darken-2', route: 'devices' },
             { action: 'fa-wifi', title: 'Givare',  color: 'blue-grey darken-2', route: 'sensors' },
             { action: 'fa-cog', title: 'Inställningar', color: 'blue-grey darken-2', route: 'settings' },
             { action: 'fa-hammer', title: 'System', color: 'blue-grey darken-2', route: 'admin' },
             { action: 'fa-sign-out-alt', title: 'Logout', color: 'blue darken-2', route: 'login'},
-      ];
-    public name() {
-        return this.user.credentials.mEmail;
-    }
-    public menuItemClicked(item: MenuItem) {
-        this.showNewDeviceDialogue = (item.route === 'devices') ? true : false;
-        this.showNewLocationDialogue = (item.route === 'locations') ? true : false;
-        if (item.action === 'logout') {
-            this.user.logout();
-        } else {
-            router.push({name: item.route});
-        }
-    }
-    public signup() {
-        this.user.status =  Status.LOGGING_IN;
-        router.push({name: 'register'});
-    }
-    public login() {
-        this.user.status =  Status.LOGGING_IN;
-        router.push({name: 'login'});
-    }
-    public logout() {
-        log.debug('Toolbar.logout()' );
-        this.showNewDeviceDialogue = false;
-        this.user.logout().then(() => reset());
-        router.push({name: 'home'});
-    }
-}
-</script>
+        ];
+        const name = computed(() => state.user.credentials.mEmail);
+        const menuItemClicked = (item: MenuItem) => {
+            showNewDeviceDialogue.value = (item.route === 'devices') ? true : false;
+            showNewLocationDialogue.value = (item.route === 'locations') ? true : false;
+            if (item.action === 'logout') {
+                logout();
+            } else {
+                router.push({name: item.route});
+            }
+        };
+        const status = computed(() => Status[state.user.status].replace('_', ' ').toLocaleLowerCase());
+        const activeState = computed(() => retrievingState.value ? 'online' : 'stopped' );
+        const signup = () => {
+            state.user.status =  Status.LOGGING_IN;
+            router.push({name: 'register'});
+        };
+        const login = () => {
+            state.user.status =  Status.LOGGING_IN;
+            router.push({name: 'login'});
+        };
+        const logout = () => {
+            log.debug('Toolbar.logout()' );
+            showNewDeviceDialogue.value = false;
+            state.user.logout().then(() => {
+                stopRetrieveState();
+                resetState();
+                });
+            router.push({name: 'home'});
+        };
+        router.beforeEach((to, from, next) => {
+            log.info('location-page: beforeEach' + context.root.$router.currentRoute.path);
+            log.info('location-page: isPublicPath: ' + isPublicPath(to.path));
+            log.info('location-page: retrievingState: ' + JSON.stringify(retrievingState.value));
+            log.info('location-page: state.user.status: ' + Status[state.user.status]);
 
+            if (state.user.status === Status.LOGGED_IN) {
+                if (!retrievingState.value) {
+                    startRetrieveState();
+                } else if (isPublicPath(to.path)) {
+                    stopRetrieveState();
+                }
+            }
+            next();
+        });
+
+        return  {
+                    activeState, development, drawer, login, logout, menuItemClicked, menuItems, name,
+                    showNewDeviceDialogue, showNewLocationDialogue, state, status, signup,
+                    retrievingState,
+                };
+    },
+});
+</script>
 <style scoped>
 .signlog {
     background-color: rgb(37, 122, 233);

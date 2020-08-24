@@ -3,7 +3,7 @@ import { Sensor } from '@/models/sensor';
 import { SensorProxy } from '@/models/sensor-proxy';
 import { store } from '@/store/store';
 import { LocationData, ILocationService } from '@/features/locations/';
-
+import { Status } from '@/store/user';
 import { Vue  } from 'vue-property-decorator';
 
 import { log } from '@/services/logger';

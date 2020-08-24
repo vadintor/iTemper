@@ -2,6 +2,7 @@ import { Credentials } from '@/models/credentials';
 import { IApiService } from '@/services/api-service';
 import { Vue  } from 'vue-property-decorator';
 import { log } from '@/services/logger';
+import { useState } from '@/store/store';
 
 export enum Status {
     LOGGED_OUT,
@@ -13,7 +14,6 @@ export class User  {
     public mLastName: string = '';
     public credentials: Credentials;
     private mStatus: Status = Status.LOGGED_OUT;
-
     private api: IApiService;
 
     constructor(apiService: IApiService) {
@@ -53,7 +53,7 @@ export class User  {
             });
         });
     }
-    public login(): Promise<Status>  {
+    public login(): Promise<Status> {
         log.debug('user.login');
         this.status = Status.LOGGING_IN;
         return new Promise<Status> ((resolve, reject) => {
@@ -67,7 +67,7 @@ export class User  {
             });
         });
     }
-    public logout(): Promise<Status>  {
+    public logout(): Promise<Status> {
         log.debug('user.logout');
         return new Promise<Status> ((resolve, reject) => {
             this.status = Status.LOGGED_OUT;

@@ -36,23 +36,22 @@ const routes = [
   { path: '*', redirect: '/' },
 ];
 
-export const router = new Router({routes });
+export const router = new Router({ routes });
 
+const publicPaths: string[] = ['/', '/login', '/register'];
+export function isPublicPath(path: string) {
+  return publicPaths.find( (item) => path === item);
+}
+export function loginRequired(path: string): boolean {
+  return Vue.$store.user.status !== Status.LOGGED_IN && !isPublicPath(path);
+}
 router.beforeEach((to, from, next) => {
-  log.debug('router.beforeEach FROM path= ' + json(from.path) + ', name=' + json(from.name) +
-                            ', TO path=' + json(to.path) + ', name' + json(to.name) );
-  // redirect to login page if not logged in and trying to access a restricted page
-  const publicPaths: string[] = ['/', '/login', '/register'];
-
-  const authRequired = !publicPaths.find( (path) => path === to.path);
-  log.debug('router.beforeEach user.status=' +  Status[Vue.$store.user.status]);
-  if (authRequired && Vue.$store.user.status !== Status.LOGGED_IN) {
+  if (loginRequired (to.path)) {
     log.debug('router.beforeEach Log in required!!!');
     return next({
       path: '/login',
       query: { returnUrl: to.path },
     });
   }
-
   next();
 });

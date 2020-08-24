@@ -17,14 +17,15 @@ import { ref, reactive, defineComponent, computed, watch, toRefs, toRef, onMount
 
 // Store
 import { Status } from '@/store/user';
+import { useState } from '@/store/store';
 
 // Services
 import { log } from '@/services/logger';
+import { loginRequired, isPublicPath } from '@/helpers/router';
 
 // Child components
 import LocationCard from './location-card.vue';
 
-import { store } from '@/store/store';
 
 export default defineComponent({
   name: 'LocationPage',
@@ -32,48 +33,11 @@ export default defineComponent({
 
   setup(props, context) {
 
-    const state = reactive(store);
-
-    let timeout: NodeJS.Timeout;
+    const {state, startRetrieveState, stopRetrieveState, retrievingState } = useState('location-page');
 
     const locationCount = computed(() => state.locations.all.length);
 
-    const getLocations = () => {
-        log.debug('location-page.getLocations');
-    };
-    watchEffect(() => {
-        log.debug('location-page, status=' + Status[state.user.status]);
-        if (state.user.status === Status.LOGGED_IN) {
-            const sampleCount = 2;
-            // make sure we have some values from all sensors before loading locations
-            state.sensors.loadSensors(sampleCount)
-            .then(() => {
-                state.locations.getLocations();
-                state.sensors.getSensorsLast24h();
-                timeout = setInterval(() => state.sensors.getSensorsSamples(sampleCount),
-                            1000 * state.settings.interval);
-            });
-        }
-    });
-    watchEffect(() => {
-        log.debug('location-page, status=' + Status[state.user.status]);
-        if (state.user.status === Status.LOGGED_OUT) {
-            if (timeout) {
-                clearInterval(timeout);
-            }
-        }
-    });
-    const getAllSensors = () => {
-        const count = 2;
-        log.debug('location-page.getAllSensors, status=' + Status[state.user.status]);
-        state.sensors.getSensorsSamples(count);
-
-    };
-    onMounted(() => {
-        log.debug('location-page.onMounted()');
-
-    });
-    log.debug('device-settings.setup');
+    log.debug('location-page.setup');
     return { state, locationCount };
   },
 });
