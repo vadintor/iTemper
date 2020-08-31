@@ -5,16 +5,16 @@ interface Config {
 }
 
 function configure(): Config {
-    const development: boolean = !process.env.NODE_ENV || process.env.NODE_ENV === 'development';
-    if (development) {
+    const production: boolean = process.env.NODE_ENV === 'production';
+    if (!production) {
         return {
-            development,
+            development: !production,
             iTemperAPI: 'https://localhost:3000/',
             iTemperWS: 'wss://localhost:3000/ws',
         };
     } else {
         return {
-            development,
+            development: !production,
             iTemperAPI: 'https://api.itemper.io/',
             iTemperWS: 'wss://device.itemper.io/ws',
         };

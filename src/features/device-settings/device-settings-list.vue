@@ -2,7 +2,8 @@
         <v-expansion-panels>
             <DeviceNameSetting/>
             <DeviceColorSetting/>
-            <WiFiSetting/>
+            <DeviceApiKeySetting/>
+            <DeviceWiFiSetting/>
         </v-expansion-panels>
 </template>
 <script lang="ts">
@@ -11,13 +12,15 @@ import { computed, defineComponent, onMounted, reactive, Ref, ref, UnwrapRef, wa
 import { log } from '@/services/logger';
 import DeviceNameSetting from './device-name-setting.vue';
 import DeviceColorSetting from './device-color-setting.vue';
-import WiFiSetting from './wifi-setting.vue';
+import DeviceApiKeySetting from './device-api-key-setting.vue';
+import DeviceWiFiSetting from './device-wifi-setting.vue';
 
 export default defineComponent({
   name: 'DeviceSettingList',
   components: { DeviceNameSetting,
-                WiFiSetting,
                 DeviceColorSetting,
+                DeviceApiKeySetting,
+                DeviceWiFiSetting,
               },
 
   setup(props, context) {

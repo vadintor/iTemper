@@ -44,7 +44,7 @@ export function useBluetooth() {
                 resolve(BtStatus.Connected);
             });
         });
-};
+    };
     const disconnect = () => {
         service.disconnect();
     };

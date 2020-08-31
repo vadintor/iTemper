@@ -1,25 +1,30 @@
 <template>
     <div>
-        <p v-if="error"> {{ errorMessaghe }} </p>
+        <slot>
+            <p v-show="showMessage" :class="color" align="center">{{ message }}</p>
+        </slot>
     </div>
 </template>
 <script lang="ts">
-import {defineComponent, ref} from '@vue/composition-api';
-
+import { computed, defineComponent } from '@vue/composition-api';
 import { log } from '@/services/logger';
-
-function useErrorMessages() {
-    const error = ref (false);
-    const errorMessage = ref('');
-
-    return { error, errorMessage };
-}
-
-export default defineComponent( {
-    setup(): any {
-        const {error, errorMessage} = useErrorMessages();
-
-        return {error, errorMessage};
+export default defineComponent({
+    name: 'ErrorMessage',
+    components: {},
+    props: {
+        message: {
+            type: String,
+            default: '',
+        },
+        color: {
+            type: String,
+            default: 'red--text',
+        },
+    },
+    setup(props, context): any {
+        const showMessage = computed(() => props.message !== '');
+        log.info('error-message.setup');
+        return { showMessage };
     },
 });
 </script>

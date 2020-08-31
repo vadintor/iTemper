@@ -2,11 +2,11 @@
 <div id='app'>
     <v-app>
         <Toolbar></Toolbar>
-        <v-content>
+        <v-main>
             <v-container fluid>
                 <router-view transition='scale-transition' ></router-view>
             </v-container>
-        </v-content>
+        </v-main>
     </v-app>
 </div>
 </template>

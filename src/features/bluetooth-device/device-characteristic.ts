@@ -22,6 +22,9 @@ export class DeviceCharacteristic {
         } else {
           reject('Invalid device data');
         }
+      })
+      .catch(() => {
+        reject('Cannot retrieve device configuration');
       });
     });
 

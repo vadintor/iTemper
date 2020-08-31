@@ -5,8 +5,8 @@
                 <v-col cols="1">
                     <v-icon :color="settingIconColor" v-text="settingIcon"/>
                 </v-col>
-                <v-col cols="9" v-text="settingName"/>
-                <v-col cols="1">
+                <v-col cols="7" v-text="settingName"/>
+                <v-col cols="4">
                     <v-fab-transition leave-absolute v-if="!open">
                         <span v-if="settingOn" v-text="setting"/>
                         <span v-else v-text="settingOffValue"/>
@@ -15,7 +15,7 @@
             </v-row>
         </v-expansion-panel-header>
         <v-expansion-panel-content>
-            <v-row justify="left" no-gutters>
+            <v-row no-gutters>
                 <v-col cols="1"></v-col>
                 <v-col cols="10">
                     <v-form v-model="settingValid" ref="form">
@@ -53,7 +53,7 @@ export default defineComponent({
     const setting = computed(() => deviceState.deviceData.name);
     const newSetting = ref('');
     const settingIcon = ref('mdi-alpha-d-circle-outline');
-    const settingName = ref('Device name');
+    const settingName = ref('Name');
     const settingOffValue = ref('');
     const settingLabel = ref('Enter a device name');
     const settingIconColor = computed(() => 'gray');

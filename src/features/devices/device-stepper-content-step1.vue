@@ -1,9 +1,10 @@
 <template>
-        <v-stepper-content step="1">
+        <v-stepper-content step="1" transition="scroll-x-transition">
         <v-card
           class="mb-12"
           color="grey lighten-1"
         >
+            <new-device :name="newDeviceName" v-model="newDevice" @created="deviceCreated"/>
             <div v-if="connected && isActionsDone">
                 <v-card-title  class="headline">
                     <v-row>
@@ -84,7 +85,7 @@ import { defineComponent, onMounted, watchEffect, computed } from '@vue/composit
 
 import { SensorData, Category } from '@/models/sensor-data';
 import { DeviceData, DeviceState, DeviceWiFiData, WiFiNetwork } from './device-data';
-
+import { Device } from '@/features/devices/device';
 import useDeviceState from './use-device-state';
 import { useBluetooth } from './use-bluetooth';
 import { BtStatus } from '@/features/bluetooth-device/bluetooth-service';
@@ -92,22 +93,24 @@ import { BtStatus } from '@/features/bluetooth-device/bluetooth-service';
 import { log } from '@/services/logger';
 import { error } from 'console';
 
+import NewDevice from './new-device.vue';
 enum SavedStatus { NotSaved, Saving, Saved}
 type BooleanOrString = boolean | string;
 type ValidationFunction = (value: string) => BooleanOrString;
 
 export default defineComponent({
   name: 'DeviceStepperContentStep1',
-  components: { },
+  components: { NewDevice },
 
   setup(props, context) {
     const {deviceState, resetDeviceState } = useDeviceState();
     const  { btStatus, connecting, connected, connect, disconnected,
               disconnect, disconnecting, current, device, available } = useBluetooth();
+    const newDevice = ref(false);
     const currentAction = ref(-1);
     const action = ref(1);
     const actions = reactive([
-        { text: 'Establishing Bluetooth connection',
+        { text: 'Connect to device',
           loading: false,
           done: false,
           error: false,
@@ -161,6 +164,7 @@ export default defineComponent({
       actions[currentAction.value].done = false;
       actions[currentAction.value].error = true;
     };
+    const newDeviceName = computed(() => deviceState.deviceData.name);
     const isFirstActionStarted = computed(() => {
       const firstAction = actions[0];
       return firstAction.loading || firstAction.done || firstAction.error;
@@ -170,82 +174,143 @@ export default defineComponent({
       actions.forEach((i) => done = done && i.done);
       return done;
     });
+    const deviceIDOf = (key: string) => {
+      const deviceID = key.slice(0, key.indexOf(':'));
+      log.info('device-stepper-content-step1.deviceIDOf=' + deviceID);
+      return key.slice(0, key.indexOf(':'));
+    };
     const isActionStarted = (index: number) => {
       const thisAction = actions[index];
       return thisAction.loading || thisAction.done || thisAction.error;
     };
-    const scan = () => {
+    async function scan() {
       try {
         startActions();
-        watchEffect(() => {
-          connect()
-          .then((status: BtStatus) => {
-              actionDone();
-              log.debug('device-stepper-content-step1, status=' + BtStatus[status]);
-              device().readValue()
-              .then((deviceConfig) => {
-                  log.info('device-stepper-content-step1: device data read');
-                  resetDeviceState();
-                  // Device data
-                  deviceState.deviceData.name = deviceConfig.name;
-                  deviceState.deviceData.deviceID = deviceConfig.deviceID;
-                  deviceState.deviceData.key = deviceConfig.key;
-                  deviceState.deviceData.color = deviceConfig.color;
-                  current().readValue()
-                  .then((wifi) => {
-                        // current WiFi
-                        deviceState.networks.current.ssid = wifi.ssid;
-                        deviceState.networks.current.security = wifi.security;
-                        deviceState.networks.current.quality = wifi.quality;
-                        deviceState.networks.current.channel = wifi.channel;
-                        available().subscribe((network: WiFiNetwork) => {
-                                const found = deviceState.networks.available.find((n) =>
-                                            n.ssid === network.ssid && n.channel === network.channel);
-                                if (found) {
-                                  found.quality = network.quality;
-                                  found.security = network.security;
-                                } else {
-                                  deviceState.networks.available.push(reactive(
-                                  {   ssid: ref(network.ssid),
-                                      security: ref(network.security),
-                                      quality: ref(network.quality),
-                                      channel: ref(network.channel),
-                                  }));
-                                }
-                        });
-                        log.info('device-stepper-content-step1 deviceState= %s', JSON.stringify(deviceState));
-                        actionDone();
-                        nextStep();
-                  })
-                  .catch((e: Error) => {
-                      log.error('device-stepper-content-step1.Received invalid wifi configuration');
-                      actionError(e.message);
-                  });
-              })
-              .catch((e) => {
-                log.error('device-stepper-content-step1.Received invalid device configuration');
-                actionError(e);
-              });
-          }).catch((e) => {
-                log.info('device-stepper-content-step1 Cannot connect to BLE device');
-                actionError(e);
+        await connectDevice();
+        actionDone();
+        await retriveDeviceData();
+        const existingDevice = Vue.$store.devices.all
+        .filter((dev) => dev.deviceID === deviceState.deviceData.deviceID );
+        if (existingDevice.length === 0) {
+          log.info('device-stepper-content-step1.scan: - create a new device?');
+          newDevice.value = true;
+        } else {
+          log.debug('device-stepper-content-step1.scan: retrieve network configuration for an existing device:' +
+                    JSON.stringify(existingDevice));
+          await retrieveCurrentWiFiNetwork();
+          await retrieveAvailableWiFiNetworks();
+          actionDone();
+          nextStep();
+        }
+      } catch (e) {
+        actionError(e);
+        log.info('device-stepper-content-step1.scan Cannot connect to BLE device');
+      }
+    }
+    async function connectDevice() {
+        log.info('device-stepper-content-step1.connectDevice');
+        const status = await connect();
+    }
+    async function retriveDeviceData() {
+      const MaxRetries = 1;
+      let retries = 0;
+      let done = false;
+      while (retries <= MaxRetries && !done) {
+        try {
+          const deviceConfig = await device().readValue();
+          log.info('device-stepper-content-step1.retriveDeviceData: device data read');
+          resetDeviceState();
+          // Device data
+          deviceState.deviceData.name = deviceConfig.name;
+          deviceState.deviceData.deviceID = deviceIDOf(deviceConfig.key);
+          deviceState.deviceData.key = deviceConfig.key;
+          deviceState.deviceData.color = deviceConfig.color;
+          done = true;
+        } catch (e) {
+            if (retries < MaxRetries) {
+              retries = retries + 1;
+              await connectDevice();
+              log.info('device-stepper-content-step1.retriveDeviceData: retrying');
+            } else {
+              log.error('device-stepper-content-step1.retriveDeviceData: invalid device data');
+              actionError(e);
+              return;
+            }
+        }
+      }
+    }
+    async function retrieveCurrentWiFiNetwork() {
+      try {
+        const wifi = await current().readValue();
+        deviceState.networks.current.ssid = wifi.ssid;
+        deviceState.networks.current.security = wifi.security;
+        deviceState.networks.current.quality = wifi.quality;
+        deviceState.networks.current.channel = wifi.channel;
+        log.info('device-stepper-content-step1.retrieveCurrentWiFiNetwork deviceState= %s',
+                  JSON.stringify(deviceState));
+      } catch (e) {
+        log.error('device-stepper-content-step1.retrieveCurrentWiFiNetwork: ' + e);
+      }
+    }
+    async function retrieveAvailableWiFiNetworks() {
+      const MaxRetries = 1;
+      let retries = 0;
+      let done = false;
+      while (retries <= MaxRetries && !done) {
+        try {
+          available().subscribe((network: WiFiNetwork) => {
+              const found = deviceState.networks.available.find((n) =>
+                          n.ssid === network.ssid && n.channel === network.channel);
+              if (found) {
+                found.quality = network.quality;
+                found.security = network.security;
+              } else {
+                deviceState.networks.available.push(reactive(
+                {   ssid: ref(network.ssid),
+                    security: ref(network.security),
+                    quality: ref(network.quality),
+                    channel: ref(network.channel),
+                }));
+              }
           });
-        });
+          done = true;
+        } catch (e) {
+            if (retries < MaxRetries) {
+              retries += 1;
+              await connect();
+              log.info('device-stepper-content-step1.retrieveAvailableWiFiNetworks: retrying');
+            } else {
+              log.error('device-stepper-content-step1.retrieveAvailableWiFiNetworks: invalid device configuration');
+              actionError(e);
+            }
+        }
+      }
+      log.info('device-stepper-content-step1 deviceState= %s', JSON.stringify(deviceState));
+    }
+    const writeDeviceConfiguration = () => {
+      try {
+        device().writeValue(deviceState.deviceData);
       } catch {
-              actionError('No devices found');
-              log.info('No devices found, do something');
+        log.error('device-stepper-content-step1: cannot write deviceData=' + JSON.stringify(deviceState.deviceData));
       }
     };
-
+    const nextStep = () => {
+      context.emit('forward', deviceState);
+    };
+    async function deviceCreated(event: Device) {
+      deviceState.deviceData.deviceID = event.deviceID;
+      deviceState.deviceData.key = event.key;
+      await writeDeviceConfiguration();
+      await retrieveCurrentWiFiNetwork();
+      await retrieveAvailableWiFiNetworks();
+      actionDone();
+      nextStep();
+    }
     const ready = computed(() => isActionsDone && connected);
-
     const cancel = () => {
       disconnect();
       resetActions();
       context.emit('cancel', deviceState);
-    };
-    const nextStep = () => {
-      context.emit('forward', deviceState);
     };
     onMounted(() => {
       log.info('device-stepper-content-step1.mounted!');
@@ -260,8 +325,9 @@ export default defineComponent({
       log.info('device-stepper-content-step1.onActivated!');
     });
 
-    return {  connecting, connected, deviceState, disconnect, disconnecting, disconnected, ready, scan,
-               cancel, nextStep, action, actions, isActionsDone, isFirstActionStarted, isActionStarted };
+    return {  connecting, connected, deviceState, disconnect, disconnecting, disconnected, newDevice,
+              ready, scan, deviceCreated, newDeviceName,
+              cancel, nextStep, action, actions, isActionsDone, isFirstActionStarted, isActionStarted };
   },
 });
 </script>

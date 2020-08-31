@@ -29,18 +29,20 @@ export class AvailableWiFiCharacteristic {
             reject('Invalid wifi data');
           }
         } catch {
-            reject('Cannot parse current wifi data');
+            reject('Cannot parse available wifi data');
         }
+      })
+      .catch(() => {
+        reject('Cannot retrieve available wifi configuration');
       });
     });
   }
 
-  public subscribe(listener: Listener): void {
-    log.debug('available-wifi-characteristics.readValue');
+  public async subscribe(listener: Listener): Promise<void> {
+    log.debug('available-wifi-characteristics.subscribe');
     this.listener = listener;
-    this.characteristic.startNotifications().then((characteristic) => {
-        characteristic.addEventListener('characteristicvaluechanged', this.handleNotifications.bind(this));
-    });
+    const characteristic = await this.characteristic.startNotifications();
+    characteristic.addEventListener('characteristicvaluechanged', this.handleNotifications.bind(this));
   }
   public unsubscribe(): void {
     this.characteristic.stopNotifications().then(() => this.listener = undefined);
@@ -57,7 +59,7 @@ export class AvailableWiFiCharacteristic {
         }
       }
     } catch {
-      log.error('available-wifi-characteristics.handleNotifications, parse value ');
+      log.error('available-wifi-characteristics.handleNotifications, parse value: ');
     }
 
   }

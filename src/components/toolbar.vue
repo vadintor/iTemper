@@ -29,10 +29,10 @@
             <v-btn  v-if="state.user.isLoggedOut()" outlined class="signlog" @click="signup">Sign up</v-btn>
             <v-btn  v-if="state.user.isLoggedOut()" transition="scale-transition" outlined class="signlog" @click="login">Login</v-btn>
             <v-chip ripple
-                v-if="state.user.isLoggedIn()" 
-                transition="scale-transition"  
+                v-if="state.user.isLoggedIn()"
+                transition="scale-transition"
                 color="#2591E9"
-                class="signlog" 
+                class="signlog"
                 close
                  @click:close="logout">
                     <v-icon>fa-user</v-icon>

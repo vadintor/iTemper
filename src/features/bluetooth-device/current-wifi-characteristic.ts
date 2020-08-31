@@ -27,11 +27,14 @@ export class CurrentWiFiCharacteristic {
           if (isWiFiDataValid(data)) {
             resolve(data as WiFiNetwork);
           } else {
-            reject('Invalid wifi data');
+            reject('Cannot validate current wifi configuration' + str);
           }
         } catch {
-            reject('Cannot parse current wifi data');
+            reject('Cannot parse current wifi configuration: ' + str);
         }
+      })
+      .catch(() => {
+        reject('Cannot retrieve current wifi configuration');
       });
     });
   }

@@ -25,7 +25,7 @@ import { router } from '@/helpers';
 })
 export default class LoginPage extends Vue {
     public store = Vue.$store;
-    public returnUrl: any;
+    public returnUrl = '/';
 
     public login(status: Status) {
         this.store.notice.publish('Welcome to itemper!');

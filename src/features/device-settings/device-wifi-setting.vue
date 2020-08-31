@@ -5,8 +5,8 @@
             <v-col cols="1">
             <v-icon :color="wifiIconColor">mdi-wifi</v-icon>
             </v-col>
-            <v-col cols="9">Wi-Fi</v-col>
-            <v-col cols="1">
+            <v-col cols="7">Wi-Fi</v-col>
+            <v-col cols="4">
             <v-fab-transition leave-absolute v-if="!open">
                 <span v-if="wifiOn" key="ssid">{{wifi.ssid}}
                 </span>
@@ -17,9 +17,9 @@
         </v-row>
         </v-expansion-panel-header>
         <v-expansion-panel-content>
-        <v-row justify="left" no-gutters>
+        <v-row no-gutters>
             <v-col cols="1"></v-col>
-            <v-col cols="3">
+            <v-col cols="11">
             <v-switch v-model="wifiOn" @change="switchChanged" inset>
                 <template v-slot:label>
                 <span v-if="wifiOn">On</span>
@@ -28,7 +28,7 @@
             </v-switch>
             </v-col>
         </v-row>
-        <v-row justify="left" no-gutters>
+        <v-row no-gutters>
             <v-col cols="1"></v-col>
             <v-col cols="11">
             <v-list>
@@ -129,7 +129,7 @@ import useDeviceState from '../devices/use-device-state';
 import { WiFiNetwork } from '../devices//device-data';
 
 export default defineComponent({
-  name: 'WiFiSetting',
+  name: 'DeviceWiFiSetting',
   components: {},
 
   setup(props, context) {
@@ -197,7 +197,7 @@ export default defineComponent({
     const securityText = (security: string) => {
         return isSecured(security) ? security : 'Open network';
     };
-    log.debug('wifi-setting.setup');
+    log.debug('device-wifi-setting.setup');
     return {connecting, deviceState, connectWiFi, dialog, isSecured, otherNetworks, resetPassword,
             password, secured, securityText, showPassword, selectedNetworkIndex, selectNetwork,
             switchChanged, network, wifi, wifiIconColor, wifiOn, selectedNetwork} ;

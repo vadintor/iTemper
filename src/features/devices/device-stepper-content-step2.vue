@@ -1,5 +1,5 @@
 <template>
-        <v-stepper-content step="2">
+        <v-stepper-content step="2" transition="scroll-x-transition">
 
             <v-card
             class="mb-12"
