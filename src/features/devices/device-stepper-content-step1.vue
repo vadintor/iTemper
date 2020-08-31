@@ -4,7 +4,11 @@
           class="mb-12"
           color="grey lighten-1"
         >
-            <new-device :name="newDeviceName" v-model="newDevice" @created="deviceCreated"/>
+            <new-device
+              :name="newDeviceName"
+              :color="newDeviceColor"
+              v-model="newDevice"
+              @created="deviceCreated"/>
             <div v-if="connected && isActionsDone">
                 <v-card-title  class="headline">
                     <v-row>
@@ -59,7 +63,6 @@
                         </v-list-item>
                       </v-list-item-group>
                     </v-list>
-
                 </v-card-text>
                 <v-card-actions>
                     <v-btn :disabled="connecting" text color="primary" @click="scan()">
@@ -103,7 +106,7 @@ export default defineComponent({
   components: { NewDevice },
 
   setup(props, context) {
-    const {deviceState, resetDeviceState } = useDeviceState();
+    const { deviceState, resetDeviceState } = useDeviceState();
     const  { btStatus, connecting, connected, connect, disconnected,
               disconnect, disconnecting, current, device, available } = useBluetooth();
     const newDevice = ref(false);
@@ -165,6 +168,7 @@ export default defineComponent({
       actions[currentAction.value].error = true;
     };
     const newDeviceName = computed(() => deviceState.deviceData.name);
+    const newDeviceColor = computed(() => deviceState.deviceData.color);
     const isFirstActionStarted = computed(() => {
       const firstAction = actions[0];
       return firstAction.loading || firstAction.done || firstAction.error;
@@ -312,21 +316,9 @@ export default defineComponent({
       resetActions();
       context.emit('cancel', deviceState);
     };
-    onMounted(() => {
-      log.info('device-stepper-content-step1.mounted!');
-    });
-    onBeforeUpdate(() => {
-      log.info('device-stepper-content-step1.onBeforeUpdate!');
-    });
-    onUnmounted(() => {
-     log.info('device-stepper-content-step1.onUnmounted!');
-    });
-    onActivated(() => {
-      log.info('device-stepper-content-step1.onActivated!');
-    });
 
     return {  connecting, connected, deviceState, disconnect, disconnecting, disconnected, newDevice,
-              ready, scan, deviceCreated, newDeviceName,
+              ready, scan, deviceCreated, newDeviceName, newDeviceColor,
               cancel, nextStep, action, actions, isActionsDone, isFirstActionStarted, isActionStarted };
   },
 });

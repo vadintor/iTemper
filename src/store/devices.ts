@@ -34,7 +34,7 @@ export class Devices  {
             response.forEach((device) => {
                 const deviceFound = this.mDevices.find((d) => d.deviceID === device.deviceID);
                 if (!deviceFound) {
-                    const newDevice = new Device(device.name, device.deviceID);
+                    const newDevice = new Device(device.name, device.color, device.deviceID);
                     newDevice.key = device.key;
                     this.mDevices.push(newDevice);
                 }
@@ -42,12 +42,12 @@ export class Devices  {
         })
         .catch((e) => this.handleError(e));
     }
-    public createDevice(name: string): Promise<Device> {
+    public createDevice(name: string, color: string): Promise<Device> {
         this.resetError();
         return new Promise ((resolve, reject) => {
-            this.deviceService.createDevice(name)
+            this.deviceService.createDevice(name, color)
             .then((response) => {
-                const newDevice = new Device(response.name, response.deviceID);
+                const newDevice = new Device(response.name, response.color, response.deviceID);
                 newDevice.key = response.key;
                 this.all.push(newDevice);
                 resolve(newDevice);
@@ -65,6 +65,22 @@ export class Devices  {
                     reject({status: 95, message: 'Device id not available'});
                 } else {
                     thisDevice.name = response.name;
+                    resolve(thisDevice);
+                }
+            } )
+            .catch((e) => this.handleError(e));
+        });
+    }
+    public updateColor(color: string, device: Device): Promise<Device> {
+        return new Promise((resolve, reject) => {
+            this.resetError();
+            this.deviceService.updateColor(color, device)
+            .then((response: DeviceData) => {
+                const thisDevice = this.all.find((d) => d.deviceID === response.deviceID);
+                if (!thisDevice) {
+                    reject({status: 95, message: 'Device id not available'});
+                } else {
+                    thisDevice.color = response.color;
                     resolve(thisDevice);
                 }
             } )

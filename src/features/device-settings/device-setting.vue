@@ -1,5 +1,5 @@
 <template>
-    <v-expansion-panel>
+    <v-expansion-panel  @change="onChange">
         <v-expansion-panel-header v-slot="{ open }">
             <v-row no-gutters>
                 <v-col cols="1">
@@ -8,8 +8,10 @@
                 <v-col cols="7" v-text="name"/>
                 <v-col cols="4">
                     <v-fab-transition leave-absolute v-if="!open">
-                        <span v-if="isOn" v-text="value"/>
-                        <span v-else v-text="off"/>
+                        <slot name="header">
+                            <span v-if="isOn" v-text="value"/>
+                            <span v-else v-text="off"/>
+                        </slot>
                     </v-fab-transition>
                 </v-col>
             </v-row>
@@ -59,8 +61,11 @@ export default defineComponent({
         },
   },
   setup(props, context) {
+    const onChange = () => {
+        context.emit('change');
+    };
     log.debug('DeviceSetting.setup');
-    return {};
+    return { onChange };
   },
 });
 </script>

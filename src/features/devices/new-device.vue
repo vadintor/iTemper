@@ -60,6 +60,7 @@ export default defineComponent({
     inheritAttrs: false,
     props: {
         name: { type: String, required: true },
+        color: { type: String, required: true },
         value: { type: Boolean, default: false },
     },
     setup(props, context) {
@@ -72,7 +73,7 @@ export default defineComponent({
                 displayError('Device form not valid');
                 return;
             } else {
-                createDevice(props.name);
+                createDevice(props.name, props.color);
             }
         };
         const close = () => {
@@ -81,10 +82,10 @@ export default defineComponent({
         const error = (): boolean => {
             return errorMsg.value !== '';
         };
-        const createDevice = (name: string) => {
+        const createDevice = (name: string, color: string) => {
             log.debug('device-api-key-dialogue.createDevice');
             submitted.value = true;
-            Vue.$store.devices.createDevice(name)
+            Vue.$store.devices.createDevice(name, color)
             .then((device: Device) => {
                 submitted.value = false;
                 deviceKey.value = device.key;

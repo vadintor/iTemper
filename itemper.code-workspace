@@ -16,5 +16,7 @@
 			"path": "..\\composition-api"
 		}
 	],
-	"settings": {}
+	"settings": {
+		"maven.view": "flat"
+	}
 }

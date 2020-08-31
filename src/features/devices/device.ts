@@ -7,10 +7,11 @@ export class Device {
     private mName: string = '';
     private mDeviceID: string = '';
     private mKey: string = '';
+    private mColor: string = '';
     private mColorID: number = 0;
     private keyStorage: Storage<string>;
 
-    constructor(name: string, id: string) {
+    constructor(name: string, color: string, id: string) {
         this.mName = name;
         this.mDeviceID = id;
         this.mColorID = Math.floor(Math.random() * 6);
@@ -25,6 +26,12 @@ export class Device {
     }
     public set name(value: string) {
         Vue.set(this, 'mName', value);
+    }
+    public get color(): string {
+        return this.mColor;
+    }
+    public set color(value: string) {
+        Vue.set(this, 'mColor', value);
     }
     public get deviceID(): string {
         return this.mDeviceID;
@@ -46,6 +53,6 @@ export class Device {
         Vue.set(this, 'mColorID', value);
     }
     public toDeviceData(): DeviceData {
-        return {name: this.name, deviceID: this.deviceID, key: this.key };
+        return {name: this.name, color: this.color, deviceID: this.deviceID, key: this.key };
     }
 }

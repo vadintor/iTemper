@@ -55,7 +55,7 @@ export default defineComponent({
                    displayError('Cannot copy key to clipboard');
             }
         };
-        return { isOn, setting, errorMsg };
+        return { isOn, setting, errorMsg, copy };
     },
 });
 </script>

@@ -1,90 +1,78 @@
 <template>
         <v-stepper-content step="2" transition="scroll-x-transition">
-
             <v-card
             class="mb-12"
-            color="grey lighten-1"
+            color="blue lighten-1"
             >
-            <v-card-text>
-                  <device-settings-list/>
-            </v-card-text>
+                <v-card-text>
+                    <device-settings-list>
+                        <DeviceNameSetting/>
+                        <DeviceColorSetting 
+                            :value="deviceState.deviceData.color"
+                            @input="syncColor"
+                        />
+                        <DeviceApiKeySetting/>
+                        <DeviceWiFiSetting/>
+                    </device-settings-list>
+                </v-card-text>
+                <v-card-actions>
+                  <v-btn text @click="stepBack">Back</v-btn>
+                  <v-btn  v-if="updated" color="primary" @click="nextStep">Continue</v-btn>
+                </v-card-actions>
             </v-card>
-            <v-btn text @click="stepBack">Back</v-btn>
-            <v-btn  v-if="updated" color="primary" @click="nextStep">Continue</v-btn>
         </v-stepper-content>
 </template>
 <script lang="ts">
-import { onMounted, onBeforeUpdate, onUnmounted, onActivated, watchEffect } from '@vue/composition-api';
-import { Vue } from 'vue-property-decorator';
-import { ref, reactive, defineComponent, computed, watch, toRefs, toRef } from '@vue/composition-api';
-
-import { SensorData, Category } from '@/models/sensor-data';
-import { DeviceState, WiFiNetwork } from './device-data';
-import { isDeviceStateValid} from './device-data-validators';
-import useDeviceState from './use-device-state';
+import { ref, defineComponent} from '@vue/composition-api';
+import { DeviceData } from './device-data';
 import { useBluetooth } from './use-bluetooth';
+import useDeviceState from './use-device-state';
 
 import DeviceSettingsList from '@/features/device-settings/device-settings-list.vue';
+import DeviceNameSetting from '@/features/device-settings/device-name-setting.vue';
+import DeviceColorSetting from '@/features/device-settings/device-color-setting.vue';
+import DeviceApiKeySetting from '@/features/device-settings/device-api-key-setting.vue';
+import DeviceWiFiSetting from '@/features/device-settings/device-wifi-setting.vue';
 import { log } from '@/services/logger';
 
 export default defineComponent({
   name: 'DeviceStepperContentStep2',
-  components: { DeviceSettingsList },
+  components: {
+      DeviceSettingsList,
+      DeviceNameSetting,
+      DeviceColorSetting,
+      DeviceApiKeySetting,
+      DeviceWiFiSetting,
+  },
 
   setup(props, context) {
-    const { deviceState } = useDeviceState();
-    const { device, current, available } = useBluetooth();
-    const select = ref({});
-    const password = ref('');
-    const showPassword = ref(false);
+    const { deviceState, resetDeviceState } = useDeviceState();
+    const  { btStatus, connecting, connected, connect, disconnected,
+              disconnect, disconnecting, current, device, available } = useBluetooth();
+    const loading = ref(false);
     const updated = ref(false);
-    const ssids = computed(() => deviceState.networks.available);
-    const networks = computed(() => deviceState.networks.current);
-    const isSecure = (ssid: string): boolean => {
-      const selected = deviceState?.networks?.available.find((network: WiFiNetwork) => network.ssid === ssid);
-      return !!selected && selected.security !== 'Open';
-    };
-    const prependIcon = (ssid: string): string =>  {
-       return isSecure(ssid) ? 'fa-lock' : 'fa-unlock';
-    };
-    const configure = () => {
-        setTimeout(() => {
-        // const current = deviceState?.networks?.available.find((network: WiFiData) => network.ssid === select.value);
-        }, 3_000);
-    };
-    const hint = (network: WiFiNetwork) => {
-      return 'Security: ' + network.security;
-    };
+
+    async function syncColor(event: string) {
+      const cached = deviceState.deviceData.color.slice();
+      try {
+            loading.value = true;
+            deviceState.deviceData.color = event.slice();
+            await device().writeValue(deviceState.deviceData);
+        } catch {
+            deviceState.deviceData.color = cached;
+        } finally {
+          loading.value = false;
+        }
+    }
     const stepBack = () => {
       log.info('device-stepper-content-step2.stepBack', JSON.stringify(deviceState));
       context.emit('backward', deviceState);
     };
-    const sync = () => {
-      const Wificonfig = { ssid: 'ssid', password: password.value };
-      current().writeValue(Wificonfig)
-      .then(() => {
-        updated.value = true;
-      });
-    };
     const nextStep = () => {
           available().unsubscribe();
-          const Wificonfig = { ssid: select.value, password: password.value };
-          context.emit('forward', Wificonfig);
+          context.emit('forward');
     };
-    onMounted(() => {
-          log.info('device-stepper-content-step2.mounted, deviceState', JSON.stringify(deviceState));
-    });
-    onBeforeUpdate(() => {
-      log.info('device-stepper-content-step2.onBeforeUpdate!');
-    });
-    onUnmounted(() => {
-     log.info('device-stepper-content-step2.onUnmounted!');
-    });
-    onActivated(() => {
-      log.info('device-stepper-content-step2.onActivated!');
-    });
-    return { deviceState, select, ssids, configure, hint, isSecure, updated,
-              stepBack, nextStep, networks, password, showPassword, prependIcon };
+    return { deviceState, loading, updated, stepBack, nextStep};
   },
 });
 </script>
