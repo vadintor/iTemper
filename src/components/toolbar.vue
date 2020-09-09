@@ -81,7 +81,7 @@ export default defineComponent({
         const showNewLocationDialogue = ref(true);
         const  menuItems = [
             { action: 'fa-home', title: 'Platser',  color: 'blue-grey darken-2', route: 'locations' },
-            { action: 'fa-broadcast-tower', title: 'Enheter',  color: 'blue-grey darken-2', route: 'devices' },
+            { action: 'fa-hockey-puck', title: 'Enheter',  color: 'blue-grey darken-2', route: 'devices' },
             { action: 'fa-wifi', title: 'Givare',  color: 'blue-grey darken-2', route: 'sensors' },
             { action: 'fa-cog', title: 'Inställningar', color: 'blue-grey darken-2', route: 'settings' },
             { action: 'fa-hammer', title: 'System', color: 'blue-grey darken-2', route: 'admin' },

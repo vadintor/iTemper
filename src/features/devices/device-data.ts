@@ -10,6 +10,10 @@ export interface DeviceData {
 }
 export type WiFiData = WiFiNetwork;
 
+export interface WiFiWriteData  {
+     ssid: string;
+     password: string;
+ }
 export interface WiFiNetwork {
      ssid: string;
      security: string;

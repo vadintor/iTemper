@@ -1,15 +1,10 @@
 import { log } from '@/services/logger';
 import * as ble from './bluetooth-service';
-import { WiFiData, WiFiNetwork } from '@/features/devices/device-data';
+import { WiFiData, WiFiNetwork, WiFiWriteData } from '@/features/devices/device-data';
 import { isWiFiDataValid } from '@/features/devices/device-data-validators';
-
+import { getUuid, UUID_Designator} from './ble-uuid';
 // SSID (read/write), Encryption (read/write), Password (write)
-export const CurrentWiFiCharacteristicUUID = 'd7e84cb2-ff37-4afc-9ed8-5577aeb84541';
-
-export interface WiFiWriteData  {
-    ssid: string;
-    password: string;
-}
+export const CurrentWiFiCharacteristicUUID = getUuid(UUID_Designator.CurrentWiFi);
 
 export class CurrentWiFiCharacteristic {
   private characteristic: BluetoothRemoteGATTCharacteristic;

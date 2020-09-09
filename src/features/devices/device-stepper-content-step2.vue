@@ -2,29 +2,38 @@
         <v-stepper-content step="2" transition="scroll-x-transition">
             <v-card
             class="mb-12"
-            color="blue lighten-1"
             >
                 <v-card-text>
                     <device-settings-list>
-                        <DeviceNameSetting/>
-                        <DeviceColorSetting 
-                            :value="deviceState.deviceData.color"
-                            @input="syncColor"
+                        <DeviceWiFiSetting
+                          :value="deviceState.networks.current"
+                          :networks="deviceState.networks.available"
+                          @connect="syncCurrentNetwork"
+                          @switch="switchChanged"
                         />
-                        <DeviceApiKeySetting/>
-                        <DeviceWiFiSetting/>
+                        <DeviceNameSetting
+                          :value="deviceState.deviceData.name"
+                          @input="syncColor"
+                          />
+                        <DeviceApiKeySetting
+                          :value="deviceState.deviceData.key"
+                        />
+                        <DeviceColorSetting 
+                          :value="deviceState.deviceData.color"
+                          @input="syncColor"
+                        />
                     </device-settings-list>
                 </v-card-text>
                 <v-card-actions>
-                  <v-btn text @click="stepBack">Back</v-btn>
-                  <v-btn  v-if="updated" color="primary" @click="nextStep">Continue</v-btn>
                 </v-card-actions>
             </v-card>
+            <v-btn text @click="stepBack">Back</v-btn>
+            <v-btn color="primary" @click="nextStep">Continue</v-btn>
         </v-stepper-content>
 </template>
 <script lang="ts">
 import { ref, defineComponent} from '@vue/composition-api';
-import { DeviceData } from './device-data';
+import { DeviceData, WiFiWriteData } from './device-data';
 import { useBluetooth } from './use-bluetooth';
 import useDeviceState from './use-device-state';
 
@@ -64,6 +73,34 @@ export default defineComponent({
           loading.value = false;
         }
     }
+    async function retrieveCurrentWiFiNetwork() {
+      try {
+        const wifi = await current().readValue();
+        deviceState.networks.current.ssid = wifi.ssid;
+        deviceState.networks.current.security = wifi.security;
+        deviceState.networks.current.quality = wifi.quality;
+        deviceState.networks.current.channel = wifi.channel;
+        log.info('device-stepper-content-step2.retrieveCurrentWiFiNetwork deviceState=' +
+                  JSON.stringify(deviceState));
+      } catch (e) {
+        log.error('device-stepper-content-step2.retrieveCurrentWiFiNetwork: e=' + e);
+      }
+    }
+    async function syncCurrentNetwork(newWiFi: WiFiWriteData) {
+      try {
+          log.debug('device-stepper-content-step2.syncCurrentNetwork: newWiFi=' + JSON.stringify(newWiFi));
+          loading.value = true;
+          await current().writeValue(newWiFi);
+          await retrieveCurrentWiFiNetwork();
+        } catch (e) {
+             log.error('device-stepper-content-step2.syncCurrentNetwork: e=' + e);
+        } finally {
+          loading.value = false;
+        }
+    }
+    const switchChanged = (switchedOn: boolean) => {
+      if (!switchedOn) { deviceState.networks.current.ssid = ''; }
+    };
     const stepBack = () => {
       log.info('device-stepper-content-step2.stepBack', JSON.stringify(deviceState));
       context.emit('backward', deviceState);
@@ -72,7 +109,7 @@ export default defineComponent({
           available().unsubscribe();
           context.emit('forward');
     };
-    return { deviceState, loading, updated, stepBack, nextStep};
+    return { deviceState, loading, updated, stepBack, syncColor, nextStep, switchChanged, syncCurrentNetwork};
   },
 });
 </script>

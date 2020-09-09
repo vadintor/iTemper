@@ -1,23 +1,21 @@
 import { log } from '@/services/logger';
 import { AvailableWiFiCharacteristicUUID, AvailableWiFiCharacteristic} from './available-wifi-characteristics';
+import { getUuid, UUID_Designator} from './ble-uuid';
 import { CurrentWiFiCharacteristicUUID, CurrentWiFiCharacteristic} from './current-wifi-characteristic';
-import { DeviceCharacteristicUUID, DeviceCharacteristic} from './device-characteristic';
-import { EventEmitter } from 'events';
-import { rejects } from 'assert';
-import { runInThisContext } from 'vm';
+import { DeviceInfoCharacteristicUUID, DeviceInfoCharacteristic} from './device-info-characteristic';
 
 const DeviceServiceUUID = 0xfff1;
 
 const DeviceOptions = {
   filters: [
     {
-      name: 'itemperBLE',
+      namePrefix: 'itemper',
     },
   ],
   optionalServices: [DeviceServiceUUID],
 };
 export interface BtCharacteristics {
-  device: DeviceCharacteristic;
+  device: DeviceInfoCharacteristic;
   current: CurrentWiFiCharacteristic;
   available: AvailableWiFiCharacteristic;
 }
@@ -31,63 +29,88 @@ export class BtService {
   }
 
   public async getCharacteristics(): Promise<BtCharacteristics> {
-      const MAX_RETRIES = 3;
       try {
-        if (!this.isPaired()) {
-          await this.pairDevice();
-        }
+        const btDevice = await this.pairDevice();
         this.onChanged(BtStatus.Connecting);
-        const service = await this.connect();
-        const device = await this.getDevice(service);
+        const service = await this.getService(btDevice);
+        const device = await this.getDeviceInfo(service);
         const current = await this.getCurrentWiFi(service);
         const available = await this.getAvailableWiFi(service);
         this.onChanged(BtStatus.Connected);
-        log.debug('bluetooth-service.getCharacteristics resolved');
+        log.info('bluetooth-service.getCharacteristics all itemper services connected');
+        this.btDevice = btDevice;
         return { device, current, available };
 
-      } catch {
-        throw new Error ('Cannot pair bluetooth device');
+      } catch (e) {
+        log.error('bluetooth-service.getCharacteristics: ' + e);
+        throw Error('Cannot get Bluetooth characteristics');
       }
   }
-    // disconnect from peripheral
-    public disconnect() {
-      this.onChanged(BtStatus.Disconnecting);
-      log.debug('bluetooth-service.disconnect');
-      if (this.btDevice && this.btDevice.gatt) {
-        return this.btDevice.gatt.disconnect();
+  public get name() {
+    if (this.btDevice) {
+      if (this.btDevice.name) {
+        return this.btDevice.name;
+      } else {
+        return this.btDevice.id;
       }
+    } else {
+      return '';
     }
+  }
+  // disconnect from peripheral
+  public disconnect() {
+    this.onChanged(BtStatus.Disconnecting);
+    if (this.btDevice && this.btDevice.gatt && this.btDevice.gatt.connected) {
+        this.btDevice.gatt.disconnect();
+    } else {
+      log.info('bluetooth-service.disconnect: not connected');
+      this.onChanged(BtStatus.Disconnected);
+    }
+  }
   private onDisconnected() {
-    this.btDevice = undefined;
     this.onChanged(BtStatus.Disconnected);
-  }
-  private async pairDevice() {
-    try {
-        this.btDevice = await navigator.bluetooth.requestDevice(DeviceOptions);
-        this.btDevice.addEventListener('gattserverdisconnected', this.onDisconnected.bind(this));
-    } catch {
-      throw new Error ('Cannot pair bluetooth device');
-    }
+    log.info('bluetooth-service.onDisconnected');
   }
   private isPaired() {
     return this.btDevice && this.btDevice.gatt;
   }
-  // request connection to a device remote GATT service
-  private async connect(): Promise<BluetoothRemoteGATTService> {
-      const MAX_RETRIES = 3;
-      if (this.btDevice && this.btDevice.gatt && !this.btDevice.gatt.connected) {
-          const server = await this.btDevice.gatt.connect();
-          return await server.getPrimaryService(DeviceServiceUUID);
-      } else {
-        throw new Error ('No bluetooth GATT service available');
-      }
-  }
-  private async getDevice(service: BluetoothRemoteGATTService): Promise<DeviceCharacteristic> {
+  private async pairDevice(): Promise<BluetoothDevice> {
     try {
-      const characteristic = await service.getCharacteristic(DeviceCharacteristicUUID);
-      return new DeviceCharacteristic(characteristic);
+        const btDevice =  await navigator.bluetooth.requestDevice(DeviceOptions);
+        btDevice.addEventListener('gattserverdisconnected', this.onDisconnected.bind(this));
+        log.info('bluetooth-service.getCharacteristics: successfully paired device ' + btDevice.name);
+        return btDevice;
+      } catch (e) {
+        log.error('bluetooth-service.pairDevice: ' + e);
+        throw new Error ('Cannot pair bluetooth device');
+    }
+  }
+  // request connection to a device remote GATT service
+  private async getService(btDevice: BluetoothDevice): Promise<BluetoothRemoteGATTService> {
+    return new Promise((resolve, reject) => {
+      if (btDevice.gatt) {
+        log.info('bluetooth-service.connect: connecting to GATT server, connected=' + btDevice.gatt.connected);
+        btDevice.gatt.connect()
+        .then((server) => {
+          log.info('bluetooth-service.connect: GATT server connected=' + server.connected);
+          return server.getPrimaryService(DeviceServiceUUID);
+        })
+        .then((service) => {
+            log.info('bluetooth-service.connect: connected to GATT service');
+            resolve(service);
+          })
+        .catch(() => reject('Cannot get primary service'));
+      } else {
+        reject('No GATT server found');
+      }
+    });
+  }
+  private async getDeviceInfo(service: BluetoothRemoteGATTService): Promise<DeviceInfoCharacteristic> {
+    try {
+      const characteristic = await service.getCharacteristic(DeviceInfoCharacteristicUUID);
+      return new DeviceInfoCharacteristic(characteristic);
     } catch {
-      throw new Error ('Cannot get device characteristics');
+      throw new Error ('Cannot get device info characteristics');
     }
   }
   private async getCurrentWiFi(service: BluetoothRemoteGATTService): Promise<CurrentWiFiCharacteristic> {
@@ -139,7 +162,7 @@ async function run<T>(MaxRetries: number, fn: (...args: any[]) => Promise<T>, ..
     } catch (e) {
       log.error('bluetooth-services.run: ' + JSON.stringify(e));
       if (retries < MaxRetries) {
-        await delay(1_000 + retries * 2_000 * Math.random());
+        await delay(1000 * Math.pow(2, retries));
       }
       retries += 1;
     }

@@ -1,5 +1,8 @@
 <template>
-    <device-setting name="Shared access key" :value=setting :isOn="isOn">
+    <device-setting
+        name="Shared access key"
+        :icon="settingIcon"
+        :value=setting :isOn="isOn">
         <div v-if="isOn">
             <p>
                 <span   class="d-inline-block text-truncate" 
@@ -19,7 +22,6 @@
 <script lang="ts">
 import { computed, defineComponent, onMounted, reactive, Ref, ref, UnwrapRef, watch, watchEffect } from '@vue/composition-api';
 import { log } from '@/services/logger';
-import useDeviceState from '../devices/use-device-state';
 import DeviceSetting from './device-setting.vue';
 import ErrorMessage from '@/components/error-message.vue';
 
@@ -43,9 +45,16 @@ export function useErrorMessage() {
 export default defineComponent({
     name: 'DeviceApiKeySetting',
     components: { DeviceSetting, ErrorMessage },
+    props: {
+            value: {
+                type: String,
+                required: true,
+            },
+            loading: { type: Boolean, default: false},
+    },
     setup(props, context) {
-        const { deviceState } = useDeviceState();
-        const setting = computed(() => deviceState.deviceData.key);
+        const setting = computed(() => props.value);
+        const settingIcon = ref('fa-key');
         const isOn = computed(() => setting.value !== '');
 
         const { errorMsg, displayError } = useErrorMessage();
@@ -55,7 +64,7 @@ export default defineComponent({
                    displayError('Cannot copy key to clipboard');
             }
         };
-        return { isOn, setting, errorMsg, copy };
+        return { isOn, setting, settingIcon, errorMsg, copy };
     },
 });
 </script>

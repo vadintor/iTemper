@@ -8,8 +8,8 @@
       <v-stepper-step :complete="saved()" step="3">Enable sensors</v-stepper-step>
     </v-stepper-header>
     <v-stepper-items>
-      <DeviceStepperContentStep1 @cancel="cancel"  @forward="nextStep"></DeviceStepperContentStep1>
-      <DeviceStepperContentStep2 @cancel="cancel" @backward="stepBack" @forward="nextStep"></DeviceStepperContentStep2>
+      <DeviceStepperContentStep1 @cancel="cancel"  @forward="step=2"></DeviceStepperContentStep1>
+      <DeviceStepperContentStep2 @cancel="cancel" @backward="step=1" @forward="step=3"></DeviceStepperContentStep2>
       <v-stepper-content step="3">
         <v-card
           class="mb-12"
@@ -20,7 +20,7 @@
                 <pre>{{ssid}}</pre>
             </v-card-text>
         </v-card>
-        <v-btn text @click="stepBack">Back</v-btn>
+        <v-btn text @click="step = 2">Back</v-btn>
         <v-btn color="primary" :loading="saving()" @click="submit">Save</v-btn>
       </v-stepper-content>
     </v-stepper-items>

@@ -50,26 +50,26 @@ export class ApiService implements IApiService {
         }
 }
     public register(email: string, password: string, confirmPassword: string): Promise<boolean> {
-        log.debug('ApiService.register');
+        log.debug('api-service.register');
         const url = '/signup';
         const body = JSON.stringify({email, password, confirmPassword});
         return this.post(url, body);
     }
     public login(email: string, password: string): Promise<boolean> {
-        log.debug('ApiService.login');
+        log.debug('api-service.login');
         const url = '/login';
         const body = JSON.stringify({email, password});
         return this.post(url, body);
     }
 
     public logout() {
-        log.debug('ApiService.logout');
+        log.debug('api-service.logout');
         this.token = undefined;
         this.isLoggedIn = false;
     }
 
     public request(method: Method, url: string, body?: any, config?: AxiosRequestConfig): Promise<any> {
-        log.debug('ApiService.request: ' + method.toUpperCase() + ' ' + url);
+        log.debug('api-service.request: ' + method.toUpperCase() + ' ' + url);
         return new Promise<any> ((resolve, reject) => {
             if (!this.isLoggedIn) {
                     reject('User is not logged');
@@ -91,6 +91,7 @@ export class ApiService implements IApiService {
             } else {
                 conf = {url, method, headers: Authorization, data: body};
             }
+            log.debug('api-service.request conf=', JSON.stringify(conf, undefined, 2));
             this.io.request(conf)
             .then ((response) => {
                     const data = response.data;
@@ -102,7 +103,7 @@ export class ApiService implements IApiService {
         });
     }
     public Authorization() {
-        log.debug('ApiService.Authorization');
+        log.debug('api-service.Authorization');
         if (this.token) {
             return {value: 'Bearer ' + this.token};
         } else {
@@ -124,11 +125,11 @@ export class ApiService implements IApiService {
                 message = error.response.data;
             }
         } else if (error.request) {
-            log.debug(error.request);
+            log.debug('api-service: request=' + error.request);
             message = error.request.data;
             status = error.request.status;
         } else {
-            log.debug('request Error=' + error.message);
+            log.debug('api-service.request Error=' + error.message);
         }
         return {message, status};
     }

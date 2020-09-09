@@ -2,7 +2,6 @@
         <v-stepper-content step="1" transition="scroll-x-transition">
         <v-card
           class="mb-12"
-          color="grey lighten-1"
         >
             <new-device
               :name="newDeviceName"
@@ -17,7 +16,8 @@
                     </v-row>    
                 </v-card-title>
                 <v-card-text>
-                    <v-icon color="green">fa-check</v-icon> You paired with a device. You can change the configuration below.
+                    <v-icon color="green">fa-check</v-icon> You paired with a device<span v-if="btName !==''"> ({{btName}})</span>. 
+                    You can change the configuration follwing this guide.
                 </v-card-text>
                 <v-card-actions>
                   <v-btn text color="primary" :loading="disconnecting"  @click="disconnect">Disconnect</v-btn>
@@ -27,17 +27,19 @@
                 <v-card-title  class="headline">
                   <v-row>
                     <v-col cols="1"><v-icon color="blue">fab fa-bluetooth-b</v-icon></v-col>
-                    <v-col>Search for devices</v-col>
+                    <v-col>
+                        <span v-if="btName !==''">{{btName}}</span>
+                        <span v-else>Search for device</span>
+                    </v-col>
                   </v-row>             
                   </v-card-title>  
                 <v-card-text>
-                    Turn on your iTemper device. 
-                    Click Scan!
-                    Please wait until the connection is complete.
+                    <span v-if="disconnected">Turn on your iTemper device. Click Scan and pair a device.</span>
+                    <span v-else>Please wait until the connection is complete. This may take up to 60 seconds.</span>
                     
                     <v-list flat v-if="!disconnected && isFirstActionStarted && !isActionsDone">
                       <v-subheader>Progress</v-subheader>
-                      <v-list-item-group v-model="action" color="primary">
+                      <v-list-item-group v-model="activity" color="primary">
                         <v-list-item
                           v-for="(action, i) in actions"
                           :key="i"
@@ -65,19 +67,20 @@
                     </v-list>
                 </v-card-text>
                 <v-card-actions>
-                    <v-btn :disabled="connecting" text color="primary" @click="scan()">
-                      Scan
-                      <template v-slot:loader>
-                        <span class="custom-loader">
-                          <v-icon light>fa-sync</v-icon>
-                        </span>
-                      </template>
-                    </v-btn>
                 </v-card-actions>
             </div>
         </v-card>
         <v-btn @click="cancel" text>Cancel</v-btn>
-        <v-btn  :disabled="!ready" color="primary" @click="nextStep">Continue</v-btn>
+        <v-btn :disabled="connecting" color="primary" @click="scan()">
+            Scan
+            <template v-slot:loader>
+              <span class="custom-loader">
+                <v-icon>fa-sync</v-icon>
+              </span>
+            </template>
+        </v-btn>
+        <v-btn @click="nextStep" text>Continue</v-btn>
+
         </v-stepper-content>
 </template>
 
@@ -107,22 +110,26 @@ export default defineComponent({
 
   setup(props, context) {
     const { deviceState, resetDeviceState } = useDeviceState();
-    const  { btStatus, connecting, connected, connect, disconnected,
+    const  { btStatus, btName, connecting, connected, connect, disconnected,
               disconnect, disconnecting, current, device, available } = useBluetooth();
     const newDevice = ref(false);
     const currentAction = ref(-1);
-    const action = ref(1);
+    const activity = ref(1);
     const actions = reactive([
-        { text: 'Connect to device',
-          loading: false,
-          done: false,
-          error: false,
-          errorText: 'Cannot establish Bluetooth connection'},
-        { text: 'Retrieving device configuration',
-          loading: false,
-          done: false,
-          error: false,
-          errorText: 'Cannot retreive device configuration'},
+      reactive(
+        { text: ref('Connect to device'),
+          loading: ref(false),
+          done: ref(false),
+          error: ref(false),
+          errorText: ref('Cannot establish Bluetooth connection')},
+        ),
+      reactive(
+        { text: ref('Retrieving device configuration'),
+          loading: ref(false),
+          done: ref(false),
+          error: ref(false),
+          errorText: ref('Cannot retreive device configuration')},
+        ),
       ]);
     const currentActionValid = () => {
       return 0 <= currentAction.value && currentAction.value  < actions.length;
@@ -170,8 +177,7 @@ export default defineComponent({
     const newDeviceName = computed(() => deviceState.deviceData.name);
     const newDeviceColor = computed(() => deviceState.deviceData.color);
     const isFirstActionStarted = computed(() => {
-      const firstAction = actions[0];
-      return firstAction.loading || firstAction.done || firstAction.error;
+      return actions[0].loading || actions[0].done || actions[0].error;
     });
     const isActionsDone = computed(() => {
       let done = true;
@@ -299,6 +305,7 @@ export default defineComponent({
       }
     };
     const nextStep = () => {
+      log.info('device-stepper-content-step1.nextstep');
       context.emit('forward', deviceState);
     };
     async function deviceCreated(event: Device) {
@@ -317,9 +324,9 @@ export default defineComponent({
       context.emit('cancel', deviceState);
     };
 
-    return {  connecting, connected, deviceState, disconnect, disconnecting, disconnected, newDevice,
+    return {  btName, connecting, connected, deviceState, disconnect, disconnecting, disconnected, newDevice,
               ready, scan, deviceCreated, newDeviceName, newDeviceColor,
-              cancel, nextStep, action, actions, isActionsDone, isFirstActionStarted, isActionStarted };
+              cancel, nextStep, activity, actions, isActionsDone, isFirstActionStarted, isActionStarted };
   },
 });
 </script>

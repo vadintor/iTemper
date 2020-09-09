@@ -2,20 +2,20 @@ import { log } from '@/services/logger';
 import * as ble from './bluetooth-service';
 import { DeviceData } from '@/features/devices/device-data';
 import { isDeviceDataValid } from '@/features/devices/device-data-validators';
+import { getUuid, UUID_Designator} from './ble-uuid';
+export const DeviceInfoCharacteristicUUID = getUuid(UUID_Designator.DeviceInfo);
 
-export const DeviceCharacteristicUUID = 'd7e84cb2-ff37-4afc-9ed8-5577aeb84542';
-
-export class DeviceCharacteristic {
+export class DeviceInfoCharacteristic {
   private characteristic: BluetoothRemoteGATTCharacteristic;
   constructor(characteristic: BluetoothRemoteGATTCharacteristic) {
     this.characteristic = characteristic;
   }
   public async readValue(): Promise<DeviceData> {
-    log.debug('device-characteristic.readValue');
+    log.debug('device-info-characteristic.readValue');
     return  new Promise ((resolve, reject) => {
       this.characteristic.readValue().then ((value) => {
         const str = ble.decode(value);
-        log.info('device-characteristic.readValue received str=' + str);
+        log.info('device-info-characteristic.readValue received str=' + str);
         const data = JSON.parse(str);
         if (isDeviceDataValid(data)) {
           resolve( data as DeviceData);
@@ -24,13 +24,13 @@ export class DeviceCharacteristic {
         }
       })
       .catch(() => {
-        reject('Cannot retrieve device configuration');
+        reject('Cannot retrieve device info');
       });
     });
 
   }
   public async writeValue(value: DeviceData): Promise<void> {
-    log.debug('device-characteristic.writeValue');
+    log.debug('device-info-characteristic.writeValue');
     return  this.characteristic.writeValue(ble.encode(JSON.stringify(value)));
   }
 }

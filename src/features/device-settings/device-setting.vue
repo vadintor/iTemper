@@ -17,13 +17,14 @@
             </v-row>
         </v-expansion-panel-header>
         <v-expansion-panel-content>
-            <v-row no-gutters>
+                        <v-row no-gutters>
                 <v-col cols="1"></v-col>
                 <v-col cols="11">
                     <slot>
                     </slot>
                 </v-col>
             </v-row>
+            <slot name="extended"></slot>
         </v-expansion-panel-content>
     </v-expansion-panel>
 </template>
@@ -58,6 +59,10 @@ export default defineComponent({
         off: {
             type: String,
             default: 'Off',
+        },
+        extended: {
+            type: Boolean,
+            default: false,
         },
   },
   setup(props, context) {

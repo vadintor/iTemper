@@ -2,9 +2,9 @@ import { log } from '@/services/logger';
 import * as ble from './bluetooth-service';
 import { WiFiNetwork } from '@/features/devices/device-data';
 import { isWiFiDataValid, isWiFiDataArrayValid } from '@/features/devices/device-data-validators';
-import { networkInterfaces } from 'os';
+import { getUuid, UUID_Designator} from './ble-uuid';
 
-export const AvailableWiFiCharacteristicUUID = 'd7e84cb2-ff37-4afc-9ed8-5577aeb84540';
+export const AvailableWiFiCharacteristicUUID = getUuid(UUID_Designator.AvailableWiFi);
 type Listener = (network: WiFiNetwork) => void;
 
 export class AvailableWiFiCharacteristic {

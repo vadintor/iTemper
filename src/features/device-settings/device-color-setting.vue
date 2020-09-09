@@ -8,9 +8,12 @@
         @change="onChange"
         >
         <template v-slot:header>
-            <v-btn icon v-if="settingOn" :color="newSetting" :loading="loading">
-              <v-icon>fa-tint</v-icon>
-            </v-btn>
+            <span v-if="settingOn">
+            <v-btn icon left small :color="setting" :loading="loading">
+                <v-icon>fa-square</v-icon>
+                </v-btn>
+                {{setting}}
+            </span>
             <span v-else v-text="settingOffValue"/>
         </template>
         <template v-slot:default>
@@ -39,13 +42,13 @@ export default defineComponent({
   setup(props, context) {
     const open = ref(false);
     const syncingSetting = ref(false);
-    const setting = ref(props.value);
+    const setting = computed(() => props.value);
     const newSetting = ref('');
-    const settingIcon = ref('mdi-alpha-d-circle-outline');
+    const settingIcon = ref('fa-tint');
     const settingName = ref('Color');
     const settingOffValue = ref('');
     const settingLabel = ref('Choose a color');
-    const settingIconColor = computed(() => 'gray');
+    const settingIconColor = computed(() => 'orange');
     const settingOn = computed(() => setting.value !== '');
     const settingValid = ref(false);
     const syncSetting = () => {
