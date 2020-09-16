@@ -1,6 +1,5 @@
 import { Location, LocationData } from '@/features/locations';
 import { Sensor } from '@/models/sensor';
-import { SensorProxy} from '@/models/sensor-proxy';
 import { Descriptor } from '@/models/sensor-data';
 import { IApiService, Method } from '@/services/api-service';
 import { log } from '@/services/logger';
@@ -11,7 +10,7 @@ export interface ILocationService {
         updateFile(form: FormData, location: Location): Promise<LocationData>;
         updateName(newName: string, location: Location): Promise<LocationData>;
         updateColor(newColor: string, location: Location): Promise<LocationData>;
-        updateSensors(newSensors: Array<Sensor | SensorProxy>, location: Location): Promise<LocationData>;
+        updateSensors(newSensors: Sensor[], location: Location): Promise<LocationData>;
         // updateLocation(location: Location): Promise<Location>;
         deleteLocation(location: Location): Promise<LocationData>;
 }
@@ -55,7 +54,7 @@ export class LocationService implements ILocationService {
         const body = { color: newColor };
         return this.api.request(method, path, body);
     }
-    public updateSensors(newSensors: Array<Sensor | SensorProxy>, location: Location): Promise<LocationData> {
+    public updateSensors(newSensors: Sensor[], location: Location): Promise<LocationData> {
         const path = this.path + '/' + location._id + '/sensors';
         const method: Method = 'put';
         const sensorDesc: Descriptor[] = [];

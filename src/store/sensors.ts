@@ -17,7 +17,6 @@
 import { ISensorService } from '@/services/sensor-service';
 import { Descriptor, SensorData, SensorLog } from '@/models/sensor-data';
 import { Sensor } from '@/models/sensor';
-import { SensorProxy } from '@/models/sensor-proxy';
 
 import { store } from '@/store/store';
 
@@ -26,7 +25,7 @@ import { Vue  } from 'vue-property-decorator';
 
 export class Sensors  {
     // Reactive
-    public mAll: Array<Sensor | SensorProxy> = [];
+    public mAll: Sensor[] = [];
     private mError: boolean = false;
     private mErrorMessage: string = '';
 
@@ -42,10 +41,10 @@ export class Sensors  {
         this.errorMessage = '';
         this.firstTime = true;
     }
-    public get all(): Array<Sensor | SensorProxy> {
+    public get all(): Sensor[] {
         return this.mAll;
     }
-    public set all(value: Array<Sensor | SensorProxy>) {
+    public set all(value: Sensor[]) {
         Vue.set(this, 'mAll', value);
     }
     public get error(): boolean {
@@ -97,7 +96,7 @@ export class Sensors  {
     }
     // getSensorSamples(desc: Descriptor): Promise<Data[]>
 
-    public find(desc: Descriptor): Sensor | SensorProxy | undefined {
+    public find(desc: Descriptor): Sensor | undefined {
         const found = this.all.find((s) =>
         s.desc.SN === desc.SN && s.desc.port === desc.port);
         const isSensor = found && 'attr' in found;
@@ -105,22 +104,18 @@ export class Sensors  {
         if (!found) {
             log.debug('sensors.find: nothing found');
             return;
-        } else if (isSensor) {
+        } else {
             log.debug('sensors.find: ' + JSON.stringify(found.desc));
             return found as Sensor;
-        } else {
-            log.debug('sensors.find proxy: ' + JSON.stringify(found.desc));
-            return found as SensorProxy;
         }
     }
-
     public filterByDeviceID(deviceID: string): Sensor[] {
         return this.all.filter((item) => item instanceof Sensor && item.deviceID === deviceID) as Sensor[];
     }
     public allSensors(): Sensor[] {
         return this.all.filter((item) => item instanceof Sensor) as Sensor[];
     }
-    public index(id: number): Sensor | SensorProxy | undefined {
+    public index(id: number): Sensor | undefined {
         if (0 <= id && id < this.all.length) {
             return this.all[id];
         } else {
@@ -130,7 +125,7 @@ export class Sensors  {
     public isSensor(): boolean {
         return this instanceof Sensor;
     }
-    public indexOf(item: Sensor | SensorProxy, fromIndex?: number): number {
+    public indexOf(item: Sensor, fromIndex?: number): number {
         return this.all.indexOf(item, fromIndex);
     }
     public clearError() {
@@ -160,56 +155,33 @@ export class Sensors  {
         this.all.push(newSensor);
         log.debug('Sensors.createSensor:: sensors.all=' + JSON.stringify(this.all));
     }
-    private createProxy(sensorLog: SensorLog) {
-        const newSensor = new SensorProxy (sensorLog.desc, sensorLog.samples);
-        this.all.push(newSensor);
-        log.debug('Sensors.createProxy:: sensors.all=' + JSON.stringify(this.all));
-    }
-    private upgradeProxy(proxy: SensorProxy, sensorData: SensorData) {
-        // Delete proxy and insert real sensor
-        const index = this.all.indexOf(proxy);
-        const deleted = this.all[index];
-        this.all.splice(index, 1);
-        const newSensor = new Sensor (sensorData);
-        this.all.push (newSensor);
-        log.debug('Sensors.upgradeProxy: sensors.all=' + JSON.stringify(this.all));
-    }
-
     private parseSensorData(response: SensorData[]) {
         response.forEach((sensorData) => {
             const found = this.find(sensorData.desc);
             if (!found) {
                 this.createSensor(sensorData);
-            } else if (found instanceof Sensor) {
-                const sensor = found as Sensor;
+            } else {
                 let pushedSamples = 0;
                 for (const sample of sensorData.samples) {
-                    if (sensor.samples.length === 0 || sample.date > sensor.samples[sensor.samples.length - 1].date) {
+                    if (found.samples.length === 0 || sample.date > found.samples[found.samples.length - 1].date) {
                         pushedSamples ++;
-                        sensor.samples.push(sample);
+                        found.samples.push(sample);
                     }
                 }
                 log.debug('Sensors.parseSensorData: pushed samples ' + pushedSamples);
                 return;
-            } else if (found instanceof SensorProxy) {
-                this.upgradeProxy(found, sensorData);
-            } else {
-                log.debug('Sensors.parseSensorData: foobar');
             }
         });
     }
     private parseSensorLog(sensorLog: SensorLog) {
         const found = this.find(sensorLog.desc);
-        if (!found) {
-            log.debug('Sensors.parseSensorLog: sensor not found creating proxy');
-            this.createProxy(sensorLog);
-        } else  {
-            log.debug('Sensors.parseSensorLog: received samples=' + sensorLog.samples.length);
+        if (found) {
+            log.info('Sensors.parseSensorLog: received samples=' + sensorLog.samples.length);
             for (const sample of sensorLog.samples) {
                 found.samples.push(sample);
             }
-            return;
-
+        } else {
+            log.error('Sensors.parseSensorLog: no sensor found, desc=' + JSON.stringify(sensorLog.desc));
         }
     }
 }

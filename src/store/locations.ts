@@ -1,6 +1,5 @@
 import { Location } from '@/features/locations';
 import { Sensor } from '@/models/sensor';
-import { SensorProxy } from '@/models/sensor-proxy';
 import { store } from '@/store/store';
 import { LocationData, ILocationService } from '@/features/locations/';
 import { Status } from '@/store/user';
@@ -133,7 +132,7 @@ export class Locations {
             .catch((e: any) => reject(e));
         });
     }
-    public updateSensors(newSensors: Array<Sensor | SensorProxy>, location: Location): Promise<Location> {
+    public updateSensors(newSensors: Sensor[], location: Location): Promise<Location> {
         this.resetError();
         log.debug('locations.updateSensors ' + JSON.stringify(newSensors));
         return new Promise ((resolve, reject) => {
@@ -148,7 +147,6 @@ export class Locations {
                     this.mapSensorDesc(thisLocation, received);
                     resolve(thisLocation);
                 }
-
             })
             .catch((e: any) => reject(e));
         });
@@ -161,29 +159,20 @@ export class Locations {
         return location;
     }
     private mapSensorDesc(location: Location, locationData: LocationData) {
-        log.debug('Locations.mapSensorDesc, location.sensors (length=' + location.sensors.length + ')'
-            + JSON.stringify(location.sensors));
+        const m = 'locations.mapSensorDesc: ';
         location.sensors = [];
         for (const desc of locationData.sensorDesc) {
             const found = location.sensors.find((s) => s.desc.SN === desc.SN && s.desc.port === desc.port);
             if (!found) {
                 const inStoreSensor = store.sensors.find(desc);
-                if (!inStoreSensor) {
-                    //  Need to create a proxy for the actual sensor
-                    // so we do not forgot that we want data from it.
-                    log.debug('Locations.mapSensorDesc, sensor not in store, map proxy sensor to location'
-                    + JSON.stringify(desc)
-                    + JSON.stringify(desc));
-                    const proxySensor = new SensorProxy(desc);
-                    location.sensors.push(proxySensor);
-                    store.sensors.all.push(proxySensor);
-                } else {
-                    log.debug('Locations.mapSensorDesc, sensor in store mapped to location'
-                    + JSON.stringify(inStoreSensor));
+                if (inStoreSensor) {
+                    log.info(m + 'Sensor found ' + JSON.stringify(inStoreSensor));
                     location.sensors.push(inStoreSensor);
+                } else {
+                    log.error(m + 'Sensor noy found, removed from location ' + JSON.stringify(desc));
                 }
             } else {
-                log.debug('Locations.mapSensorDesc, sensor mapped already' + JSON.stringify(desc));
+                log.info(m + 'Sensor mapped to location already ' + JSON.stringify(desc));
             }
         }
     }

@@ -16,18 +16,18 @@
 // },
 import { log } from '@/services/logger';
 import {Category, Sample, Attributes, Descriptor, SensorData} from '@/models/sensor-data';
-import { SensorProxy } from '@/models/sensor-proxy';
 import { Vue  } from 'vue-property-decorator';
 
-export class Sensor extends SensorProxy {
+export class Sensor implements SensorData {
     private mId: string = '';
     private mDeviceID: string = '';
+    private mDesc: Descriptor = { SN: '', port: 0 };
     private mAttr: Attributes = {
-        model: '', category: Category.Temperature, accuracy: 0, resolution: 0, maxSampleRate: 0,
+        model: '', category: Category.Other, accuracy: 0, resolution: 0, maxSampleRate: 0,
     };
+    private mSamples: Sample[] = [];
 
     constructor(data: SensorData) {
-            super(data.desc);
             this.update(data);
     }
     public update(sensorData: SensorData) {
@@ -38,10 +38,6 @@ export class Sensor extends SensorProxy {
         for (const sample of sensorData.samples) {
             this.samples.push(sample);
         }
-
-    }
-    public isProxy() {
-        return false;
     }
     public get _id(): string {
         return this.mId;
@@ -55,17 +51,26 @@ export class Sensor extends SensorProxy {
     public set deviceID(value: string) {
         Vue.set(this, 'mDeviceID', value);
     }
+    public get desc(): Descriptor {
+        return this.mDesc;
+    }
+    public set desc(value: Descriptor) {
+        Vue.set(this, 'mDesc', value);
+    }
+    public get samples(): Sample[] {
+        return this.mSamples;
+    }
+    public set samples(value: Sample[]) {
+        Vue.set(this, 'mSamples', value);
+    }
+    public get name(): string {
+        return this.desc.SN + '/' + this.desc.port;
+    }
     public get attr(): Attributes {
         return this.mAttr;
     }
     public set attr(value: Attributes) {
         Vue.set(this, 'mAttr', value);
-    }
-    public get samples(): Sample[]  {
-        return this.mSamples;
-    }
-    public set samples(value: Sample[]) {
-        Vue.set(this, 'mSamples', value);
     }
     public get lastValue(): string {
         if (this.hasSamples()) {

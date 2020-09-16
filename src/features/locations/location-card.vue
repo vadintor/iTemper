@@ -14,10 +14,10 @@
                                     <v-col align-self="start">
                                         <v-card light v-show="editSensors">
                                             <v-card-text transition="slide-y-transition">
-                                            <v-list style="max-height: 150px" class="overflow-y-auto">
+                                            <v-list style="max-height: 300px" class="overflow-y-auto">
                                             <v-list-item-group 
                                                 v-model="seletedSensors"
-                                                max="10"
+                                                max="20"
                                                 multiple
                                             >
                                                 <template v-for="(sensor, i) in sensors.all">
@@ -169,7 +169,6 @@ import {Vue, Component, Watch, Prop} from 'vue-property-decorator';
 // import * as locations from '@/models/locations'
 import { SensorLog, Sample, Descriptor } from '@/models/sensor-data';
 import { Sensor } from '@/models/sensor';
-import { SensorProxy } from '@/models/sensor-proxy';
 import { Location, Locations } from '@/features/locations';
 import { Settings } from '@/store/settings';
 import { Sensors } from '@/store/sensors';
@@ -199,7 +198,7 @@ export default class LocationCard extends Vue {
     @Prop() public height!: number;
 
     public items: string[] =  [];
-    public seletedSensors: Array<Sensor | SensorProxy> = [];
+    public seletedSensors: Sensor[] = [];
     public sensorDesc: Descriptor[] = [];
 
     public nameRules: ValidationFunction[] = [
@@ -409,7 +408,7 @@ export default class LocationCard extends Vue {
     }
 
     public sensorName(sensor: Sensor) {
-        return sensor.desc.SN + ', port: ' + sensor.desc.port;
+        return sensor.attr.category + ' | ' + sensor.desc.SN + ' | port: ' + sensor.desc.port;
     }
     public error(): boolean {
         return this.errorMsg !== '';

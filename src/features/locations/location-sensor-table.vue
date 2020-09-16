@@ -16,7 +16,6 @@ import {Vue, Component, Watch, Prop} from 'vue-property-decorator';
 
 import { Category, SensorLog } from '@/models/sensor-data';
 import { Sensor } from '@/models/sensor';
-import { SensorProxy } from '@/models/sensor-proxy';
 import { Settings } from '@/store/settings';
 
 import { log } from '@/services/logger';
@@ -26,7 +25,7 @@ import * as utils from '@/helpers';
 @Component({})
 export default class SensorTable extends Vue {
 
-    @Prop() public sensors!: Array<Sensor | SensorProxy>;
+    @Prop() public sensors!: Sensor[];
 
     public state = Vue.$store;
     public settings: Settings = Vue.$store.settings;
@@ -70,19 +69,31 @@ export default class SensorTable extends Vue {
     public unit(category: Category): string {
         return this.settings.unit(category);
     }
-    public sampleValue(sensor: Sensor | SensorProxy): string {
-        if (sensor instanceof Sensor) {
-            log.debug('sensor-table.sampleValue:' + JSON.stringify(sensor.samples.length));
-            const lastSample = sensor.samples.length;
-            if (lastSample > 0) {
-                const multiplier = Math.pow(10, this.settings.resolution || 0);
-                const value = sensor.samples[lastSample - 1].value;
-                return this.round(value, 0.5).toString().replace('.', ',') + ' ' + this.unit(sensor.attr.category);
-            } else {
-                return '-';
-            }
+    public unitFactor(category: Category): number {
+        return this.settings.unitFactor(category);
+    }
+    public decimalComma(value: number): string {
+        const str = value.toString();
+        return this.settings.decimalComma ? str.replace('.', ',') : str;
+
+    }
+    public roundedValue(value: number, category: Category): number{
+        let precision = 1;
+        switch (category) {
+            case Category.Temperature:
+                precision = 0.5;
+        }
+    return this.round(value, precision);
+    }
+    public sampleValue(sensor: Sensor): string {
+        const lastSample = sensor.samples.length;
+        if (lastSample > 0) {
+            const category = sensor.attr.category;
+            const multiplier = Math.pow(10, this.settings.resolution || 0);
+            const value = this.unitFactor(category) * sensor.samples[lastSample - 1].value;
+            return this.decimalComma(this.roundedValue(value, category)) + ' ' + this.unit(category);
         } else {
-            return  'Still waiting for samples of ' + sensor.name;
+            return '-';
         }
     }
     public sampleTime(sensor: Sensor ) {

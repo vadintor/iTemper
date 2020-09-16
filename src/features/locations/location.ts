@@ -1,7 +1,6 @@
 import { Position } from '@/models/position';
 import { Descriptor } from '@/models/sensor-data';
 import { Sensor } from '@/models/sensor';
-import { SensorProxy} from '@/models/sensor-proxy';
 import { Vue  } from 'vue-property-decorator';
 export class Location  {
     public mId: string = '';
@@ -9,7 +8,7 @@ export class Location  {
     public mColor: string = '';
     public mPath: string = '';
     public mSensorDesc: Descriptor[] = [];
-    public mSensors: Array<Sensor | SensorProxy> = [];
+    public mSensors: Sensor[] = [];
     constructor(name: string, color: string) {
         this.name = name;
         this.color = color;
@@ -44,25 +43,25 @@ export class Location  {
     public set path(value: string) {
         Vue.set(this, 'mPath', value);
     }
-    public get sensors(): Array<Sensor | SensorProxy> {
+    public get sensors(): Sensor[] {
         return this.mSensors;
     }
-    public set sensors(value: Array<Sensor | SensorProxy>) {
+    public set sensors(value: Sensor[]) {
         Vue.set(this, 'mSensors', value);
     }
-    public addSensorOrProxy(sensor: Sensor | SensorProxy) {
+    public addSensor(sensor: Sensor) {
         const existing = this.sensors.find((s) => s.desc.SN === sensor.desc.SN && s.desc.port === sensor.desc.port);
         if (!existing) {
             this.sensors.push(sensor);
         }
     }
-    public removeSensorOrProxy(sensor: Sensor | SensorProxy) {
+    public removeSensor(sensor: Sensor) {
         const index = this.sensors.indexOf(sensor);
         if (index >= 0) {
             this.sensors.splice(index, 1);
         }
     }
-    public removeSensorOrProxyIndex(index: number) {
+    public removeSensorIndex(index: number) {
         if (0 <= index && index <  this.sensors.length) {
             this.sensors.splice(index, 1);
         }
