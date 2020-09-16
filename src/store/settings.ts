@@ -7,6 +7,7 @@ export class Settings {
     private mLimit: number = 30;
     private mInterval: number = 60;
     private mZone: string = 'Europe/Stockholm';
+    private mDecimalComma = true;
 
     get resolution(): number {
         return this.mResolution;
@@ -17,9 +18,23 @@ export class Settings {
     }
 
     public unit(category: Category): string {
-        return '°C';
+        switch (category) {
+            case Category.Temperature:
+                return '°C';
+            case Category.Humidity:
+                return '% RH';
+            case Category.AirPressure:
+                return 'hPA';
+        }
+        return '';
     }
-
+    public unitFactor(category: Category): number {
+        switch (category) {
+            case Category.AirPressure:
+                return 0.01;
+        }
+        return 1;
+    }
     set setUnit(value: string) {
         this.mUnitSymbol = value;
     }
@@ -47,5 +62,12 @@ export class Settings {
         this.mZone = value;
     }
 
+    get decimalComma(): boolean {
+        return this.mDecimalComma;
+    }
+
+    set decimalComma(value: boolean) {
+        this.mDecimalComma = value;
+    }
 }
 
