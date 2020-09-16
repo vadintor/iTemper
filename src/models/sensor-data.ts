@@ -1,7 +1,16 @@
-export enum Category {
-    Temperature, Humidity,
-}
 
+export enum Category {
+    Temperature = 'Temperature',
+    AbsoluteHumidity = 'AbsoluteHumidity',
+    RelativeHumidity = 'RelativeHumidity',
+    WindSpeed = 'WindSpeed',
+    Humidity = 'Humidity',
+    AirPressure = 'AirPressure',
+    AccelerationX = 'AccelerationX',
+    AccelerationY = 'AccelerationY',
+    AccelerationZ = 'AccelerationZ',
+    Other = 'Other',
+}
 export interface Sample {
     value: number;
     date: number;
