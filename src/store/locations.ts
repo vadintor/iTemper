@@ -7,6 +7,7 @@ import { Vue  } from 'vue-property-decorator';
 
 import { log } from '@/services/logger';
 import { LogLevel } from '@/models/admin';
+import { Sensors } from './sensors';
 export class Locations {
     private mLocations: Location[] = [];
     private mError: string = '';
@@ -151,6 +152,10 @@ export class Locations {
             .catch((e: any) => reject(e));
         });
     }
+    public locationOf(id: string): Location | undefined {
+        return this.all.find((l) => l._id === id);
+
+    }
     private newLocation(response: LocationData): Location {
         const location = new Location (response.name, response.color);
         location._id = response._id;
@@ -175,6 +180,7 @@ export class Locations {
                 log.info(m + 'Sensor mapped to location already ' + JSON.stringify(desc));
             }
         }
+        store.sensors.setLocation(location);
     }
     private resetError() {
         this.mError = '';

@@ -34,6 +34,7 @@
                     <th class="text-left">Givare</th>
                     <th class="text-left">Modell</th>
                     <th class="text-left">Kategori</th>
+                    <th class="text-left">Plats</th>
                     <th class="text-left">Senaste mätvärde</th>
                     <th class="text-left">Tidpunkt</th>
                     <th class="text-left">Nogrannhet, decimaler</th>
@@ -46,6 +47,7 @@
                     <td>{{ item.desc.SN + '/' +  item.desc.port }}</td>
                     <td>{{ item.attr.model }}</td>
                     <td>{{ item.attr.category }}</td>
+                    <td>{{ locationName(item) }}</td>
                     <td>
                         <span v-if="item.samples.length > 0">{{ item.samples[item.samples.length-1].value }}</span>
                         <span v-else>-</span>
@@ -93,9 +95,10 @@ import * as moment from 'moment-timezone';
 import {Vue, Component, Watch, Prop} from 'vue-property-decorator';
 
 // Models
-// import * as locations from '@/models/locations'
+import { Location } from '@/features/locations';
 import { Device } from '@/features/devices';
 import { Sensor } from '@/models/sensor';
+import { Descriptor } from '@/models/sensor-data';
 
 import { log } from '@/services/logger';
 import {json, copyToClipboard } from '@/helpers';
@@ -111,6 +114,7 @@ export default class DeviceCard extends Vue {
     public state = Vue.$store;
     public sensors = Vue.$store.sensors;
     public devices = Vue.$store.devices;
+    public locations = Vue.$store.locations;
     public showConfiguration: boolean = false;
     public newName: string = '';
     public editName: boolean = false;
@@ -141,6 +145,10 @@ export default class DeviceCard extends Vue {
         if (this.showConfiguration) {
             this.newName = this.device.name.slice();
         }
+    }
+    public locationName(sensor: Sensor): string {
+        const location = this.locations.locationOf(sensor.locationId);
+        return location ? location.name : '-';
     }
     public filterSensors(sensors: Sensor[], deviceID: string): Sensor[] {
         return this.sensors.filterByDeviceID(deviceID);

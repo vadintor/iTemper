@@ -20,7 +20,7 @@
                                                 max="20"
                                                 multiple
                                             >
-                                                <template v-for="(sensor, i) in sensors.all">
+                                                <template v-for="(sensor, i) in availableSensors">
                                                 <v-list-item
                                                     :key="`sensor-${i}`"
                                                     :value="sensor"
@@ -199,6 +199,7 @@ export default class LocationCard extends Vue {
 
     public items: string[] =  [];
     public seletedSensors: Sensor[] = [];
+    public availableSensors: Sensor[] = [];
     public sensorDesc: Descriptor[] = [];
 
     public nameRules: ValidationFunction[] = [
@@ -275,10 +276,16 @@ export default class LocationCard extends Vue {
         this.locationName = this.location.name.slice();
     }
     public onEditSensors() {
+        this.availableSensors = [];
         this.seletedSensors = [];
-        for (const sensor of this.location.sensors) {
-            this.seletedSensors.push(sensor);
-        }
+        this.sensors.all.forEach((sensor) => {
+            if (sensor.locationId === this.location._id) {
+                this.seletedSensors.push(sensor);
+                this.availableSensors.push(sensor);
+            } else if (sensor.locationId === '') {
+                this.availableSensors.push(sensor);
+            }
+        });
         this.editSensors = true;
     }
     public cancelEditSensors() {

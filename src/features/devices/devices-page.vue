@@ -8,7 +8,7 @@
                 >
                 </device-card>
             </v-flex>
-            <v-chip v-if="deviceCount()===0" transition="scale-transition" >Det finns inga enheter ännu</v-chip>
+            <v-chip v-if="deviceCount === 0" transition="scale-transition" >Det finns inga enheter ännu</v-chip>
         </v-layout>
     </v-container>
 </template>
@@ -16,85 +16,27 @@
 <script lang="ts">
 import * as moment from 'moment-timezone';
 import {Vue, Component, Watch} from 'vue-property-decorator';
-// Models
+import { computed, defineComponent, onMounted } from '@vue/composition-api';
 
-import { Device } from '@/features/devices';
+// Store
+import { useState } from '@/store/store';
 
 // Services
-
 import { log } from '@/services/logger';
 // Child components
 import DeviceCard from '@/features/devices/device-card.vue';
 
-@Component({
-    components: {
-    DeviceCard,
+export default defineComponent({
+  name: 'DevicesPage',
+  components: { DeviceCard },
+
+  setup(props, context) {
+    const { state } = useState('device-page');
+
+    const deviceCount = computed (() => state.devices.all.length);
+
+    log.debug('DevicePage.setup');
+    return { state, deviceCount };
   },
-})
-export default class DevicesPage extends Vue {
-
-    public state = Vue.$store;
-
-    public deviceCount(): number {
-        return this.state.devices.all.length;
-    }
-
-    public getDevices() {
-        this.state.devices.getDevices();
-    }
-
-    public created(): void {
-        log.debug('MyDevices.created()');
-        this.getDevices();
-    }
-
-    public name(device: Device) {
-        return device.name;
-    }
-
-    public color(id: number): string {
-        return 'trans-' + id.toString();
-    }
-
-    public image(id: number): string {
-            return '/img/' + 'uterum' + '.jpg';
-    }
-
-    public location(id: number): string {
-            return 'En  plats';
-    }
-}
-
+});
 </script>
-
-<style scoped>
-
-.trans-0 {
-    background-color: rgba(227, 153, 0, 0.7);
-}
-
-.trans-1 {
-    background-color: rgba(153, 10, 227, 0.7);
-}
-
-.trans-2 {
-    background-color: rgba(153, 0, 0, 0.7);
-}
-
-.trans-3 {
-    background-color: rgba(10, 153, 227, 0.7);
-}
-
-.trans-4 {
-    background-color: rgba(0, 10, 153, 0.7);
-}
-
-.trans-5 {
-    background-color: rgba(0, 227, 30, 0.7);
-}
-
-.highcharts-background {
-    background-color: rgba(255, 255, 255, 0.1);
-}
-
-</style>

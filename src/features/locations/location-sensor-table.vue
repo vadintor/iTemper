@@ -77,13 +77,13 @@ export default class SensorTable extends Vue {
         return this.settings.decimalComma ? str.replace('.', ',') : str;
 
     }
-    public roundedValue(value: number, category: Category): number{
+    public roundedValue(value: number, category: Category): number {
         let precision = 1;
         switch (category) {
             case Category.Temperature:
                 precision = 0.5;
         }
-    return this.round(value, precision);
+        return this.round(value, precision);
     }
     public sampleValue(sensor: Sensor): string {
         const lastSample = sensor.samples.length;

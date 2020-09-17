@@ -51,25 +51,26 @@ export function useState(moduleName: string) {
         log.info('store.useState.startRetrieveState');
 
         // make sure we have some values from all sensors before loading locations
+        retrieveState();
+    };
+    const retrieveState = () => {
+        log.info('store.useState.retrieveState');
+        state.sensors.getSensorsSamples(sampleCount);
         state.sensors.loadSensors(sampleCount)
         .then(() => {
             state.locations.getLocations();
+            state.devices.getDevices();
             state.sensors.getSensorsLast24h();
             timeout = setInterval(() => retrieveState(),
                         1000 * state.settings.interval);
             timer.value = true;
         });
     };
-    const retrieveState = () => {
-        log.info('store.useState.retrieveState');
-        state.sensors.getSensorsSamples(sampleCount);
-    };
     const stopRetrieveState = () => {
         if (timer.value) {
             log.info('store.useState.stopRetrieveState');
             clearInterval(timeout);
             timer.value = false;
-
         }
     };
     const resetState = () => {

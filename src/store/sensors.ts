@@ -17,7 +17,7 @@
 import { ISensorService } from '@/services/sensor-service';
 import { Descriptor, SensorData, SensorLog } from '@/models/sensor-data';
 import { Sensor } from '@/models/sensor';
-
+import { Location } from '@/features/locations/location';
 import { store } from '@/store/store';
 
 import { log } from '@/services/logger';
@@ -149,6 +149,20 @@ export class Sensors  {
         .catch((error: any) => {
             log.debug('getSensorData' + JSON.stringify(error));
         });
+    }
+    public AddLocation(location: Location) {
+        location.sensors.forEach((s) => s.locationId = location._id);
+    }
+    public removeLocation(location: Location) {
+        this.all.forEach((s) => {
+            if (s.locationId === location._id) {
+                s.locationId = '';
+            }
+        });
+    }
+    public setLocation(location: Location) {
+        this.removeLocation(location);
+        this.AddLocation(location);
     }
     private createSensor(sensorData: SensorData) {
         const newSensor = new Sensor (sensorData);

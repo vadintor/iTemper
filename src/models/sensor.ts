@@ -26,6 +26,7 @@ export class Sensor implements SensorData {
         model: '', category: Category.Other, accuracy: 0, resolution: 0, maxSampleRate: 0,
     };
     private mSamples: Sample[] = [];
+    private mLocationId: string = '';
 
     constructor(data: SensorData) {
             this.update(data);
@@ -106,5 +107,11 @@ export class Sensor implements SensorData {
     }
     public get lastSample(): Sample {
         return this.samples[this.samples.length];
+    }
+    public get locationId(): string {
+        return this.mLocationId;
+    }
+    public set locationId(value: string) {
+        Vue.set(this, 'mLocationId', value);
     }
 }
