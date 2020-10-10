@@ -6,16 +6,16 @@
         :iconColor="settingIconColor"
         :isOn="settingOn"
         @change="onChange"
-        >
-                <v-form v-model="settingValid" ref="form">
-                <base-text-field
-                    :readonly="!open"
-                    :label="settingLabel"
-                    :loading="loading"
-                    v-model="newSetting"
-                    :rules="nameRules"
-                    @updated="syncSetting"
-                ></base-text-field>
+    >
+        <v-form v-model="settingValid" ref="form">
+        <base-text-field
+            :readonly="!open"
+            :label="settingLabel"
+            :loading="loading"
+            v-model="newSetting"
+            :rules="nameRules"
+            @updated="syncSetting"
+        ></base-text-field>
             </v-form>
     </device-setting>
 </template>

@@ -3,11 +3,19 @@
         <v-card
           class="mb-12"
         >
-            <new-device
-              :name="newDeviceName"
-              :color="newDeviceColor"
-              v-model="newDevice"
-              @created="deviceCreated"/>
+          <new-device
+            :name="newDeviceName"
+            :color="newDeviceColor"
+            v-model="newDevice"
+            @created="deviceCreated"/>
+            <v-alert
+              :value="alert"
+              color="pink"
+              dark
+              border="top"
+              icon="mdi-home"
+              transition="scale-transition"
+            >{{ alertMessage }}</v-alert>
             <div v-if="connected && isActionsDone">
                 <v-card-title  class="headline">
                     <v-row>
@@ -31,8 +39,8 @@
                         <span v-if="btName !==''">{{btName}}</span>
                         <span v-else>Search for device</span>
                     </v-col>
-                  </v-row>             
-                  </v-card-title>  
+                  </v-row>
+                  </v-card-title>
                 <v-card-text>
                     <span v-if="disconnected">Turn on your iTemper device. Click Scan and pair a device.</span>
                     <span v-else>Please wait until the connection is complete. This may take up to 60 seconds.</span>
@@ -111,13 +119,15 @@ export default defineComponent({
   setup(props, context) {
     const { deviceState, resetDeviceState } = useDeviceState();
     const  { btStatus, btName, connecting, connected, connect, disconnected,
-              disconnect, disconnecting, current, device, available } = useBluetooth();
+              disconnect, disconnecting, current, device, available, deviceName } = useBluetooth();
     const newDevice = ref(false);
+    const alert = ref(false);
+    const  alertMessage = ref('');
     const currentAction = ref(-1);
     const activity = ref(1);
     const actions = reactive([
       reactive(
-        { text: ref('Connect to device'),
+        { text: ref('Connecting to Bluetooth services'),
           loading: ref(false),
           done: ref(false),
           error: ref(false),
@@ -193,10 +203,22 @@ export default defineComponent({
       const thisAction = actions[index];
       return thisAction.loading || thisAction.done || thisAction.error;
     };
+    const showAlert = (text: string) => {
+      alertMessage.value = text;
+      alert.value = true;
+      setTimeout(() => {
+        alert.value = false;
+        alertMessage.value = '';
+      }, 3_000);
+    };
     async function scan() {
       try {
         startActions();
-        await connectDevice();
+        const status = await connectDevice();
+        if (status !== BtStatus.Connected) {
+          showAlert('Cannot connect device');
+          return;
+        }
         actionDone();
         await retriveDeviceData();
         const existingDevice = Vue.$store.devices.all
@@ -217,37 +239,27 @@ export default defineComponent({
         log.info('device-stepper-content-step1.scan Cannot connect to BLE device');
       }
     }
-    async function connectDevice() {
+    async function connectDevice(): Promise<BtStatus> {
         log.info('device-stepper-content-step1.connectDevice');
         const status = await connect();
+        return status;
     }
     async function retriveDeviceData() {
-      const MaxRetries = 1;
-      let retries = 0;
-      let done = false;
-      while (retries <= MaxRetries && !done) {
         try {
           const deviceConfig = await device().readValue();
           log.info('device-stepper-content-step1.retriveDeviceData: device data read');
+          const name = await deviceName().readValue();
+          log.info('device-stepper-content-step1.retriveDeviceData, devicename: ' + name);
           resetDeviceState();
           // Device data
           deviceState.deviceData.name = deviceConfig.name;
           deviceState.deviceData.deviceID = deviceIDOf(deviceConfig.key);
           deviceState.deviceData.key = deviceConfig.key;
           deviceState.deviceData.color = deviceConfig.color;
-          done = true;
         } catch (e) {
-            if (retries < MaxRetries) {
-              retries = retries + 1;
-              await connectDevice();
-              log.info('device-stepper-content-step1.retriveDeviceData: retrying');
-            } else {
               log.error('device-stepper-content-step1.retriveDeviceData: invalid device data');
               actionError(e);
-              return;
-            }
         }
-      }
     }
     async function retrieveCurrentWiFiNetwork() {
       try {
@@ -263,12 +275,8 @@ export default defineComponent({
       }
     }
     async function retrieveAvailableWiFiNetworks() {
-      const MaxRetries = 1;
-      let retries = 0;
-      let done = false;
-      while (retries <= MaxRetries && !done) {
         try {
-          available().subscribe((network: WiFiNetwork) => {
+          await available().subscribe((network: WiFiNetwork) => {
               const found = deviceState.networks.available.find((n) =>
                           n.ssid === network.ssid && n.channel === network.channel);
               if (found) {
@@ -283,19 +291,10 @@ export default defineComponent({
                 }));
               }
           });
-          done = true;
         } catch (e) {
-            if (retries < MaxRetries) {
-              retries += 1;
-              await connect();
-              log.info('device-stepper-content-step1.retrieveAvailableWiFiNetworks: retrying');
-            } else {
               log.error('device-stepper-content-step1.retrieveAvailableWiFiNetworks: invalid device configuration');
               actionError(e);
-            }
         }
-      }
-      log.info('device-stepper-content-step1 deviceState= %s', JSON.stringify(deviceState));
     }
     const writeDeviceConfiguration = () => {
       try {
@@ -324,7 +323,8 @@ export default defineComponent({
       context.emit('cancel', deviceState);
     };
 
-    return {  btName, connecting, connected, deviceState, disconnect, disconnecting, disconnected, newDevice,
+    return {  alert, alertMessage, btName, connecting, connected, deviceState, disconnect, disconnecting,
+              disconnected, newDevice,
               ready, scan, deviceCreated, newDeviceName, newDeviceColor,
               cancel, nextStep, activity, actions, isActionsDone, isFirstActionStarted, isActionStarted };
   },

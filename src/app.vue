@@ -4,7 +4,7 @@
         <Toolbar></Toolbar>
         <v-main>
             <v-container fluid>
-                <router-view transition='scale-transition' ></router-view>
+                <router-view transition='scale-transition'></router-view>
             </v-container>
         </v-main>
     </v-app>

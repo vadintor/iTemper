@@ -171,7 +171,6 @@ export class Locations {
             if (!found) {
                 const inStoreSensor = store.sensors.find(desc);
                 if (inStoreSensor) {
-                    log.info(m + 'Sensor found ' + JSON.stringify(inStoreSensor));
                     location.sensors.push(inStoreSensor);
                 } else {
                     log.error(m + 'Sensor noy found, removed from location ' + JSON.stringify(desc));

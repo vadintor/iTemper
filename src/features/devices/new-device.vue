@@ -1,7 +1,7 @@
 <template>
     <v-dialog v-model="value" persistent max-width="500">
         <v-card>
-            <v-card-title class="headline">New Device found</v-card-title>
+            <v-card-title class="headline">New Device</v-card-title>
             <v-card-text>
                 <p>Create an access key for device:</p>
                 <v-form v-model="valid" ref="device">

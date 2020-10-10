@@ -13,7 +13,7 @@
                         />
                         <DeviceNameSetting
                           :value="deviceState.deviceData.name"
-                          @input="syncColor"
+                          @input="syncName"
                           />
                         <DeviceApiKeySetting
                           :value="deviceState.deviceData.key"
@@ -73,6 +73,18 @@ export default defineComponent({
           loading.value = false;
         }
     }
+    async function syncName(event: string) {
+      const cached = deviceState.deviceData.name.slice();
+      try {
+            loading.value = true;
+            deviceState.deviceData.name = event.slice();
+            await device().writeValue(deviceState.deviceData);
+        } catch {
+            deviceState.deviceData.color = cached;
+        } finally {
+          loading.value = false;
+        }
+    }
     async function retrieveCurrentWiFiNetwork() {
       try {
         const wifi = await current().readValue();
@@ -109,7 +121,8 @@ export default defineComponent({
           available().unsubscribe();
           context.emit('forward');
     };
-    return { deviceState, loading, updated, stepBack, syncColor, nextStep, switchChanged, syncCurrentNetwork};
+    return { deviceState, loading, updated, stepBack, syncColor, syncName,
+             nextStep, switchChanged, syncCurrentNetwork};
   },
 });
 </script>

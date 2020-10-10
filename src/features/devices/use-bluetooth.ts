@@ -3,7 +3,7 @@ import { log } from '@/services/logger';
 
 import { AvailableWiFiCharacteristic} from '../bluetooth-device/available-wifi-characteristics';
 import { CurrentWiFiCharacteristic} from '../bluetooth-device/current-wifi-characteristic';
-import { DeviceInfoCharacteristic} from '../bluetooth-device/device-info-characteristic';
+import { DeviceCharacteristic} from '../bluetooth-device/device-characteristic';
 
 import { BtCharacteristics, BtService, BtStatus } from '@/features/bluetooth-device/bluetooth-service';
 
@@ -56,7 +56,10 @@ export function useBluetooth() {
     const disconnect = () => {
         service.disconnect();
     };
-    const device = (): DeviceInfoCharacteristic => {
+    const device = (): DeviceCharacteristic => {
+        return characteristics.device;
+    };
+    const deviceName = (): DeviceCharacteristic => {
         return characteristics.device;
     };
     const current = (): CurrentWiFiCharacteristic => {
@@ -67,6 +70,6 @@ export function useBluetooth() {
     };
 
     return { btStatus, btName, connecting, connected, connect, disconnected, disconnect, disconnecting,
-        current, device, available};
+        current, device, available, deviceName};
 
 }

@@ -91,7 +91,6 @@ export class ApiService implements IApiService {
             } else {
                 conf = {url, method, headers: Authorization, data: body};
             }
-            log.debug('api-service.request conf=', JSON.stringify(conf, undefined, 2));
             this.io.request(conf)
             .then ((response) => {
                     const data = response.data;

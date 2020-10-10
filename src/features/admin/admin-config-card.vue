@@ -4,7 +4,7 @@
         <v-card>
             <v-card-title>Configuration:</v-card-title>
             <v-card-text><pre>{{config}}</pre></v-card-text>
-        </v-card>>
+        </v-card>
     </div>
 </template>
 <script lang='ts'>

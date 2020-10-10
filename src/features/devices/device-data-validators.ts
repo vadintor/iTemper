@@ -1,8 +1,21 @@
-import {DeviceData, DeviceWiFiData, WiFiData, DeviceState} from './device-data';
+import {DeviceData, DeviceName, DeviceWiFiData, WiFiData, DeviceState} from './device-data';
 import { isObject, isSensorDataArrayValid } from '@/models/sensor-data-validators';
 import { log } from '@/services/logger';
 import { isArray } from 'util';
-
+export function isDeviceNameValid(raw: unknown): boolean {
+    let valid = isObject(raw);
+    if (!valid) {
+        log.error('device-data-validators.isDeviceNameValid - not an object');
+    } else {
+        const data = raw as Partial<DeviceName>;
+        valid = valid
+        && 'name' in data && typeof data.name === 'string';
+        if (!valid) {
+            log.error('device-data-validators.isDeviceNameValid - not valid');
+        }
+    }
+    return valid;
+}
 
 export function isDeviceDataValid(raw: unknown): boolean {
     let valid = isObject(raw);
